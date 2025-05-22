@@ -38,7 +38,10 @@ public:
 	class UInputAction* IA_Jump;
 	
 	UFUNCTION()
-	void Move(const FInputActionValue& Value);
+	void MoveAction(const FInputActionValue& Value);
+
+	UFUNCTION()
+	void JumpAction(const FInputActionValue& Value);
 
 	FVector Direction;
 };

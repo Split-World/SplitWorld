@@ -52,7 +52,8 @@ ASplitPlayer::ASplitPlayer()
 void ASplitPlayer::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	JumpMaxCount = 2;
 }
 
 void ASplitPlayer::NotifyControllerChanged()
@@ -81,17 +82,22 @@ void ASplitPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent)) 
 	{
-		EnhancedInputComponent->BindAction(IA_Move, ETriggerEvent::Triggered, this, &ASplitPlayer::Move);
+		EnhancedInputComponent->BindAction(IA_Move, ETriggerEvent::Triggered, this, &ASplitPlayer::MoveAction);
 
 		EnhancedInputComponent->BindAction(IA_Jump, ETriggerEvent::Started, this, &ACharacter::Jump);
 		EnhancedInputComponent->BindAction(IA_Jump, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 	}
 }
 
-void ASplitPlayer::Move(const FInputActionValue& Value)
+void ASplitPlayer::MoveAction(const FInputActionValue& Value)
 {
 	FRotator rot = GetControlRotation();
 	AddMovementInput(UKismetMathLibrary::GetRightVector(FRotator(rot.Roll, 0,rot.Yaw)), Value.Get<FVector>().X, false);
 	AddMovementInput(UKismetMathLibrary::GetForwardVector(FRotator(0, 0,rot.Yaw)), Value.Get<FVector>().Y, false);
+}
+
+void ASplitPlayer::JumpAction(const FInputActionValue& Value)
+{
+	Jump();
 }
 
