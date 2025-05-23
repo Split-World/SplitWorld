@@ -44,4 +44,24 @@ public:
 	void JumpAction(const FInputActionValue& Value);
 
 	FVector Direction;
+
+	UPROPERTY(EditAnywhere)
+	FTransform SpawnTransform;
+
+	UFUNCTION()
+	void Die();
+
+	bool bJumping = false;
+	bool bDoubleJumping = false;
+
+	void DetectWall();
+
+	FVector MoveVectorUpward(FVector InVector, float AddValue);
+	FVector MoveVectorDownward(FVector InVector, float SubtractValue);
+	FVector MoveVectorForward(FVector InVector, FRotator InRotation, float AddValue);
+	FVector MoveVectorBackward(FVector InVector, FRotator InRotation, float SubtractValue);
+	FVector MoveVectorRightward(FVector InVector, FRotator InRotation, float AddValue);
+	FVector MoveVectorLeftward(FVector InVector, FRotator InRotation, float SubtractValue);
+
+	FRotator ReveseNormal(FVector InNormal);
 };

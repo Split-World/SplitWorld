@@ -15,7 +15,7 @@ ASplitPlayer::ASplitPlayer()
  	PrimaryActorTick.bCanEverTick = true;
 
 	ConstructorHelpers::FObjectFinder<USkeletalMesh>tempMesh
-	(TEXT("/Script/Engine.SkeletalMesh'/Game/Characters/Mannequins/Meshes/SKM_Manny.SKM_Manny'"));
+	(TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Characters/Mannequins/Meshes/SKM_Manny.SKM_Manny'"));
 	if (tempMesh.Succeeded())
 	{
 		GetMesh()->SetSkeletalMesh(tempMesh.Object);
@@ -52,7 +52,11 @@ ASplitPlayer::ASplitPlayer()
 void ASplitPlayer::BeginPlay()
 {
 	Super::BeginPlay();
-
+	
+	bUseControllerRotationPitch = false;
+	bUseControllerRotationYaw = false;
+	bUseControllerRotationRoll = false;
+	
 	JumpMaxCount = 2;
 }
 
@@ -73,6 +77,12 @@ void ASplitPlayer::NotifyControllerChanged()
 void ASplitPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (!GetCharacterMovement()->IsFalling())
+	{
+		bJumping = false;
+		bDoubleJumping = false;
+	}
 }
 
 // Called to bind functionality to input
@@ -84,8 +94,7 @@ void ASplitPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	{
 		EnhancedInputComponent->BindAction(IA_Move, ETriggerEvent::Triggered, this, &ASplitPlayer::MoveAction);
 
-		EnhancedInputComponent->BindAction(IA_Jump, ETriggerEvent::Started, this, &ACharacter::Jump);
-		EnhancedInputComponent->BindAction(IA_Jump, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
+		EnhancedInputComponent->BindAction(IA_Jump, ETriggerEvent::Started, this, &ASplitPlayer::JumpAction);
 	}
 }
 
@@ -98,6 +107,71 @@ void ASplitPlayer::MoveAction(const FInputActionValue& Value)
 
 void ASplitPlayer::JumpAction(const FInputActionValue& Value)
 {
-	Jump();
+	if (bJumping)
+	{
+		Jump();
+		bJumping = true;
+	}
+	else if (bDoubleJumping)
+	{
+		Jump();
+		bDoubleJumping = true;
+	}
 }
+
+void ASplitPlayer::Die()
+{
+	SetActorTransform(SpawnTransform);
+}
+
+void ASplitPlayer::DetectWall()
+{
+	for (int i = 0; i < 8; i++)
+	{
+		MoveVectorUpward(MoveVectorDownward(GetOwner()->GetActorLocation(), 60.f), i * 20.f); 
+	}
+}
+
+FVector ASplitPlayer::MoveVectorUpward(FVector InVector, float AddValue)
+{
+	InVector.Y += AddValue;
+	return InVector;
+}
+
+FVector ASplitPlayer::MoveVectorDownward(FVector InVector, float SubtractValue)
+{
+	InVector.Y -= SubtractValue;
+	return InVector;
+}
+
+FVector ASplitPlayer::MoveVectorForward(FVector InVector, FRotator InRotation, float AddValue)
+{
+	InVector += InRotation.Vector() * AddValue;
+	return InVector;
+}
+
+FVector ASplitPlayer::MoveVectorBackward(FVector InVector, FRotator InRotation, float SubtractValue)
+{
+	InVector -= InRotation.Vector() * SubtractValue;
+	return InVector;
+}
+
+FVector ASplitPlayer::MoveVectorRightward(FVector InVector, FRotator InRotation, float AddValue)
+{
+	InVector += InRotation.RotateVector(GetActorRightVector()) * AddValue;
+	return InVector;
+}
+
+FVector ASplitPlayer::MoveVectorLeftward(FVector InVector, FRotator InRotation, float SubtractValue)
+{
+	InVector -= InRotation.RotateVector(GetActorRightVector()) * SubtractValue;
+	return InVector;
+}
+
+FRotator ASplitPlayer::ReveseNormal(FVector InNormal)
+{
+	return UKismetMathLibrary::NormalizedDeltaRotator(UKismetMathLibrary::MakeRotFromX(InNormal),FRotator(0.f ,0.f ,180.f));
+}
+
+
 
