@@ -14,20 +14,23 @@ class SPLITWORLD_API ACaptureCamera : public AActor
 public: 
 	ACaptureCamera(); 
 	virtual void BeginPlay() override; 
-	virtual void Tick(float DeltaTime) override; 
+	virtual void Tick(float DeltaTime) override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
 private:
 	UPROPERTY(EditAnywhere)
 	class USpringArmComponent* SpringArmComp;
-	UPROPERTY(EditAnywhere)
-	class USceneCaptureComponent2D* CameraComp;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true), Replicated)
+	class USceneCaptureComponent2D* CameraComp; 
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(AllowPrivateAccess=true))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(AllowPrivateAccess=true), Replicated)
 	int CameraIdx;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(AllowPrivateAccess=true))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(AllowPrivateAccess=true), Replicated)
 	class APawn* Player1;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(AllowPrivateAccess=true))
-	class APawn* Player2;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(AllowPrivateAccess=true), Replicated)
+	class APawn* Player2; 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true), Replicated)
+	class ASceneCapture2D* Mask;
 	
 };
