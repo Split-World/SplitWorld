@@ -6,8 +6,10 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
+#include "Animation/AnimInstanceProxy.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 // Sets default values
 ASplitPlayer::ASplitPlayer()
@@ -103,6 +105,13 @@ void ASplitPlayer::MoveAction(const FInputActionValue& Value)
 	FRotator rot = GetControlRotation();
 	AddMovementInput(UKismetMathLibrary::GetRightVector(FRotator(rot.Roll, 0,rot.Yaw)), Value.Get<FVector>().X, false);
 	AddMovementInput(UKismetMathLibrary::GetForwardVector(FRotator(0, 0,rot.Yaw)), Value.Get<FVector>().Y, false);
+
+
+	FVector HitLocation;
+	FVector Normal;
+	int index;
+
+	DetectWall(HitLocation,Normal, index);
 }
 
 void ASplitPlayer::JumpAction(const FInputActionValue& Value)
@@ -124,23 +133,56 @@ void ASplitPlayer::Die()
 	SetActorTransform(SpawnTransform);
 }
 
-void ASplitPlayer::DetectWall()
+bool ASplitPlayer::DetectWall(FVector& HitLocation, FVector& Normal, int& index)
 {
-	for (int i = 0; i < 8; i++)
+	FHitResult OutHit;
+	
+	for (int detectIndex  = 0; detectIndex < 2; detectIndex++)
 	{
-		MoveVectorUpward(MoveVectorDownward(GetOwner()->GetActorLocation(), 60.f), i * 20.f); 
+		FVector tempLocation = MoveVectorUpward(MoveVectorUpward(GetActorLocation(), 45.f), detectIndex * 20.f);
+		FVector StartVector = MoveVectorBackward(tempLocation, GetActorRotation(), 30.f);
+		FVector EndVector = (GetActorForwardVector() * 100.f) + tempLocation;
+		
+		TArray<AActor*> ignoreActors;
+		ignoreActors.Add(this);
+		
+		bool bHit = UKismetSystemLibrary::SphereTraceSingle(
+			GetWorld(),
+			StartVector,
+			EndVector,
+			10.f,
+			(ETraceTypeQuery)ECC_Visibility,
+			false,
+			ignoreActors,
+			EDrawDebugTrace::ForOneFrame,
+			OutHit,
+			true,
+			FColor::Yellow,
+			FColor::Green,
+			5.f
+			);
+
+		if (bHit)
+		{
+			index = detectIndex;
+			break;
+		}
 	}
+
+	HitLocation=OutHit.Location;
+	Normal = OutHit.Normal;
+	return OutHit.bBlockingHit;
 }
 
 FVector ASplitPlayer::MoveVectorUpward(FVector InVector, float AddValue)
 {
-	InVector.Y += AddValue;
+	InVector.Z += AddValue;
 	return InVector;
 }
 
 FVector ASplitPlayer::MoveVectorDownward(FVector InVector, float SubtractValue)
 {
-	InVector.Y -= SubtractValue;
+	InVector.Z -= SubtractValue;
 	return InVector;
 }
 

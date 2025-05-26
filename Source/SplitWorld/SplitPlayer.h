@@ -54,7 +54,7 @@ public:
 	bool bJumping = false;
 	bool bDoubleJumping = false;
 
-	void DetectWall();
+	bool DetectWall(FVector& HitLocation, FVector& Normal, int& index);
 
 	FVector MoveVectorUpward(FVector InVector, float AddValue);
 	FVector MoveVectorDownward(FVector InVector, float SubtractValue);
