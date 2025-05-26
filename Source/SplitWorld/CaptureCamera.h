@@ -15,9 +15,11 @@ public:
 	ACaptureCamera(); 
 	virtual void BeginPlay() override; 
 	virtual void Tick(float DeltaTime) override;
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override; 
 	
-private:
+private: 
+	void UpdateMask(); 
+
 	UPROPERTY(EditAnywhere)
 	class USpringArmComponent* SpringArmComp;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true), Replicated)
