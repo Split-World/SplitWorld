@@ -18,6 +18,6 @@ class SPLITWORLD_API IInteractable
 
 public:
 	UFUNCTION(BlueprintNativeEvent) 
-	void Interactive(); 
+	void Interaction(); 
 	
 };
