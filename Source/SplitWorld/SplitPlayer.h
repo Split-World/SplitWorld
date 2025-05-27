@@ -41,10 +41,11 @@ public:
 	void MoveAction(const FInputActionValue& Value);
 
 	UFUNCTION()
+	void MoveCancle(const FInputActionValue& Value);
+
+	UFUNCTION()
 	void JumpAction(const FInputActionValue& Value);
-
-	FVector Direction;
-
+	
 	UPROPERTY(EditAnywhere)
 	FTransform SpawnTransform;
 
@@ -53,8 +54,14 @@ public:
 
 	bool bJumping = false;
 	bool bDoubleJumping = false;
-
+	FVector JumpDir;
+	FVector Dir;
+	
+	bool bClimb = false;
+	bool bTryClimb = false;
+	
 	bool DetectWall(FVector& HitLocation, FVector& Normal, int& index);
+	void ClimbWall();
 
 	FVector MoveVectorUpward(FVector InVector, float AddValue);
 	FVector MoveVectorDownward(FVector InVector, float SubtractValue);
@@ -64,4 +71,7 @@ public:
 	FVector MoveVectorLeftward(FVector InVector, FRotator InRotation, float SubtractValue);
 
 	FRotator ReveseNormal(FVector InNormal);
+
+	UPROPERTY(EditAnywhere)
+	UAnimMontage* ClimbMontage;
 };

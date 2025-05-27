@@ -42,11 +42,19 @@ ASplitPlayer::ASplitPlayer()
 	}
 
 	ConstructorHelpers::FObjectFinder<UInputAction>tempJumpIA
-(TEXT("/Script/EnhancedInput.InputAction'/Game/JS_Folder/Inputs/InputActions/IA_Jump.IA_Jump'"));
+	(TEXT("/Script/EnhancedInput.InputAction'/Game/JS_Folder/Inputs/InputActions/IA_Jump.IA_Jump'"));
 
 	if (tempJumpIA.Succeeded())
 	{
 		IA_Jump = tempJumpIA.Object;
+	}
+
+	ConstructorHelpers::FObjectFinder<UAnimMontage>tempClimbMontage
+	(TEXT("/Script/Engine.AnimMontage'/Game/JS_Folder/Animations/AM_Climb.AM_Climb'"));
+
+	if (tempClimbMontage.Succeeded())
+	{
+		ClimbMontage = tempClimbMontage.Object;
 	}
 }
 
@@ -59,7 +67,7 @@ void ASplitPlayer::BeginPlay()
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
 	
-	JumpMaxCount = 2;
+	JumpMaxCount = 3;
 }
 
 void ASplitPlayer::NotifyControllerChanged()
@@ -79,11 +87,33 @@ void ASplitPlayer::NotifyControllerChanged()
 void ASplitPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	
 	if (!GetCharacterMovement()->IsFalling())
 	{
 		bJumping = false;
 		bDoubleJumping = false;
+	}
+	else
+	{
+		FVector HitLocation;
+		FVector Normal;
+		int index;
+		
+		if (DetectWall(HitLocation, Normal, index) && bTryClimb)
+		{
+			if (index == 0)
+			{
+				bClimb = true;
+				GetCharacterMovement()->GravityScale = 0.f;
+				ClimbWall();
+			}
+			else if (index == 1)
+			{
+				PlayAnimMontage(ClimbMontage);
+				GetCharacterMovement()->GravityScale = 1.f;
+				bClimb = false;
+			}
+		}
 	}
 }
 
@@ -95,6 +125,7 @@ void ASplitPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent)) 
 	{
 		EnhancedInputComponent->BindAction(IA_Move, ETriggerEvent::Triggered, this, &ASplitPlayer::MoveAction);
+		EnhancedInputComponent->BindAction(IA_Move, ETriggerEvent::Canceled, this, &ASplitPlayer::MoveCancle);
 
 		EnhancedInputComponent->BindAction(IA_Jump, ETriggerEvent::Started, this, &ASplitPlayer::JumpAction);
 	}
@@ -102,28 +133,45 @@ void ASplitPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 void ASplitPlayer::MoveAction(const FInputActionValue& Value)
 {
+	if (bClimb) return;
+	bTryClimb = true;
+
+	FVector2D tempDir = Value.Get<FVector2D>();
+	Dir.X = tempDir.X;
+	Dir.Y = tempDir.Y;
+	
 	FRotator rot = GetControlRotation();
-	AddMovementInput(UKismetMathLibrary::GetRightVector(FRotator(rot.Roll, 0,rot.Yaw)), Value.Get<FVector>().X, false);
-	AddMovementInput(UKismetMathLibrary::GetForwardVector(FRotator(0, 0,rot.Yaw)), Value.Get<FVector>().Y, false);
+	if (GetCharacterMovement()->IsFalling())
+	{
+		AddMovementInput(Dir);
+		// AddMovementInput(UKismetMathLibrary::GetRightVector(FRotator(rot.Roll, 0,rot.Yaw)), Value.Get<FVector>().X, false);
+		// AddMovementInput(UKismetMathLibrary::GetForwardVector(FRotator(0, 0,rot.Yaw)), Value.Get<FVector>().Y, false);
+	}
+	else
+	{
+		AddMovementInput(Dir);
+		// AddMovementInput(UKismetMathLibrary::GetRightVector(FRotator(rot.Roll, 0,rot.Yaw)), Value.Get<FVector>().X, false);
+		// AddMovementInput(UKismetMathLibrary::GetForwardVector(FRotator(0, 0,rot.Yaw)), Value.Get<FVector>().Y, false);
+	}
+}
 
-
-	FVector HitLocation;
-	FVector Normal;
-	int index;
-
-	DetectWall(HitLocation,Normal, index);
+void ASplitPlayer::MoveCancle(const FInputActionValue& Value)
+{
+	bTryClimb = false;
 }
 
 void ASplitPlayer::JumpAction(const FInputActionValue& Value)
 {
-	if (bJumping)
+	if (!bJumping)
 	{
 		Jump();
+		JumpDir = Dir;
 		bJumping = true;
 	}
-	else if (bDoubleJumping)
+	else if (!bDoubleJumping)
 	{
 		Jump();
+		JumpDir = Dir;
 		bDoubleJumping = true;
 	}
 }
@@ -172,6 +220,29 @@ bool ASplitPlayer::DetectWall(FVector& HitLocation, FVector& Normal, int& index)
 	HitLocation=OutHit.Location;
 	Normal = OutHit.Normal;
 	return OutHit.bBlockingHit;
+}
+
+void ASplitPlayer::ClimbWall()
+{
+	FHitResult OutHit;
+	TArray<AActor*> ignoreActors;
+	ignoreActors.Add(this);
+	
+	bool bHit = UKismetSystemLibrary::SphereTraceSingle(
+	GetWorld(),
+	MoveVectorUpward(GetActorLocation(), 60.f),
+	MoveVectorUpward(GetActorLocation(), 70.f),
+	10.f,
+	(ETraceTypeQuery)ECC_Visibility,
+	false,
+	ignoreActors,
+	EDrawDebugTrace::ForOneFrame,
+	OutHit,
+	true,
+	FColor::Red,
+	FColor::Blue,
+	5.f
+	);
 }
 
 FVector ASplitPlayer::MoveVectorUpward(FVector InVector, float AddValue)
