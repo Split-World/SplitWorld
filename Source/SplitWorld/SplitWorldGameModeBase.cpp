@@ -1,9 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "SplitWorldGameModeBase.h"
-
-#include "Kismet/GameplayStatics.h"
+#include "SplitWorldGameModeBase.h" 
 
 ASplitWorldGameModeBase::ASplitWorldGameModeBase()
 {
@@ -17,7 +15,7 @@ ASplitWorldGameModeBase::ASplitWorldGameModeBase()
 
 AActor* ASplitWorldGameModeBase::ChoosePlayerStart_Implementation(AController* Player)
 {
-	return Super::ChoosePlayerStart_Implementation(Player);
-
-	//UGameplayStatics::GetAllActorsOfClass(GetWorld(), )
+	Players.Add(Player);
+	
+	return Super::ChoosePlayerStart_Implementation(Player); 
 }

@@ -3,6 +3,8 @@
 
 #include "CaptureCamera.h"
 
+#include <rapidjson/document.h>
+
 #include "ClonePlayer.h"
 #include "SplitWorldGameModeBase.h"
 #include "TempPlayer.h"
@@ -22,7 +24,9 @@ ACaptureCamera::ACaptureCamera()
 
 	CameraComp = CreateDefaultSubobject<USceneCaptureComponent2D>(TEXT("CameraComp"));
 	CameraComp->SetupAttachment(SpringArmComp);
-	CameraComp->SetRelativeRotation(FRotator(20.0f, 0.0f, 0.0f)); 
+	CameraComp->SetRelativeRotation(FRotator(20.0f, 0.0f, 0.0f));
+
+	bAlwaysRelevant = true; 
 } 
 
 void ACaptureCamera::BeginPlay()
@@ -31,13 +35,14 @@ void ACaptureCamera::BeginPlay()
 
 	SetActorRotation(FRotator(-90.0f, 0.0f, 0.0f)); 
 
-	GM = Cast<ASplitWorldGameModeBase>(UGameplayStatics::GetGameMode(GetWorld())); 
+	GM = Cast<ASplitWorldGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+
 } 
 
 void ACaptureCamera::Tick(float DeltaTime)
 {
-	Super::Tick(DeltaTime);
-
+	Super::Tick(DeltaTime); 
+	
 	if (IsValid(Player1) && IsValid(Player2))
 	{
 		UpdateMask(); 
@@ -77,14 +82,14 @@ void ACaptureCamera::UpdateMask()
 		}
 		else
 		{
-			Comp->ClipPlaneNormal = Dist.GetSafeNormal2D();
+			Comp->ClipPlaneNormal = -Dist.GetSafeNormal();
 		}
 	}
 }
 
 void ACaptureCamera::FindPlayers()
-{
-	if (GM->Players.Num() != 2)
+{ 
+	if (!GM || GM->Players.Num() != 2)
 	{
 		return; 
 	}
