@@ -16,4 +16,9 @@ class SPLITWORLD_API ASplitWorldGameModeBase : public AGameModeBase
 
 public:
 	ASplitWorldGameModeBase();
+	virtual AActor* ChoosePlayerStart_Implementation(AController* Player) override; 
+
+	UPROPERTY() 
+	TArray<class AController*> Players;
+	
 };

@@ -15,9 +15,12 @@ public:
 	ACaptureCamera(); 
 	virtual void BeginPlay() override; 
 	virtual void Tick(float DeltaTime) override;
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override; 
 	
-private:
+private: 
+	void UpdateMask();
+	void FindPlayers(); 
+
 	UPROPERTY(EditAnywhere)
 	class USpringArmComponent* SpringArmComp;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true), Replicated)
@@ -26,6 +29,9 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(AllowPrivateAccess=true), Replicated)
 	int CameraIdx;
 
+	UPROPERTY()
+	class ASplitWorldGameModeBase* GM; 
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(AllowPrivateAccess=true), Replicated)
 	class APawn* Player1;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(AllowPrivateAccess=true), Replicated)
