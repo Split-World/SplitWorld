@@ -2,9 +2,14 @@
 
 
 #include "CaptureCamera.h"
+
+#include "ClonePlayer.h"
+#include "SplitWorldGameModeBase.h"
+#include "TempPlayer.h"
 #include "Engine/SceneCapture2D.h" 
 #include "Components/SceneCaptureComponent2D.h"
 #include "GameFramework/SpringArmComponent.h" 
+#include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h" 
 
 ACaptureCamera::ACaptureCamera()
@@ -25,6 +30,8 @@ void ACaptureCamera::BeginPlay()
 	Super::BeginPlay();
 
 	SetActorRotation(FRotator(-90.0f, 0.0f, 0.0f)); 
+
+	GM = Cast<ASplitWorldGameModeBase>(UGameplayStatics::GetGameMode(GetWorld())); 
 } 
 
 void ACaptureCamera::Tick(float DeltaTime)
@@ -33,7 +40,11 @@ void ACaptureCamera::Tick(float DeltaTime)
 
 	if (IsValid(Player1) && IsValid(Player2))
 	{
-
+		UpdateMask(); 
+	}
+	else
+	{
+		FindPlayers(); 
 	}
 } 
 
@@ -68,5 +79,31 @@ void ACaptureCamera::UpdateMask()
 		{
 			Comp->ClipPlaneNormal = Dist.GetSafeNormal2D();
 		}
+	}
+}
+
+void ACaptureCamera::FindPlayers()
+{
+	if (GM->Players.Num() != 2)
+	{
+		return; 
+	}
+
+	auto P1 = Cast<ATempPlayer>(GM->Players[0]->GetPawn()); 
+	auto P2 = Cast<ATempPlayer>(GM->Players[1]->GetPawn());
+	if (!IsValid(P1->Clone) || !IsValid(P2->Clone))
+	{
+		return; 
+	}
+
+	if (!CameraIdx)
+	{
+		Player1 = P1; 
+		Player2 = P2->Clone; 
+	}
+	else 
+	{
+		Player1 = P1->Clone; 
+		Player2 = P2; 
 	}
 }

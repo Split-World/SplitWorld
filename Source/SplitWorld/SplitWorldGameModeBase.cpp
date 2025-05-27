@@ -3,6 +3,8 @@
 
 #include "SplitWorldGameModeBase.h"
 
+#include "Kismet/GameplayStatics.h"
+
 ASplitWorldGameModeBase::ASplitWorldGameModeBase()
 {
 	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(
@@ -11,4 +13,11 @@ ASplitWorldGameModeBase::ASplitWorldGameModeBase()
 	{
 		DefaultPawnClass = PlayerPawnBPClass.Class;
 	}
+}
+
+AActor* ASplitWorldGameModeBase::ChoosePlayerStart_Implementation(AController* Player)
+{
+	return Super::ChoosePlayerStart_Implementation(Player);
+
+	//UGameplayStatics::GetAllActorsOfClass(GetWorld(), )
 }
