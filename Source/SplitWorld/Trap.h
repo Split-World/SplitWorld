@@ -16,11 +16,17 @@ public:
 	virtual void BeginPlay() override; 
 	virtual void Tick(float DeltaTime) override;
 
-	UFUNCTION() 
-	virtual void Execute() = 0; 
+	virtual void Execute() {}; 
 
 protected: 
 	UPROPERTY() 
-	class UBoxComponent* BoxComp; 
+	class UBoxComponent* BoxComp;
 
+	UPROPERTY()
+	class ASplitPlayer* Player; 
+	
+private: 
+	UFUNCTION() 
+	void OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult); 
+	
 };

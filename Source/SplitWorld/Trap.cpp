@@ -2,6 +2,9 @@
 
 
 #include "Trap.h" 
+
+#include "Raser.h"
+#include "SplitPlayer.h"
 #include "Components/BoxComponent.h" 
 
 ATrap::ATrap()
@@ -15,7 +18,8 @@ ATrap::ATrap()
 void ATrap::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	BoxComp->OnComponentBeginOverlap.AddDynamic(this, &ATrap::OnBoxBeginOverlap); 
 }
 
 void ATrap::Tick(float DeltaTime)
@@ -24,3 +28,9 @@ void ATrap::Tick(float DeltaTime)
 
 }
 
+void ATrap::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	Player = Cast<ASplitPlayer>(OtherActor); 
+	
+	Execute(); 
+}

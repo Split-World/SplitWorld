@@ -35,8 +35,7 @@ void ACaptureCamera::BeginPlay()
 
 	SetActorRotation(FRotator(-90.0f, 0.0f, 0.0f)); 
 
-	GM = Cast<ASplitWorldGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
-
+	GM = Cast<ASplitWorldGameModeBase>(UGameplayStatics::GetGameMode(GetWorld())); 
 } 
 
 void ACaptureCamera::Tick(float DeltaTime)
