@@ -20,5 +20,5 @@ public:
 	virtual void Execute() override; 
 	
 	UPROPERTY(EditAnywhere) 
-	TArray<class AStaticMeshActor*> Roads; 
+	TArray<class AActor*> Roads; 
 };

@@ -1,0 +1,43 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+
+#include "MovingThorn.h"
+#include "SplitPlayer.h" 
+#include "Net/UnrealNetwork.h" 
+
+AMovingThorn::AMovingThorn()
+{ 
+	PrimaryActorTick.bCanEverTick = true;
+
+	bReplicates = true; 
+	SetReplicateMovement(true); 
+} 
+
+void AMovingThorn::BeginPlay()
+{
+	Super::BeginPlay();
+	
+}
+
+void AMovingThorn::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	SetActorLocation(GetActorLocation() + Speed * DeltaTime); 
+}
+
+void AMovingThorn::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{ 
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps); 
+
+	DOREPLIFETIME(AMovingThorn, Idx); 
+}
+
+void AMovingThorn::Execute()
+{ 
+	if (Idx && Player)
+	{
+		Player->Die(); 
+	}
+}
+

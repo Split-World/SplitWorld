@@ -1,7 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "RoadBreaker.h"
+#include "RoadBreaker.h" 
+#include "Engine/StaticMeshActor.h" 
 
 ARoadBreaker::ARoadBreaker()
 { 
@@ -23,6 +24,9 @@ void ARoadBreaker::Tick(float DeltaTime)
 
 void ARoadBreaker::Execute()
 {
-	
+	for (auto Road : Roads)
+	{ 
+
+	}
 }
 

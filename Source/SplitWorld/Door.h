@@ -16,7 +16,11 @@ public:
 	ADoor(); 
 	virtual void BeginPlay() override; 
 	virtual void Tick(float DeltaTime) override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	virtual void Interaction_Implementation() override; 
+
+	UPROPERTY(EditAnywhere, Replicated)
+	int Idx; 
 
 };
