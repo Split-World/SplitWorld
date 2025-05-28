@@ -36,6 +36,12 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = Input)
 	class UInputAction* IA_Jump;
+
+	UPROPERTY(EditAnywhere, Category = Input)
+	class UInputAction* IA_Interact;
+
+	UPROPERTY(EditAnywhere, Category = Input)
+	class UInputAction* IA_Dash;
 	
 	UFUNCTION()
 	void MoveAction(const FInputActionValue& Value);
@@ -45,6 +51,15 @@ public:
 
 	UFUNCTION()
 	void JumpAction(const FInputActionValue& Value);
+
+	UFUNCTION()
+	void JumpCancle(const FInputActionValue& Value);
+
+	UFUNCTION()
+	void InteractAction(const FInputActionValue& Value);
+
+	UFUNCTION()
+	void DashAction(const FInputActionValue& Value);
 	
 	UPROPERTY(EditAnywhere)
 	FTransform SpawnTransform;
@@ -54,14 +69,21 @@ public:
 
 	bool bJumping = false;
 	bool bDoubleJumping = false;
+	float JumpSpeed = 0.0f;
 	FVector JumpDir;
 	FVector Dir;
 	
 	bool bClimb = false;
+	bool bCanClimb = false;
 	bool bTryClimb = false;
+	bool bFailClimb = false;
+	bool bTryCanClimb = false;
+	bool bTraversal = false;
+
+	bool bCanDash = false;
 	
-	bool DetectWall(FVector& HitLocation, FVector& Normal, int& index);
-	void ClimbWall();
+	bool DetectWall(FHitResult& Out_Hit, FVector& HitLocation, FVector& Normal, int& index);
+	void ClimbWall(float Value);
 
 	FVector MoveVectorUpward(FVector InVector, float AddValue);
 	FVector MoveVectorDownward(FVector InVector, float SubtractValue);
