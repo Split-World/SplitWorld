@@ -7,12 +7,18 @@ AClonePlayer::AClonePlayer()
 { 
 	PrimaryActorTick.bCanEverTick = true;
 
+	bAlwaysRelevant = true;
 }
 
 void AClonePlayer::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	bUseControllerRotationPitch = false;
+	bUseControllerRotationYaw = false;
+	bUseControllerRotationRoll = false;
+	
+	JumpMaxCount = 3;
 }
 
 void AClonePlayer::Tick(float DeltaTime)

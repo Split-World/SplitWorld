@@ -17,5 +17,6 @@ void UEndClimb::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase*
 	{
 		player->GetCharacterMovement()->GravityScale = 1.0f;
 		player->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::Type::QueryAndPhysics);
+		player->SetActorLocation(player->GetActorLocation() + FVector::UpVector * player->GetCapsuleComponent()->GetScaledCapsuleHalfHeight() * 2);
 	}
 }

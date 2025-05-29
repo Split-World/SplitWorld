@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "SplitPlayer.generated.h"
 
+struct FInputActionValue;
+
 UCLASS()
 class SPLITWORLD_API ASplitPlayer : public ACharacter
 {
@@ -42,6 +44,9 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = Input)
 	class UInputAction* IA_Dash;
+
+	UPROPERTY(EditAnywhere, Category = Input)
+	class UInputAction* IA_Run;
 	
 	UFUNCTION()
 	void MoveAction(const FInputActionValue& Value);
@@ -60,6 +65,9 @@ public:
 
 	UFUNCTION()
 	void DashAction(const FInputActionValue& Value);
+
+	UFUNCTION()
+	void RunAction(const FInputActionValue& Value);
 	
 	UPROPERTY(EditAnywhere)
 	FTransform SpawnTransform;
@@ -80,7 +88,10 @@ public:
 	bool bTryCanClimb = false;
 	bool bTraversal = false;
 
+	bool bDashing = false;
 	bool bCanDash = false;
+
+	bool bRunning = false;
 	
 	bool DetectWall(FHitResult& Out_Hit, FVector& HitLocation, FVector& Normal, int& index);
 	void ClimbWall(float Value);
@@ -96,4 +107,19 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	UAnimMontage* ClimbMontage;
+
+	UPROPERTY(Replicated)
+	class AClonePlayer* ClonePlayer;
+	
+	UFUNCTION(Server, Reliable)
+	void CloneMovement(FVector Dir1, float Scale1, FVector Dir2, float Scale2);
+
+	UFUNCTION(Server, Reliable)
+	void SpawnClone(FVector PlayerStart, FVector LocationOffset);
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AClonePlayer> ClonePlayerFactory;
+
+	UFUNCTION(Server, Reliable)
+	void ClonePlayerSync();
 };

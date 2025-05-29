@@ -2,6 +2,8 @@
 
 
 #include "SplitPlayer.h"
+
+#include "ClonePlayer.h"
 #include "InputMappingContext.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
@@ -10,6 +12,7 @@
 #include "Animation/AnimInstanceProxy.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
 
@@ -66,6 +69,14 @@ ASplitPlayer::ASplitPlayer()
 	{
 		IA_Dash = tempIADash.Object;
 	}
+
+	ConstructorHelpers::FObjectFinder<UInputAction>tempIARun
+	(TEXT("/Script/EnhancedInput.InputAction'/Game/JS_Folder/Inputs/InputActions/IA_Run.IA_Run'"));
+
+	if (tempIARun.Succeeded())
+	{
+		IA_Run = tempIARun.Object;
+	}
 	
 	ConstructorHelpers::FObjectFinder<UAnimMontage>tempClimbMontage
 	(TEXT("/Script/Engine.AnimMontage'/Game/JS_Folder/Animations/AM/AM_Climb.AM_Climb'"));
@@ -74,6 +85,8 @@ ASplitPlayer::ASplitPlayer()
 	{
 		ClimbMontage = tempClimbMontage.Object;
 	}
+
+	bAlwaysRelevant = true;
 }
 
 // Called when the game starts or when spawned
@@ -86,6 +99,11 @@ void ASplitPlayer::BeginPlay()
 	bUseControllerRotationRoll = false;
 	
 	JumpMaxCount = 3;
+
+	if (IsLocallyControlled())
+	{
+		SpawnClone(HasAuthority() ? FVector(200.f, 0.f, 100) : FVector(-200.f, 100000.f, 100.f), HasAuthority() ? FVector(0.f, 100000.f, 0.f) : FVector(0.f, -100000.f, 0.f));
+	}
 }
 
 void ASplitPlayer::NotifyControllerChanged()
@@ -105,7 +123,7 @@ void ASplitPlayer::NotifyControllerChanged()
 void ASplitPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
+
 	if (!GetCharacterMovement()->IsFalling())
 	{
 		bJumping = false;
@@ -114,6 +132,7 @@ void ASplitPlayer::Tick(float DeltaTime)
 		bClimb = false;
 		bTraversal = false;
 		bCanDash = true;
+		bDashing = false;
 		GetCharacterMovement()->GravityScale = 1.0f;
 	}
 	else
@@ -161,12 +180,15 @@ void ASplitPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 		EnhancedInputComponent->BindAction(IA_Interact, ETriggerEvent::Triggered, this, &ASplitPlayer::InteractAction);
 		
 		EnhancedInputComponent->BindAction(IA_Dash, ETriggerEvent::Started, this, &ASplitPlayer::DashAction);
+		
+		EnhancedInputComponent->BindAction(IA_Run, ETriggerEvent::Started, this, &ASplitPlayer::RunAction);
 	}
 }
 
 void ASplitPlayer::MoveAction(const FInputActionValue& Value)
 {
 	if (bClimb) return;
+	if (bDashing) return;
 	bTryClimb = true;
 
 	FVector2D tempDir = Value.Get<FVector2D>();
@@ -199,12 +221,14 @@ void ASplitPlayer::JumpAction(const FInputActionValue& Value)
 	if (!bJumping)
 	{
 		Jump();
+		ClonePlayer->Jump();
 		JumpDir = Dir;
 		bJumping = true;
 	}
 	else if (!bDoubleJumping)
 	{
 		Jump();
+		ClonePlayer->Jump();
 		JumpDir = Dir;
 		bDoubleJumping = true;
 	}
@@ -253,8 +277,23 @@ void ASplitPlayer::DashAction(const FInputActionValue& Value)
 	if (bCanDash)
 	{
 		bCanDash = false;
+		bDashing = true;
 
 		LaunchCharacter(GetActorForwardVector() * 700.f, false, false);
+	}
+}
+
+void ASplitPlayer::RunAction(const FInputActionValue& Value)
+{
+	if (!bRunning)
+	{
+		bRunning = true;
+		GetCharacterMovement()->MaxWalkSpeed = 1000.f;
+	}
+	else
+	{
+		bRunning = true;
+		GetCharacterMovement()->MaxWalkSpeed = 600.f;
 	}
 }
 
@@ -383,6 +422,27 @@ FVector ASplitPlayer::MoveVectorLeftward(FVector InVector, FRotator InRotation, 
 FRotator ASplitPlayer::ReveseNormal(FVector InNormal)
 {
 	return UKismetMathLibrary::NormalizedDeltaRotator(UKismetMathLibrary::MakeRotFromX(InNormal),FRotator(0.f ,0.f ,180.f));
+}
+
+void ASplitPlayer::ClonePlayerSync_Implementation()
+{
+	
+}
+
+void ASplitPlayer::SpawnClone_Implementation(FVector PlayerStart, FVector LocationOffset)
+{
+	FTransform SpawnTransform = GetActorTransform();
+	SpawnTransform.SetLocation(PlayerStart + LocationOffset);
+	
+	SetActorLocation(PlayerStart);
+
+	ClonePlayer = GetWorld()-> SpawnActor<AClonePlayer>(ClonePlayerFactory, SpawnTransform);
+}
+
+void ASplitPlayer::CloneMovement_Implementation(FVector Dir1, float Scale1, FVector Dir2, float Scale2)
+{
+	ClonePlayer->AddMovementInput(Dir1, Scale1);
+	ClonePlayer->AddMovementInput(Dir2, Scale2);
 }
 
 
