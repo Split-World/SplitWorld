@@ -17,9 +17,16 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override; 
 	
-private: 
-	void UpdateMask();
+	UFUNCTION(Server, Reliable)
+	void UpdateMask(); 
+	UFUNCTION(Server, Reliable)
 	void FindPlayers(); 
+	UFUNCTION(Server, Reliable)
+	void CalcPlayerScreenLocation(); 
+	UFUNCTION(Server, Reliable)
+	void SetCameraLocation(); 
+
+private: 
 
 	UPROPERTY(EditAnywhere)
 	class USpringArmComponent* SpringArmComp;

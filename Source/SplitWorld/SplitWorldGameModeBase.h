@@ -6,9 +6,6 @@
 #include "GameFramework/GameModeBase.h"
 #include "SplitWorldGameModeBase.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class SPLITWORLD_API ASplitWorldGameModeBase : public AGameModeBase
 {
@@ -24,5 +21,7 @@ public:
 
 	int bPlayer_Interactions; 
 	float InputGauge[2] = { 0.0f }; 
+
+	FVector2D PlayerScreenLocation[0]; 
 
 };

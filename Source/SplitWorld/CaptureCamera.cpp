@@ -41,30 +41,8 @@ void ACaptureCamera::Tick(float DeltaTime)
 	if (IsValid(Player1) && IsValid(Player2))
 	{
 		UpdateMask(); 
-
-		if (!CameraIdx)
-		{ 
-			float theta = CameraComp->FOVAngle / 2.0f;
-			float d = 1.0f / FMath::Tan(FMath::DegreesToRadians(theta));
-			GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, FString::Printf(TEXT("a : %f, %f"), theta, d)); 
-			FVector pos = CameraComp->GetComponentLocation(); 
-			FVector r = CameraComp->GetRightVector(); 
-			FVector u = CameraComp->GetUpVector(); 
-			FVector f = CameraComp->GetForwardVector();
-			FVector pp = Player1->GetActorLocation(); 
-			GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, FString::Printf(TEXT("b : %f, %f, %f"), pos.X, pos.Y, pos.Z)); 
-			float z = f.Dot(Player1->GetActorLocation() - pos); 
-			float vx = r.X * pp.X + r.Y * pp.Y + r.Z * pp.Z - r.Dot(pos); 
-			float vy = u.X * pp.X + u.Y * pp.Y + u.Z * pp.Z - u.Dot(pos); 
-			float px = d * vx / z; 
-			float py = d * vy / z; 
-			GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, FString::Printf(TEXT("c : %f, %f"), px, py)); 
-		}
-		else 
-		{
-			auto con2 = Cast<APlayerController>(Player2->Controller);
-
-		} 
+		CalcPlayerScreenLocation(); 
+		SetCameraLocation(); 
 	} 
 	else
 	{
@@ -129,5 +107,50 @@ void ACaptureCamera::FindPlayers()
 	{
 		Player1 = P1->Clone; 
 		Player2 = P2; 
+	}
+}
+
+void ACaptureCamera::CalcPlayerScreenLocation()
+{ 
+	FVector pos = CameraComp->GetComponentLocation();
+	FVector r = CameraComp->GetRightVector();
+	FVector u = CameraComp->GetUpVector();
+	FVector f = CameraComp->GetForwardVector();
+	float px = 0;
+	float py = 0;
+	if (!CameraIdx)
+	{
+		FVector pp = Player1->GetActorLocation();
+		float z = f.Dot(Player1->GetActorLocation() - pos);
+		float vx = r.X * pp.X + r.Y * pp.Y + r.Z * pp.Z - r.Dot(pos);
+		float vy = u.X * pp.X + u.Y * pp.Y + u.Z * pp.Z - u.Dot(pos);
+		px = vx / z;
+		py = vy / z;
+	}
+	else
+	{
+		auto con2 = Cast<APlayerController>(Player2->Controller);
+		FVector pp = Player1->GetActorLocation();
+		float z = f.Dot(Player1->GetActorLocation() - pos);
+		float vx = r.X * pp.X + r.Y * pp.Y + r.Z * pp.Z - r.Dot(pos);
+		float vy = u.X * pp.X + u.Y * pp.Y + u.Z * pp.Z - u.Dot(pos);
+		px = vx / z;
+		py = vy / z;
+	}
+	GM->PlayerScreenLocation[CameraIdx] = FVector2D(px, py); 
+}
+
+void ACaptureCamera::SetCameraLocation()
+{ 
+	FVector2D P1 = GM->PlayerScreenLocation[0]; 
+	FVector2D P2 = GM->PlayerScreenLocation[1]; 
+	float Min_X = FMath::Min(P1.X, P2.X); 
+	if (Min_X < -0.33f) 
+	{ 
+		SetActorLocation(GetActorLocation() + FVector(-1, 0, 0) * 500.0f * GetWorld()->GetDeltaSeconds()); 
+	} 
+	else if (Min_X > 0.33f) 
+	{ 
+		SetActorLocation(GetActorLocation() + FVector(1, 0, 0) * 500.0f * GetWorld()->GetDeltaSeconds()); 
 	}
 }
