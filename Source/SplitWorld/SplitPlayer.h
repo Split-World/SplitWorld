@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "SplitPlayer.generated.h"
 
+struct FInputActionValue;
+
 UCLASS()
 class SPLITWORLD_API ASplitPlayer : public ACharacter
 {
@@ -36,15 +38,37 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = Input)
 	class UInputAction* IA_Jump;
+
+	UPROPERTY(EditAnywhere, Category = Input)
+	class UInputAction* IA_Interact;
+
+	UPROPERTY(EditAnywhere, Category = Input)
+	class UInputAction* IA_Dash;
+
+	UPROPERTY(EditAnywhere, Category = Input)
+	class UInputAction* IA_Run;
 	
 	UFUNCTION()
 	void MoveAction(const FInputActionValue& Value);
 
 	UFUNCTION()
+	void MoveCancle(const FInputActionValue& Value);
+
+	UFUNCTION()
 	void JumpAction(const FInputActionValue& Value);
 
-	FVector Direction;
+	UFUNCTION()
+	void JumpCancle(const FInputActionValue& Value);
 
+	UFUNCTION()
+	void InteractAction(const FInputActionValue& Value);
+
+	UFUNCTION()
+	void DashAction(const FInputActionValue& Value);
+
+	UFUNCTION()
+	void RunAction(const FInputActionValue& Value);
+	
 	UPROPERTY(EditAnywhere)
 	FTransform SpawnTransform;
 
@@ -53,8 +77,24 @@ public:
 
 	bool bJumping = false;
 	bool bDoubleJumping = false;
+	float JumpSpeed = 0.0f;
+	FVector JumpDir;
+	FVector Dir;
+	
+	bool bClimb = false;
+	bool bCanClimb = false;
+	bool bTryClimb = false;
+	bool bFailClimb = false;
+	bool bTryCanClimb = false;
+	bool bTraversal = false;
 
-	bool DetectWall(FVector& HitLocation, FVector& Normal, int& index);
+	bool bDashing = false;
+	bool bCanDash = false;
+
+	bool bRunning = false;
+	
+	bool DetectWall(FHitResult& Out_Hit, FVector& HitLocation, FVector& Normal, int& index);
+	void ClimbWall(float Value);
 
 	FVector MoveVectorUpward(FVector InVector, float AddValue);
 	FVector MoveVectorDownward(FVector InVector, float SubtractValue);
@@ -64,4 +104,22 @@ public:
 	FVector MoveVectorLeftward(FVector InVector, FRotator InRotation, float SubtractValue);
 
 	FRotator ReveseNormal(FVector InNormal);
+
+	UPROPERTY(EditAnywhere)
+	UAnimMontage* ClimbMontage;
+
+	UPROPERTY(Replicated)
+	class AClonePlayer* ClonePlayer;
+	
+	UFUNCTION(Server, Reliable)
+	void CloneMovement(FVector Dir1, float Scale1, FVector Dir2, float Scale2);
+
+	UFUNCTION(Server, Reliable)
+	void SpawnClone(FVector PlayerStart, FVector LocationOffset);
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AClonePlayer> ClonePlayerFactory;
+
+	UFUNCTION(Server, Reliable)
+	void ClonePlayerSync();
 };
