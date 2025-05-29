@@ -1,17 +1,13 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "CaptureCamera.h"
-
-#include <rapidjson/document.h>
-
+#include "CaptureCamera.h" 
 #include "ClonePlayer.h"
 #include "SplitWorldGameModeBase.h"
 #include "TempPlayer.h"
 #include "Engine/SceneCapture2D.h" 
 #include "Components/SceneCaptureComponent2D.h"
 #include "GameFramework/SpringArmComponent.h" 
-#include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h" 
 
 ACaptureCamera::ACaptureCamera()
@@ -34,22 +30,46 @@ void ACaptureCamera::BeginPlay()
 	Super::BeginPlay();
 
 	SetActorRotation(FRotator(-90.0f, 0.0f, 0.0f)); 
-
-	GM = Cast<ASplitWorldGameModeBase>(UGameplayStatics::GetGameMode(GetWorld())); 
+	
+	GM = Cast<ASplitWorldGameModeBase>(GetWorld()->GetAuthGameMode()); 
 } 
 
-void ACaptureCamera::Tick(float DeltaTime)
+void ACaptureCamera::Tick(float DeltaTime) 
 {
 	Super::Tick(DeltaTime); 
 	
 	if (IsValid(Player1) && IsValid(Player2))
 	{
 		UpdateMask(); 
-	}
+
+		if (!CameraIdx)
+		{ 
+			float theta = CameraComp->FOVAngle / 2.0f;
+			float d = 1.0f / FMath::Tan(FMath::DegreesToRadians(theta));
+			GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, FString::Printf(TEXT("a : %f, %f"), theta, d)); 
+			FVector pos = CameraComp->GetComponentLocation(); 
+			FVector r = CameraComp->GetRightVector(); 
+			FVector u = CameraComp->GetUpVector(); 
+			FVector f = CameraComp->GetForwardVector();
+			FVector pp = Player1->GetActorLocation(); 
+			GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, FString::Printf(TEXT("b : %f, %f, %f"), pos.X, pos.Y, pos.Z)); 
+			float z = f.Dot(Player1->GetActorLocation() - pos); 
+			float vx = r.X * pp.X + r.Y * pp.Y + r.Z * pp.Z - r.Dot(pos); 
+			float vy = u.X * pp.X + u.Y * pp.Y + u.Z * pp.Z - u.Dot(pos); 
+			float px = d * vx / z; 
+			float py = d * vy / z; 
+			GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, FString::Printf(TEXT("c : %f, %f"), px, py)); 
+		}
+		else 
+		{
+			auto con2 = Cast<APlayerController>(Player2->Controller);
+
+		} 
+	} 
 	else
 	{
 		FindPlayers(); 
-	}
+	} 
 } 
 
 void ACaptureCamera::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const 

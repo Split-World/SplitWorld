@@ -5,18 +5,28 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h" 
 #include "InteractableActorBase.h"
-#include "Crack.generated.h"
+#include "DoorHandle.generated.h"
 
 UCLASS()
-class SPLITWORLD_API ACrack : public AInteractableActorBase 
+class SPLITWORLD_API ADoorHandle : public AInteractableActorBase 
 {
 	GENERATED_BODY()
 	
-public:	
-	ACrack(); 
+public: 
+	ADoorHandle(); 
 	virtual void BeginPlay() override; 
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void Interaction_Implementation() override; 
 
-};
+private: 
+	UPROPERTY()
+	class ASplitWorldGameModeBase* GM;
+
+	UPROPERTY(EditAnywhere)
+	float MaxContinuousInputCount = 4.0f; 
+	float ContinuousInputCount; 
+
+	FTimerHandle InputTimerHandle; 
+
+}; 

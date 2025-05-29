@@ -12,17 +12,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d67493c3-6dee-456b-93df-a01497aca447" name="변경" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.SplitWorld/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.SplitWorld/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.SplitWorld/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.SplitWorld/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Config/DefaultEngine.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Config/DefaultEngine.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/SK/Blueprints/BP_TempPlayer.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/SK/Blueprints/BP_TempPlayer.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.SplitWorld/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.SplitWorld/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/SK/Blueprints/BP_ClonePlayer.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/SK/Blueprints/BP_ClonePlayer.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/SK/Levels/CameraTestMap.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/SK/Levels/CameraTestMap.umap" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/SK/Meshs/Circle_Floor.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/SK/Meshs/Stair.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/SK/Meshs/Stair.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/SplitWorld/CaptureCamera.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SplitWorld/CaptureCamera.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/SplitWorld/Trap.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SplitWorld/Trap.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/SplitWorld/Trap.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SplitWorld/Trap.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/SplitWorld/Door.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SplitWorld/Door.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/SplitWorld/Door.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SplitWorld/Door.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/SplitWorld/RoadBreaker.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SplitWorld/RoadBreaker.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/SplitWorld/SplitPlayer.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SplitWorld/SplitPlayer.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/SplitWorld/SplitWorldGameModeBase.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SplitWorld/SplitWorldGameModeBase.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -35,10 +33,45 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "customColor": "",
-  "associatedIndex": 0
-}]]></component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="cidr-memory-view://27" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Source/SplitWorld/InteractableActorBase.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Source/SplitWorld/InteractableActorBase.h" root0="FORCE_HIGHLIGHTING" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 0
+}</component>
   <component name="ProjectId" id="2xiL306uWiEcd97SMj5fmECNphI" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -137,7 +170,10 @@
       <method v="2" />
     </configuration>
     <configuration default="true" type="docker-deploy" factoryName="dockerfile" temporary="true">
-      <deployment type="dockerfile" />
+      <deployment type="dockerfile">
+        <settings />
+      </deployment>
+      <EXTENSION ID="com.jetbrains.rider.docker.debug" isFastModeEnabled="true" isSslEnabled="false" />
       <method v="2" />
     </configuration>
   </component>
@@ -150,6 +186,8 @@
       <option name="presentableId" value="Default" />
       <updated>1748415746437</updated>
       <workItem from="1748415748448" duration="5883000" />
+      <workItem from="1748475278965" duration="177000" />
+      <workItem from="1748475471114" duration="17432000" />
     </task>
     <servers />
   </component>

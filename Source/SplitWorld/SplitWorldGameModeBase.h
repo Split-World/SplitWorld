@@ -17,8 +17,12 @@ class SPLITWORLD_API ASplitWorldGameModeBase : public AGameModeBase
 public:
 	ASplitWorldGameModeBase();
 	virtual AActor* ChoosePlayerStart_Implementation(AController* Player) override; 
-
+	virtual void Tick(float DeltaTime) override; 
+	
 	UPROPERTY() 
 	TArray<class AController*> Players;
-	
+
+	int bPlayer_Interactions; 
+	float InputGauge[2] = { 0.0f }; 
+
 };

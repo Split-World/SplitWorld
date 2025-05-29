@@ -63,5 +63,5 @@ public:
 	FVector MoveVectorRightward(FVector InVector, FRotator InRotation, float AddValue);
 	FVector MoveVectorLeftward(FVector InVector, FRotator InRotation, float SubtractValue);
 
-	FRotator ReveseNormal(FVector InNormal);
+	FRotator ReveseNormal(FVector InNormal); 
 };

@@ -12,7 +12,8 @@ ATrap::ATrap()
 	PrimaryActorTick.bCanEverTick = true;
 
 	BoxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComp")); 
-	SetRootComponent(BoxComp); 
+	SetRootComponent(BoxComp);
+	BoxComp->SetBoxExtent(FVector(50.0f)); 
 }
 
 void ATrap::BeginPlay()

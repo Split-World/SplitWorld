@@ -3,6 +3,7 @@
 
 #include "RoadBreaker.h" 
 #include "Engine/StaticMeshActor.h" 
+#include "Net/UnrealNetwork.h"
 
 ARoadBreaker::ARoadBreaker()
 { 
@@ -19,14 +20,23 @@ void ARoadBreaker::BeginPlay()
 void ARoadBreaker::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	
+}
 
+void ARoadBreaker::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ARoadBreaker, Roads); 
 }
 
 void ARoadBreaker::Execute()
 {
+	GEngine->AddOnScreenDebugMessage(-1 ,5, FColor::Red, TEXT("ARoadBreaker")); 
+	
 	for (auto Road : Roads)
-	{ 
-
+	{
+		auto Comp = Road->GetStaticMeshComponent(); 
+		Comp->SetSimulatePhysics(true); 
 	}
-}
-
+} 

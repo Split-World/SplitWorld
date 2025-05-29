@@ -19,3 +19,13 @@ AActor* ASplitWorldGameModeBase::ChoosePlayerStart_Implementation(AController* P
 	
 	return Super::ChoosePlayerStart_Implementation(Player); 
 }
+
+void ASplitWorldGameModeBase::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	if (InputGauge[0] + InputGauge[1] > 6.0f)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Rotate Door Handle"));
+	}
+}

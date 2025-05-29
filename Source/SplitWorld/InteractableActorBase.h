@@ -3,24 +3,24 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h" 
+#include "GameFramework/Actor.h"
 #include "Interactable.h"
-#include "Door.generated.h"
+#include "InteractableActorBase.generated.h"
 
 UCLASS()
-class SPLITWORLD_API ADoor : public AActor, public IInteractable
+class SPLITWORLD_API AInteractableActorBase : public AActor, public IInteractable  
 {
 	GENERATED_BODY()
 	
 public: 
-	ADoor(); 
+	AInteractableActorBase(); 
 	virtual void BeginPlay() override; 
 	virtual void Tick(float DeltaTime) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	virtual void Interaction_Implementation() override; 
+	virtual void Interaction_Implementation() override;
 
 	UPROPERTY(EditAnywhere, Replicated)
-	int Idx; 
-
+	int Idx;
+	
 };

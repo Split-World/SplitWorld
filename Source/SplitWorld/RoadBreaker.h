@@ -16,9 +16,12 @@ public:
 	ARoadBreaker(); 
 	virtual void BeginPlay() override; 
 	virtual void Tick(float DeltaTime) override;
-	
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 	virtual void Execute() override; 
-	
-	UPROPERTY(EditAnywhere) 
-	TArray<class AStaticMeshActor*> Roads; 
+
+private: 
+	UPROPERTY(EditAnywhere, Replicated) 
+	TArray<class AStaticMeshActor*> Roads;
+
 };
