@@ -21,9 +21,3 @@ void AClonePlayer::Tick(float DeltaTime)
 
 }
 
-void AClonePlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-}
-

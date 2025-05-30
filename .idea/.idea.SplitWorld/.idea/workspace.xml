@@ -13,14 +13,18 @@
   <component name="ChangeListManager">
     <list default="true" id="d67493c3-6dee-456b-93df-a01497aca447" name="변경" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.SplitWorld/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.SplitWorld/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/SK/Blueprints/BP_CaptureCamera.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/SK/Blueprints/BP_CaptureCamera.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/SK/Blueprints/BP_ClonePlayer.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/SK/Blueprints/BP_ClonePlayer.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/SK/Blueprints/BP_SplitWorldGameMode.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/SK/Blueprints/BP_SplitWorldGameMode.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/SK/Blueprints/BP_TempPlayer.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/SK/Blueprints/BP_TempPlayer.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/SK/Levels/CameraTestMap.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/SK/Levels/CameraTestMap.umap" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/SplitWorld/CaptureCamera.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SplitWorld/CaptureCamera.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/SplitWorld/Door.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SplitWorld/Door.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/SplitWorld/Door.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SplitWorld/Door.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/SplitWorld/RoadBreaker.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SplitWorld/RoadBreaker.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/SplitWorld/SplitPlayer.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SplitWorld/SplitPlayer.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/SplitWorld/CaptureCamera.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SplitWorld/CaptureCamera.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/SplitWorld/ClonePlayer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SplitWorld/ClonePlayer.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/SplitWorld/ClonePlayer.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SplitWorld/ClonePlayer.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/SplitWorld/SplitWorldGameModeBase.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SplitWorld/SplitWorldGameModeBase.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/SplitWorld/TempPlayer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SplitWorld/TempPlayer.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/SplitWorld/TempPlayer.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SplitWorld/TempPlayer.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -62,11 +66,11 @@
     <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
     <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
     <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="cidr-memory-view://27" root0="FORCE_HIGHLIGHTING" />
+    <setting file="cidr-memory-view://8" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/SplitWorld/InteractableActorBase.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/SplitWorld/InteractableActorBase.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Source/SplitWorld/MaskCamera.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Source/SplitWorld/MaskCamera.h" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;customColor&quot;: &quot;&quot;,
@@ -77,22 +81,22 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "C/C++ 프로젝트.SplitWorld.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "SK",
-    "ignore.virus.scanning.warn.message": "true",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;C/C++ 프로젝트.SplitWorld.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;SK&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager" selected="C/C++ 프로젝트.SplitWorld">
     <configuration name="SplitWorld" type="CppProject" factoryName="C++ Project">
       <configuration_1 setup="1">

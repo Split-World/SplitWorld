@@ -22,6 +22,6 @@ public:
 	int bPlayer_Interactions; 
 	float InputGauge[2] = { 0.0f }; 
 
-	FVector2D PlayerScreenLocation[0]; 
+	FVector2D PlayerScreenLocation[2]; 
 
 };
