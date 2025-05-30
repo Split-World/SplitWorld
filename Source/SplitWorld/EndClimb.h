@@ -16,4 +16,8 @@ class SPLITWORLD_API UEndClimb : public UAnimNotifyState
 
 public:
 	virtual void NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration) override;
+
+	virtual void NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation) override;
+public:
+	class ASplitPlayer* player;
 };

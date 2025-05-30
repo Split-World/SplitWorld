@@ -30,6 +30,8 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 	UPROPERTY(EditAnywhere, Category = Input)
 	class UInputMappingContext* IMC_Default;
 	
@@ -87,6 +89,7 @@ public:
 	bool bFailClimb = false;
 	bool bTryCanClimb = false;
 	bool bTraversal = false;
+	bool bAdjustAnimaition = false;
 
 	bool bDashing = false;
 	bool bCanDash = false;
@@ -107,7 +110,7 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	UAnimMontage* ClimbMontage;
-
+	
 	UPROPERTY(Replicated)
 	class AClonePlayer* ClonePlayer;
 	
@@ -116,6 +119,13 @@ public:
 
 	UFUNCTION(Server, Reliable)
 	void SpawnClone(FVector PlayerStart, FVector LocationOffset);
+
+	UPROPERTY(EditAnywhere)
+	FVector Player1Start;
+	UPROPERTY(EditAnywhere)
+	FVector Player2Start;
+	UPROPERTY(EditAnywhere)
+	FVector CloneDist;
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AClonePlayer> ClonePlayerFactory;

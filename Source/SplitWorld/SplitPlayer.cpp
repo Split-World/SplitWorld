@@ -9,12 +9,11 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "Interactable.h"
-#include "Animation/AnimInstanceProxy.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values
 ASplitPlayer::ASplitPlayer()
@@ -102,7 +101,7 @@ void ASplitPlayer::BeginPlay()
 
 	if (IsLocallyControlled())
 	{
-		SpawnClone(HasAuthority() ? FVector(200.f, 0.f, 100) : FVector(-200.f, 100000.f, 100.f), HasAuthority() ? FVector(0.f, 100000.f, 0.f) : FVector(0.f, -100000.f, 0.f));
+		SpawnClone(HasAuthority() ? Player1Start : Player2Start, HasAuthority() ? CloneDist : -CloneDist);
 	}
 }
 
@@ -162,6 +161,10 @@ void ASplitPlayer::Tick(float DeltaTime)
 			}
 		}
 	}
+	if (bAdjustAnimaition)
+	{
+		SetActorLocation(GetActorLocation() + GetActorUpVector() * GetWorld()->GetDeltaSeconds() * 1333.788f);
+	}
 }
 
 // Called to bind functionality to input
@@ -183,6 +186,13 @@ void ASplitPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 		
 		EnhancedInputComponent->BindAction(IA_Run, ETriggerEvent::Started, this, &ASplitPlayer::RunAction);
 	}
+}
+
+void ASplitPlayer::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ASplitPlayer, ClonePlayer);
 }
 
 void ASplitPlayer::MoveAction(const FInputActionValue& Value)
@@ -431,8 +441,8 @@ void ASplitPlayer::ClonePlayerSync_Implementation()
 
 void ASplitPlayer::SpawnClone_Implementation(FVector PlayerStart, FVector LocationOffset)
 {
-	FTransform SpawnTransform = GetActorTransform();
-	SpawnTransform.SetLocation(PlayerStart + LocationOffset);
+	FTransform CloneSpawnTransform = GetActorTransform();
+	CloneSpawnTransform.SetLocation(PlayerStart + LocationOffset);
 	
 	SetActorLocation(PlayerStart);
 
