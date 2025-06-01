@@ -17,7 +17,7 @@ ACaptureCamera::ACaptureCamera()
 
 	SpringArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp"));
 	SetRootComponent(SpringArmComp);
-	SpringArmComp->TargetArmLength = 1500.0f; 
+	SpringArmComp->TargetArmLength = 3500.0f; 
 
 	CameraComp = CreateDefaultSubobject<USceneCaptureComponent2D>(TEXT("CameraComp"));
 	CameraComp->SetupAttachment(SpringArmComp);
@@ -134,7 +134,7 @@ void ACaptureCamera::CalcPlayerScreenLocation_Implementation()
 	float px = 0;
 	float py = 0;
 	if (!CameraIdx)
-	{
+	{ 
 		FVector pp = Player1->GetActorLocation();
 		float z = f.Dot(Player1->GetActorLocation() - pos);
 		float vx = r.X * pp.X + r.Y * pp.Y + r.Z * pp.Z - r.Dot(pos);

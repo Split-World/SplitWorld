@@ -20,8 +20,12 @@ public:
 
 	virtual void Execute() override; 
 
+	UPROPERTY(EditAnywhere) 
+	class UStaticMeshComponent* Mesh; 
+
 	UPROPERTY(EditAnywhere, Replicated) 
 	int Idx; 
+
 	UPROPERTY(EditAnywhere)
 	float Speed; 
 

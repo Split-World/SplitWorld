@@ -4,10 +4,15 @@
 #include "MovingThorn.h"
 #include "SplitPlayer.h" 
 #include "Net/UnrealNetwork.h" 
+#include "Components/BoxComponent.h" 
 
 AMovingThorn::AMovingThorn()
 { 
 	PrimaryActorTick.bCanEverTick = true;
+
+	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh")); 
+	Mesh->SetupAttachment(BoxComp); 
+	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision); 
 
 	bReplicates = true; 
 	SetReplicateMovement(true); 

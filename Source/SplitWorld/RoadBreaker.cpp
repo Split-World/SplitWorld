@@ -28,7 +28,7 @@ void ARoadBreaker::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ARoadBreaker, Roads); 
-}
+} 
 
 void ARoadBreaker::Execute()
 {
@@ -40,3 +40,4 @@ void ARoadBreaker::Execute()
 		Comp->SetSimulatePhysics(true); 
 	}
 } 
+
