@@ -8,8 +8,8 @@
 
 AMovingThorn::AMovingThorn()
 { 
-	PrimaryActorTick.bCanEverTick = true;
-
+	PrimaryActorTick.bCanEverTick = true; 
+	
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh")); 
 	Mesh->SetupAttachment(BoxComp); 
 	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision); 
@@ -21,14 +21,18 @@ AMovingThorn::AMovingThorn()
 void AMovingThorn::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	if (Idx)
+	{
+		BoxComp->SetCollisionProfileName(TEXT("MovingThorn")); 
+	}
 }
 
 void AMovingThorn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	SetActorLocation(GetActorLocation() + Speed * DeltaTime); 
+	SetActorLocation(GetActorLocation() + GetActorForwardVector() * Speed * DeltaTime); 
 }
 
 void AMovingThorn::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -40,9 +44,10 @@ void AMovingThorn::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 
 void AMovingThorn::Execute()
 { 
-	if (Idx && Player)
+	GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, TEXT("MovingThron")); 
+	if (!Idx && Player)
 	{
-		Player->Die(); 
+		Player->Die();
 	}
 }
 

@@ -24,11 +24,10 @@ void AThornbush::Tick(float DeltaTime)
 
 void AThornbush::Execute()
 { 
-	GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, TEXT("Thornbush"));
-
 	if (Player) 
 	{
 		Player->Die(); 
+		GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, TEXT("Thornbush"));
 	} 
 }
 

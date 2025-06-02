@@ -13,7 +13,8 @@ ATrap::ATrap()
 
 	BoxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComp")); 
 	SetRootComponent(BoxComp);
-	BoxComp->SetBoxExtent(FVector(50.0f)); 
+	BoxComp->SetBoxExtent(FVector(50.0f));
+	BoxComp->SetIsReplicated(true); 
 }
 
 void ATrap::BeginPlay()

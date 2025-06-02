@@ -12,19 +12,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d67493c3-6dee-456b-93df-a01497aca447" name="변경" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.SplitWorld/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.SplitWorld/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/SK/Blueprints/BP_CaptureCamera.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/SK/Blueprints/BP_CaptureCamera.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/SK/Blueprints/BP_ClonePlayer.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/SK/Blueprints/BP_ClonePlayer.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/SK/Blueprints/BP_SplitWorldGameMode.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/SK/Blueprints/BP_SplitWorldGameMode.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/SK/Blueprints/BP_TempPlayer.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/SK/Blueprints/BP_TempPlayer.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/SK/Blueprints/BP_MovingThorn.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/SK/Blueprints/BP_MovingThorn.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/SK/Levels/CameraTestMap.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/SK/Levels/CameraTestMap.umap" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/SplitWorld/CaptureCamera.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SplitWorld/CaptureCamera.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/SplitWorld/CaptureCamera.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SplitWorld/CaptureCamera.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/SplitWorld/ClonePlayer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SplitWorld/ClonePlayer.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/SplitWorld/ClonePlayer.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SplitWorld/ClonePlayer.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/SplitWorld/SplitWorldGameModeBase.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SplitWorld/SplitWorldGameModeBase.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/SplitWorld/TempPlayer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SplitWorld/TempPlayer.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/SplitWorld/TempPlayer.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SplitWorld/TempPlayer.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/SplitWorld/MovingThorn.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SplitWorld/MovingThorn.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -192,6 +182,7 @@
       <workItem from="1748415748448" duration="5883000" />
       <workItem from="1748475278965" duration="177000" />
       <workItem from="1748475471114" duration="17432000" />
+      <workItem from="1748821063323" duration="2918000" />
     </task>
     <servers />
   </component>

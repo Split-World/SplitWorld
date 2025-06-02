@@ -31,14 +31,14 @@ void AMovingThornSpawner::Tick(float DeltaTime)
 void AMovingThornSpawner::SpawnMovingThorn()
 { 
 	FTransform t = GetActorTransform(); 
+	t.SetScale3D(FVector(3.0f, 3.0f, 2.0f)); 
 	auto P1 = GetWorld()->SpawnActor<AMovingThorn>(MovingThornFactory, t); 
-	t.SetLocation(t.GetLocation() + SpawnOffset); 
+	t.SetLocation(t.GetLocation() + SpawnOffset);
 	auto P2 = GetWorld()->SpawnActor<AMovingThorn>(MovingThornFactory, t); 
 	P2->Idx = 1; 
-	P2->Mesh->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly); 
 
 	GetWorldTimerManager().SetTimer(SpawnTimerHandle, [&]()
 	{
 		SpawnMovingThorn();
-	}, FMath::RandRange(1.5f, 2.5f), false);
+	}, FMath::RandRange(2.0f, 3.5f), false);
 }

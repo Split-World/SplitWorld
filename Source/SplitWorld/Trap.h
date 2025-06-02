@@ -19,7 +19,7 @@ public:
 	virtual void Execute() {}; 
 
 protected: 
-	UPROPERTY() 
+	UPROPERTY(EditAnywhere) 
 	class UBoxComponent* BoxComp;
 
 	UPROPERTY()
