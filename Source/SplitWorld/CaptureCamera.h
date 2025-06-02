@@ -18,25 +18,31 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override; 
 	
 private: 
+	//UFUNCTION(Server, Reliable) 
 	void UpdateMask();
-	void FindPlayers(); 
+	UFUNCTION(Server, Reliable) 
+	void FindPlayers();
+	UFUNCTION(Server, Reliable) 
+	void CalcPlayerScreenLocation(); 
+	UFUNCTION(Server, Reliable) 
+	void SetCameraLocation(); 
 
 	UPROPERTY(EditAnywhere)
 	class USpringArmComponent* SpringArmComp;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true), Replicated)
+	UPROPERTY(EditAnywhere, Replicated)
 	class USceneCaptureComponent2D* CameraComp; 
+	UPROPERTY(EditAnywhere, Replicated)
+	class USceneCaptureComponent2D* MaskComp;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(AllowPrivateAccess=true), Replicated)
+	UPROPERTY(EditAnywhere, Replicated)
 	int CameraIdx;
 
 	UPROPERTY()
 	class ASplitWorldGameModeBase* GM; 
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(AllowPrivateAccess=true), Replicated)
+	UPROPERTY(EditAnywhere, Replicated)
 	class APawn* Player1;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(AllowPrivateAccess=true), Replicated)
+	UPROPERTY(EditAnywhere, Replicated)
 	class APawn* Player2; 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true), Replicated)
-	class ASceneCapture2D* Mask;
 	
 };

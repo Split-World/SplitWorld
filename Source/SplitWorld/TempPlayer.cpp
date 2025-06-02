@@ -19,7 +19,7 @@ void ATempPlayer::BeginPlay()
 void ATempPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	
 }
 
 void ATempPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

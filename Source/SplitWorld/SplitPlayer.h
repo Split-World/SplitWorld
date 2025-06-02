@@ -125,8 +125,10 @@ public:
 	FVector CloneDist;
 
 	UFUNCTION(Server, Reliable)
-	void CloneLocation(FVector Location);
+
+	void CloneLocation(FVector Location); 
 	
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AClonePlayer> ClonePlayerFactory;
+
 };

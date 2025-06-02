@@ -124,7 +124,7 @@ void ASplitPlayer::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	if (IsLocallyControlled())
-	{
+	{ 
 		ClonePlayer->SetActorLocation((HasAuthority() ? CloneDist : -CloneDist) + GetActorLocation());
 	}
 	
@@ -234,14 +234,12 @@ void ASplitPlayer::JumpAction(const FInputActionValue& Value)
 	if (!bJumping)
 	{
 		Jump();
-		
 		JumpDir = Dir;
 		bJumping = true;
 	}
 	else if (!bDoubleJumping)
 	{
 		Jump();
-
 		JumpDir = Dir;
 		bDoubleJumping = true;
 	}
@@ -280,7 +278,7 @@ void ASplitPlayer::InteractAction(const FInputActionValue& Value)
 		auto II = Cast<IInteractable>(OutHit.GetActor());
 		if (II)
 		{
-			//II->Interactive();
+			II->Interaction(); 
 		}
 	}
 }
@@ -455,5 +453,3 @@ void ASplitPlayer::SpawnClone_Implementation(FVector PlayerStart, FVector Locati
 
 	ClonePlayer = GetWorld()-> SpawnActor<AClonePlayer>(ClonePlayerFactory, SpawnTransform);
 }
-
-
