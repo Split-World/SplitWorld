@@ -101,7 +101,7 @@ void ASplitPlayer::BeginPlay()
 
 	if (IsLocallyControlled())
 	{
-		SpawnClone(HasAuthority() ? Player1Start : Player2Start, HasAuthority() ? CloneDist : -CloneDist);
+		
 	}
 }
 
@@ -123,6 +123,11 @@ void ASplitPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (IsLocallyControlled())
+	{
+		ClonePlayer->SetActorLocation((HasAuthority() ? CloneDist : -CloneDist) + GetActorLocation());
+	}
+	
 	if (!GetCharacterMovement()->IsFalling())
 	{
 		bJumping = false;
@@ -130,8 +135,6 @@ void ASplitPlayer::Tick(float DeltaTime)
 		bFailClimb = false;
 		bClimb = false;
 		bTraversal = false;
-		bCanDash = true;
-		bDashing = false;
 		GetCharacterMovement()->GravityScale = 1.0f;
 	}
 	else
@@ -231,14 +234,14 @@ void ASplitPlayer::JumpAction(const FInputActionValue& Value)
 	if (!bJumping)
 	{
 		Jump();
-		ClonePlayer->Jump();
+		
 		JumpDir = Dir;
 		bJumping = true;
 	}
 	else if (!bDoubleJumping)
 	{
 		Jump();
-		ClonePlayer->Jump();
+
 		JumpDir = Dir;
 		bDoubleJumping = true;
 	}
@@ -290,6 +293,10 @@ void ASplitPlayer::DashAction(const FInputActionValue& Value)
 		bDashing = true;
 
 		LaunchCharacter(GetActorForwardVector() * 700.f, false, false);
+	}
+	else if (bDashing && !GetCharacterMovement()->IsFalling())
+	{
+		
 	}
 }
 
@@ -434,9 +441,9 @@ FRotator ASplitPlayer::ReveseNormal(FVector InNormal)
 	return UKismetMathLibrary::NormalizedDeltaRotator(UKismetMathLibrary::MakeRotFromX(InNormal),FRotator(0.f ,0.f ,180.f));
 }
 
-void ASplitPlayer::ClonePlayerSync_Implementation()
+void ASplitPlayer::CloneLocation_Implementation(FVector Location)
 {
-	
+	ClonePlayer->SetActorLocation(Location);
 }
 
 void ASplitPlayer::SpawnClone_Implementation(FVector PlayerStart, FVector LocationOffset)
@@ -448,12 +455,5 @@ void ASplitPlayer::SpawnClone_Implementation(FVector PlayerStart, FVector Locati
 
 	ClonePlayer = GetWorld()-> SpawnActor<AClonePlayer>(ClonePlayerFactory, SpawnTransform);
 }
-
-void ASplitPlayer::CloneMovement_Implementation(FVector Dir1, float Scale1, FVector Dir2, float Scale2)
-{
-	ClonePlayer->AddMovementInput(Dir1, Scale1);
-	ClonePlayer->AddMovementInput(Dir2, Scale2);
-}
-
 
 

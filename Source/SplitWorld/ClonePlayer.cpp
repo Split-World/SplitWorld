@@ -7,7 +7,7 @@ AClonePlayer::AClonePlayer()
 { 
 	PrimaryActorTick.bCanEverTick = true;
 
-	bAlwaysRelevant = true;
+	bAlwaysRelevant = true;  
 }
 
 void AClonePlayer::BeginPlay()
@@ -17,19 +17,11 @@ void AClonePlayer::BeginPlay()
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
-	
-	JumpMaxCount = 3;
 }
 
 void AClonePlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-}
-
-void AClonePlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 }
 
