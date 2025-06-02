@@ -16,9 +16,7 @@ void AClonePlayer::BeginPlay()
 	
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
-	bUseControllerRotationRoll = false;
-	
-	JumpMaxCount = 3;
+	bUseControllerRotationRoll = false; 
 }
 
 void AClonePlayer::Tick(float DeltaTime)
@@ -26,4 +24,3 @@ void AClonePlayer::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
-

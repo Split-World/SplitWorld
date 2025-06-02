@@ -12,9 +12,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d67493c3-6dee-456b-93df-a01497aca447" name="변경" comment="">
-      <change beforePath="$PROJECT_DIR$/Content/SK/Blueprints/BP_MovingThorn.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/SK/Blueprints/BP_MovingThorn.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Source/SplitWorld/Snake.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Source/SplitWorld/Snake.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.SplitWorld/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.SplitWorld/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/SK/Levels/CameraTestMap.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/SK/Levels/CameraTestMap.umap" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/SplitWorld/MovingThorn.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SplitWorld/MovingThorn.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/SplitWorld/ClonePlayer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SplitWorld/ClonePlayer.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/SplitWorld/SplitPlayer.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SplitWorld/SplitPlayer.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/SplitWorld/SplitPlayer.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SplitWorld/SplitPlayer.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -183,6 +187,7 @@
       <workItem from="1748475278965" duration="177000" />
       <workItem from="1748475471114" duration="17432000" />
       <workItem from="1748821063323" duration="2918000" />
+      <workItem from="1748825541761" duration="454000" />
     </task>
     <servers />
   </component>

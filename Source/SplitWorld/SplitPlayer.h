@@ -115,9 +115,6 @@ public:
 	class AClonePlayer* ClonePlayer;
 	
 	UFUNCTION(Server, Reliable)
-	void CloneMovement(FVector Dir1, float Scale1, FVector Dir2, float Scale2);
-
-	UFUNCTION(Server, Reliable)
 	void SpawnClone(FVector PlayerStart, FVector LocationOffset);
 
 	UPROPERTY(EditAnywhere)
@@ -127,9 +124,10 @@ public:
 	UPROPERTY(EditAnywhere)
 	FVector CloneDist;
 
+	UFUNCTION(Server, Reliable)
+	void CloneLocation(FVector Location); 
+	
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AClonePlayer> ClonePlayerFactory;
 
-	UFUNCTION(Server, Reliable)
-	void ClonePlayerSync();
 };
