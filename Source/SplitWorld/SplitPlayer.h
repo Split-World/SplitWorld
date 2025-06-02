@@ -113,7 +113,7 @@ public:
 	
 	UPROPERTY(Replicated)
 	class AClonePlayer* ClonePlayer;
-	
+
 	UFUNCTION(Server, Reliable)
 	void SpawnClone(FVector PlayerStart, FVector LocationOffset);
 
@@ -125,6 +125,7 @@ public:
 	FVector CloneDist;
 
 	UFUNCTION(Server, Reliable)
+
 	void CloneLocation(FVector Location); 
 	
 	UPROPERTY(EditAnywhere)

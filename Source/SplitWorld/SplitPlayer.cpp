@@ -101,7 +101,7 @@ void ASplitPlayer::BeginPlay()
 
 	if (IsLocallyControlled())
 	{
-		SpawnClone(HasAuthority() ? Player1Start : Player2Start, HasAuthority() ? CloneDist : -CloneDist);
+		
 	}
 }
 
@@ -134,7 +134,7 @@ void ASplitPlayer::Tick(float DeltaTime)
 		bDoubleJumping = false;
 		bFailClimb = false;
 		bClimb = false;
-		bTraversal = false; 
+		bTraversal = false;
 		GetCharacterMovement()->GravityScale = 1.0f;
 	}
 	else
@@ -439,8 +439,8 @@ FRotator ASplitPlayer::ReveseNormal(FVector InNormal)
 	return UKismetMathLibrary::NormalizedDeltaRotator(UKismetMathLibrary::MakeRotFromX(InNormal),FRotator(0.f ,0.f ,180.f));
 }
 
-void ASplitPlayer::CloneLocation_Implementation(FVector Location) 
-{ 
+void ASplitPlayer::CloneLocation_Implementation(FVector Location)
+{
 	ClonePlayer->SetActorLocation(Location);
 }
 

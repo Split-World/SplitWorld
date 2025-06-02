@@ -13,7 +13,7 @@ class SPLITWORLD_API AClonePlayer : public APawn
 
 public: 
 	AClonePlayer(); 
-	virtual void BeginPlay() override;
+	virtual void BeginPlay() override; 
 	virtual void Tick(float DeltaTime) override; 
 
 };
