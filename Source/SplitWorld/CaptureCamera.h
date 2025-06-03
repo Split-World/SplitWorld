@@ -18,7 +18,6 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override; 
 	
 private: 
-	//UFUNCTION(Server, Reliable) 
 	void UpdateMask();
 	UFUNCTION(Server, Reliable) 
 	void FindPlayers();
@@ -33,6 +32,8 @@ private:
 	class USceneCaptureComponent2D* CameraComp; 
 	UPROPERTY(EditAnywhere, Replicated)
 	class USceneCaptureComponent2D* MaskComp;
+	UPROPERTY(EditAnywhere, Replicated)
+	class USceneCaptureComponent2D* BoundaryComp;
 
 	UPROPERTY(EditAnywhere, Replicated)
 	int CameraIdx;
@@ -45,4 +46,7 @@ private:
 	UPROPERTY(EditAnywhere, Replicated)
 	class APawn* Player2; 
 	
+	UPROPERTY(Replicated) 
+	FVector2D ScreenAvgPos; 
+
 };

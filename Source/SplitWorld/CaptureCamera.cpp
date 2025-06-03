@@ -27,6 +27,10 @@ ACaptureCamera::ACaptureCamera()
 	MaskComp->SetupAttachment(SpringArmComp);
 	MaskComp->SetRelativeRotation(FRotator(27.5f, 0.0f, 0.0f)); 
 
+	BoundaryComp = CreateDefaultSubobject<USceneCaptureComponent2D>(TEXT("BoundaryComp"));
+	BoundaryComp->SetupAttachment(SpringArmComp);
+	BoundaryComp->SetRelativeRotation(FRotator(27.5f, 0.0f, 0.0f));
+
 	SetReplicates(true); 
 	SetReplicateMovement(true); 
 	bAlwaysRelevant = true; 
@@ -46,6 +50,7 @@ void ACaptureCamera::BeginPlay()
 	if (!CameraIdx)
 	{
 		MaskComp->bEnableClipPlane = true; 
+		BoundaryComp->bEnableClipPlane = true; 
 	} 
 } 
 
@@ -71,31 +76,46 @@ void ACaptureCamera::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& Out
 
 	DOREPLIFETIME(ACaptureCamera, CameraComp); 
 	DOREPLIFETIME(ACaptureCamera, MaskComp); 
+	DOREPLIFETIME(ACaptureCamera, BoundaryComp); 
 	DOREPLIFETIME(ACaptureCamera, CameraIdx); 
 	DOREPLIFETIME(ACaptureCamera, Player1); 
 	DOREPLIFETIME(ACaptureCamera, Player2); 
+	DOREPLIFETIME(ACaptureCamera, ScreenAvgPos); 
 }
 
-//void ACaptureCamera::UpdateMask_Implementation()
 void ACaptureCamera::UpdateMask()
 { 
 	if (!CameraIdx)
-	{
+	{ 
 		FVector P1 = Player1->GetActorLocation();
 		FVector P2 = Player2->GetActorLocation();
-		FVector Dist = P1 - P2;
-		FVector AvgPos = Dist * 0.5f + P2;
-		
-		MaskComp->ClipPlaneBase = AvgPos;
+		FVector Dist = P1 - P2; 
 
-		if (Dist.Size2D() < 300.0f && Dist.Z > 1000.0f)
-		{
-			MaskComp->ClipPlaneNormal = -Dist.GetSafeNormal2D();
-		}
-		else
-		{
-			MaskComp->ClipPlaneNormal = -Dist.GetSafeNormal();
-		} 
+		FVector pos = CameraComp->GetComponentLocation();
+		FVector r = CameraComp->GetRightVector();
+		FVector u = CameraComp->GetUpVector();
+		FVector f = CameraComp->GetForwardVector(); 
+		
+		FVector r = CameraComp->GetRightVector();
+		FVector u = CameraComp->GetUpVector();
+		FVector f = CameraComp->GetForwardVector();
+
+		float z = f.Dot(P1 - pos); 
+		FVector2D v_Pos = ScreenAvgPos / z; 
+		FVector AvgPos = FVector();
+		
+		//if (Dist.Size2D() < 300.0f && Dist.Z > 1000.0f)
+		//{
+			MaskComp->ClipPlaneNormal = -Dist.GetSafeNormal2D(); 
+			BoundaryComp->ClipPlaneNormal = -Dist.GetSafeNormal2D(); 
+		//}
+		//else
+		//{
+		//	MaskComp->ClipPlaneNormal = -Dist.GetSafeNormal();
+		//} 
+
+		MaskComp->ClipPlaneBase = AvgPos + MaskComp->ClipPlaneNormal * 15.0f; 
+		BoundaryComp->ClipPlaneBase = AvgPos - MaskComp->ClipPlaneNormal * 15.0f; 
 	} 
 }
 
@@ -136,18 +156,18 @@ void ACaptureCamera::CalcPlayerScreenLocation_Implementation()
 	if (!CameraIdx)
 	{ 
 		FVector pp = Player1->GetActorLocation();
-		float z = f.Dot(Player1->GetActorLocation() - pos);
-		float vx = r.X * pp.X + r.Y * pp.Y + r.Z * pp.Z - r.Dot(pos);
-		float vy = u.X * pp.X + u.Y * pp.Y + u.Z * pp.Z - u.Dot(pos);
+		float z = f.Dot(pp - pos);
+		float vx = r.Dot(pp - pos); 
+		float vy = u.Dot(pp - pos); 
 		px = vx / z;
 		py = vy / z;
 	}
 	else 
 	{ 
 		FVector pp = Player2->GetActorLocation();
-		float z = f.Dot(Player2->GetActorLocation() - pos);
-		float vx = r.X * pp.X + r.Y * pp.Y + r.Z * pp.Z - r.Dot(pos);
-		float vy = u.X * pp.X + u.Y * pp.Y + u.Z * pp.Z - u.Dot(pos);
+		float z = f.Dot(pp - pos);
+		float vx = r.Dot(pp - pos);
+		float vy = u.Dot(pp - pos);
 		px = vx / z;
 		py = vy / z; 
 	}
@@ -158,6 +178,7 @@ void ACaptureCamera::SetCameraLocation_Implementation()
 { 
 	FVector2D P1 = GM->PlayerScreenLocation[0]; 
 	FVector2D P2 = GM->PlayerScreenLocation[1]; 
+	ScreenAvgPos = (P1 - P2) * 0.5f + P2; 
 	float Min_X = FMath::Min(P1.X, P2.X); 
 	//GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, FString::Printf(TEXT("%f"), Min_X)); 
 	if (Min_X < -0.5f) 
