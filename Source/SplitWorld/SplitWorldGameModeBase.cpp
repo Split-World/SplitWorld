@@ -23,5 +23,24 @@ AActor* ASplitWorldGameModeBase::ChoosePlayerStart_Implementation(AController* P
 void ASplitWorldGameModeBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
+
+	switch (CurPart)
+	{
+	case EMapPart::Part1:
+		if (bPlayer_Interactions[0] == 3)
+		{
+			CurPart = EMapPart::Part2; 
+		} 
+		break;
+	case EMapPart::Part2: 
+		break; 
+	case EMapPart::Part2_5: 
+		break;
+	case EMapPart::Part3: 
+		if (bPlayer_Interactions[2] == 3)
+		{
+			CurPart = EMapPart::Part2; 
+		}
+		break; 
+	} 
 }

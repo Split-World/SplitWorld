@@ -316,8 +316,7 @@ void ASplitPlayer::RunAction(const FInputActionValue& Value)
 }
 
 void ASplitPlayer::Die()
-{
-	SpawnTransform.SetScale3D(FVector(1)); 
+{ 
 	SetActorTransform(SpawnTransform);
 }
 

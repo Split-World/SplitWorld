@@ -94,25 +94,17 @@ void ACaptureCamera::UpdateMask()
 		FVector u = CameraComp->GetUpVector();
 		FVector f = CameraComp->GetForwardVector(); 
 		
-		FVector rx(1.0f / r.X, 1.0f / u.X, 1.0f / f.X); 
-		FVector ry(1.0f / r.Y, 1.0f / u.Y, 1.0f / f.Y); 
-		FVector rz(1.0f / r.Z, 1.0f / u.Z, 1.0f / f.Z); 
+		FVector rx(r.X, u.X, f.X); 
+		FVector ry(r.Y, u.Y, f.Y); 
+		FVector rz(r.Z, u.Z, f.Z); 
 		
-		float z = f.Dot(P1 - pos);
-		ScreenAvgPos *= z; 
-		FVector vpos(ScreenAvgPos.X, ScreenAvgPos.Y, z); 
-		//FVector AvgPos = FVector(vpos.Dot(rx), vpos.Dot(ry), vpos.Dot(rz)) + pos; 
-		FVector AvgPos = Dist * 0.5f + P2; 
-		//if (Dist.Size2D() < 300.0f && Dist.Z > 1000.0f)
-		//{
-			MaskComp->ClipPlaneNormal = -Dist.GetSafeNormal2D(); 
-			BoundaryComp->ClipPlaneNormal = -Dist.GetSafeNormal2D(); 
-		//}
-		//else
-		//{
-		//	MaskComp->ClipPlaneNormal = -Dist.GetSafeNormal();
-		//} 
+		float z = f.Dot(P1 - pos); 
+		FVector vpos(ScreenAvgPos.X * z, ScreenAvgPos.Y * z, z); 
+		FVector AvgPos = FVector(vpos.Dot(rx), vpos.Dot(ry), vpos.Dot(rz)) + pos; 
 
+		MaskComp->ClipPlaneNormal = -Dist.GetSafeNormal(); 
+		BoundaryComp->ClipPlaneNormal = -Dist.GetSafeNormal(); 
+		GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, FString::Printf(TEXT("%f, %f, %f"), tpos.X, tpos.Y, tpos.Z)); 
 		MaskComp->ClipPlaneBase = AvgPos + MaskComp->ClipPlaneNormal * 15.0f; 
 		BoundaryComp->ClipPlaneBase = AvgPos - MaskComp->ClipPlaneNormal * 15.0f; 
 	} 
@@ -178,14 +170,14 @@ void ACaptureCamera::SetCameraLocation_Implementation()
 	FVector2D P1 = GM->PlayerScreenLocation[0]; 
 	FVector2D P2 = GM->PlayerScreenLocation[1]; 
 	ScreenAvgPos = (P1 - P2) * 0.5f + P2; 
+
 	float Min_X = FMath::Min(P1.X, P2.X); 
-	//GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, FString::Printf(TEXT("%f"), Min_X)); 
 	if (Min_X < -0.5f) 
 	{ 
-		SetActorLocation(GetActorLocation() + FVector(0, -1, 0) * 500.0f * GetWorld()->GetDeltaSeconds()); 
+		SetActorLocation(GetActorLocation() + FVector(0, -1, 0) * 2000.0f * GetWorld()->GetDeltaSeconds()); 
 	} 
 	else if (Min_X > -0.15f) 
 	{
-		SetActorLocation(GetActorLocation() + FVector(0, 1, 0) * 500.0f * GetWorld()->GetDeltaSeconds()); 
+		SetActorLocation(GetActorLocation() + FVector(0, 1, 0) * 2000.0f * GetWorld()->GetDeltaSeconds()); 
 	} 
 }
