@@ -104,7 +104,6 @@ void ACaptureCamera::UpdateMask()
 
 		MaskComp->ClipPlaneNormal = -Dist.GetSafeNormal(); 
 		BoundaryComp->ClipPlaneNormal = -Dist.GetSafeNormal(); 
-		GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, FString::Printf(TEXT("%f, %f, %f"), tpos.X, tpos.Y, tpos.Z)); 
 		MaskComp->ClipPlaneBase = AvgPos + MaskComp->ClipPlaneNormal * 15.0f; 
 		BoundaryComp->ClipPlaneBase = AvgPos - MaskComp->ClipPlaneNormal * 15.0f; 
 	} 
