@@ -4,24 +4,30 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Snake.generated.h"
+#include "MovingFloor.generated.h"
 
 UCLASS()
-class SPLITWORLD_API ASnake : public AActor
+class SPLITWORLD_API AMovingFloor : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
-	ASnake(); 
+	AMovingFloor(); 
 	virtual void BeginPlay() override; 
-	virtual void Tick(float DeltaTime) override;
+	virtual void Tick(float DeltaTime) override; 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override; 
 
-	UPROPERTY(REPLICATED) 
-	bool bActive; 
-
-private: 
 	UPROPERTY(EditAnywhere)
-	class UStaticMeshComponent* Mesh; 
+	class UStaticMeshComponent* Mesh;
+	
+	UPROPERTY()
+	class ASplitWorldGameModeBase* GM;
+
+private:
+	UPROPERTY(EditAnywhere)
+	TArray<class AActor*> Handles;
+
+	UPROPERTY(Replicated)
+	float MoveDistance = 7000.0f;
 	
 };

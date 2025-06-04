@@ -3,20 +3,20 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h" 
 #include "InteractableActorBase.h"
-#include "DoorHandle.generated.h"
+#include "GameFramework/Actor.h"
+#include "FishHandle.generated.h"
 
 UCLASS()
-class SPLITWORLD_API ADoorHandle : public AInteractableActorBase 
+class SPLITWORLD_API AFishHandle : public AInteractableActorBase 
 {
 	GENERATED_BODY()
 	
-public: 
-	ADoorHandle(); 
+public:	
+	AFishHandle(); 
 	virtual void BeginPlay() override; 
 	virtual void Tick(float DeltaTime) override;
-
+	
 	virtual void Interaction_Implementation() override; 
 
 private:
@@ -24,6 +24,12 @@ private:
 	class UStaticMeshComponent* Mesh;
 	
 	UPROPERTY()
-	class ASplitWorldGameModeBase* GM; 
+	class ASplitWorldGameModeBase* GM;
+
+	bool bLaunched; 
+	FTimerHandle FishTimerManager;
+
+	UPROPERTY(EditAnywhere)
+	TArray<class AFish*> Fishes; 
 	
-}; 
+};

@@ -32,7 +32,7 @@ void AMovingThornSpawner::SpawnMovingThorn()
 { 
 	FTransform t = GetActorTransform(); 
 	t.SetScale3D(FVector(3.0f, 3.0f, 2.0f)); 
-	auto P1 = GetWorld()->SpawnActor<AMovingThorn>(MovingThornFactory, t); 
+	GetWorld()->SpawnActor<AMovingThorn>(MovingThornFactory, t); 
 	t.SetLocation(t.GetLocation() + SpawnOffset);
 	auto P2 = GetWorld()->SpawnActor<AMovingThorn>(MovingThornFactory, t); 
 	P2->Idx = 1; 
@@ -40,5 +40,5 @@ void AMovingThornSpawner::SpawnMovingThorn()
 	GetWorldTimerManager().SetTimer(SpawnTimerHandle, [&]()
 	{
 		SpawnMovingThorn();
-	}, FMath::RandRange(2.0f, 3.5f), false);
+	}, FMath::RandRange(2.0f, 5.0f), false);
 }

@@ -1,11 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "DoorHandle.h" 
+#include "FloorHandle.h" 
 #include "SplitWorldGameModeBase.h"
 
-ADoorHandle::ADoorHandle()
-{ 
+AFloorHandle::AFloorHandle()
+{
 	PrimaryActorTick.bCanEverTick = true;
 
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
@@ -13,10 +13,11 @@ ADoorHandle::ADoorHandle()
 	Mesh->SetCollisionProfileName(TEXT("Objects"));
 
 	SetReplicates(true); 
+	SetReplicateMovement(true); 
 	bAlwaysRelevant = true; 
 }
 
-void ADoorHandle::BeginPlay()
+void AFloorHandle::BeginPlay()
 {
 	Super::BeginPlay();
 
@@ -26,16 +27,13 @@ void ADoorHandle::BeginPlay()
 	} 
 }
 
-void ADoorHandle::Tick(float DeltaTime)
+void AFloorHandle::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
+
 }
 
-void ADoorHandle::Interaction_Implementation()
+void AFloorHandle::Interaction_Implementation()
 {
-	if (!(GM->bPlayer_Interactions[0] & (1 << Idx)))
-	{
-		GM->bPlayer_Interactions[0] |= (1 << Idx);
-	} 
-} 
+	if (!(GM->bPlayer_Interactions[2] & (1 << Idx))) GM->bPlayer_Interactions[2] |= (1 << Idx); 
+}

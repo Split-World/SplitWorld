@@ -2,11 +2,9 @@
 
 
 #include "CaptureCamera.h" 
-#include "ClonePlayer.h"
-#include "MaskCamera.h"
+#include "ClonePlayer.h" 
+#include "SplitPlayer.h"
 #include "SplitWorldGameModeBase.h"
-#include "TempPlayer.h"
-#include "Engine/SceneCapture2D.h" 
 #include "Components/SceneCaptureComponent2D.h"
 #include "GameFramework/SpringArmComponent.h" 
 #include "Net/UnrealNetwork.h" 
@@ -96,14 +94,15 @@ void ACaptureCamera::UpdateMask()
 		FVector u = CameraComp->GetUpVector();
 		FVector f = CameraComp->GetForwardVector(); 
 		
-		FVector r = CameraComp->GetRightVector();
-		FVector u = CameraComp->GetUpVector();
-		FVector f = CameraComp->GetForwardVector();
-
-		float z = f.Dot(P1 - pos); 
-		FVector2D v_Pos = ScreenAvgPos / z; 
-		FVector AvgPos = FVector();
+		FVector rx(1.0f / r.X, 1.0f / u.X, 1.0f / f.X); 
+		FVector ry(1.0f / r.Y, 1.0f / u.Y, 1.0f / f.Y); 
+		FVector rz(1.0f / r.Z, 1.0f / u.Z, 1.0f / f.Z); 
 		
+		float z = f.Dot(P1 - pos);
+		ScreenAvgPos *= z; 
+		FVector vpos(ScreenAvgPos.X, ScreenAvgPos.Y, z); 
+		//FVector AvgPos = FVector(vpos.Dot(rx), vpos.Dot(ry), vpos.Dot(rz)) + pos; 
+		FVector AvgPos = Dist * 0.5f + P2; 
 		//if (Dist.Size2D() < 300.0f && Dist.Z > 1000.0f)
 		//{
 			MaskComp->ClipPlaneNormal = -Dist.GetSafeNormal2D(); 
@@ -126,9 +125,9 @@ void ACaptureCamera::FindPlayers_Implementation()
 		return; 
 	}
 
-	auto P1 = Cast<ATempPlayer>(GM->Players[0]->GetPawn()); 
-	auto P2 = Cast<ATempPlayer>(GM->Players[1]->GetPawn());
-	if (!IsValid(P1->Clone) || !IsValid(P2->Clone))
+	auto P1 = Cast<ASplitPlayer>(GM->Players[0]->GetPawn()); 
+	auto P2 = Cast<ASplitPlayer>(GM->Players[1]->GetPawn());
+	if (!IsValid(P1->ClonePlayer) || !IsValid(P2->ClonePlayer))
 	{
 		return; 
 	}
@@ -136,11 +135,11 @@ void ACaptureCamera::FindPlayers_Implementation()
 	if (!CameraIdx)
 	{
 		Player1 = P1; 
-		Player2 = P2->Clone; 
+		Player2 = P2->ClonePlayer; 
 	}
 	else 
 	{
-		Player1 = P1->Clone; 
+		Player1 = P1->ClonePlayer; 
 		Player2 = P2; 
 	} 
 } 

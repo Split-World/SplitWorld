@@ -131,4 +131,6 @@ public:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AClonePlayer> ClonePlayerFactory;
 
+	UFUNCTION(Server, Reliable)
+	void Interact(class AInteractableActorBase* Actor); 
 };

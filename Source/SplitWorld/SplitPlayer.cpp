@@ -9,6 +9,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "Interactable.h"
+#include "InteractableActorBase.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -101,7 +102,7 @@ void ASplitPlayer::BeginPlay()
 
 	if (IsLocallyControlled())
 	{
-		
+		SpawnClone(HasAuthority() ? Player1Start : Player2Start, HasAuthority() ? CloneDist : -CloneDist);
 	}
 }
 
@@ -123,7 +124,7 @@ void ASplitPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (IsLocallyControlled())
+	if (ClonePlayer && IsLocallyControlled())
 	{ 
 		ClonePlayer->SetActorLocation((HasAuthority() ? CloneDist : -CloneDist) + GetActorLocation());
 	}
@@ -135,6 +136,8 @@ void ASplitPlayer::Tick(float DeltaTime)
 		bFailClimb = false;
 		bClimb = false;
 		bTraversal = false;
+		bCanDash = true;
+		bDashing = false;
 		GetCharacterMovement()->GravityScale = 1.0f;
 	}
 	else
@@ -275,10 +278,10 @@ void ASplitPlayer::InteractAction(const FInputActionValue& Value)
 
 	if (bHit)
 	{
-		auto II = Cast<IInteractable>(OutHit.GetActor());
-		if (II)
+		auto II = Cast<AInteractableActorBase>(OutHit.GetActor()); 
+		if (II && ((!II->Idx && HasAuthority()) || (II->Idx && !HasAuthority())))
 		{
-			II->Interaction(); 
+			Interact(II); 
 		}
 	}
 }
@@ -314,6 +317,7 @@ void ASplitPlayer::RunAction(const FInputActionValue& Value)
 
 void ASplitPlayer::Die()
 {
+	SpawnTransform.SetScale3D(FVector(1)); 
 	SetActorTransform(SpawnTransform);
 }
 
@@ -453,3 +457,8 @@ void ASplitPlayer::SpawnClone_Implementation(FVector PlayerStart, FVector Locati
 
 	ClonePlayer = GetWorld()-> SpawnActor<AClonePlayer>(ClonePlayerFactory, SpawnTransform);
 }
+
+void ASplitPlayer::Interact_Implementation(AInteractableActorBase* Actor)
+{
+	IInteractable::Execute_Interaction(Actor); 
+} 

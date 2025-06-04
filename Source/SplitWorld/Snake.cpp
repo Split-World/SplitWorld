@@ -3,25 +3,36 @@
 
 #include "Snake.h"
 
-// Sets default values
+#include "Net/UnrealNetwork.h"
+
 ASnake::ASnake()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
+	SetRootComponent(Mesh);
+	Mesh->SetCollisionProfileName(TEXT("Snake"));
+	Mesh->SetIsReplicated(true);
+
+	SetReplicates(true); 
+	bAlwaysRelevant = true; 
 }
 
-// Called when the game starts or when spawned
 void ASnake::BeginPlay()
 {
 	Super::BeginPlay();
 	
 }
 
-// Called every frame
 void ASnake::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 }
 
+void ASnake::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ASnake, bActive); 
+} 

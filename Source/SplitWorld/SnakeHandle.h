@@ -3,17 +3,17 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h" 
 #include "InteractableActorBase.h"
-#include "DoorHandle.generated.h"
+#include "GameFramework/Actor.h"
+#include "SnakeHandle.generated.h"
 
 UCLASS()
-class SPLITWORLD_API ADoorHandle : public AInteractableActorBase 
+class SPLITWORLD_API ASnakeHandle : public AInteractableActorBase
 {
 	GENERATED_BODY()
 	
 public: 
-	ADoorHandle(); 
+	ASnakeHandle(); 
 	virtual void BeginPlay() override; 
 	virtual void Tick(float DeltaTime) override;
 
@@ -24,6 +24,12 @@ private:
 	class UStaticMeshComponent* Mesh;
 	
 	UPROPERTY()
-	class ASplitWorldGameModeBase* GM; 
+	class ASplitWorldGameModeBase* GM;
 	
-}; 
+	UPROPERTY(EditAnywhere)
+	TArray<class ASnake*> Snakes;
+
+	bool bActive;
+	FTimerHandle ActiveTimerHandle; 
+	
+};

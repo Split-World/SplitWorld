@@ -19,8 +19,7 @@ public:
 	UPROPERTY() 
 	TArray<class AController*> Players;
 
-	int bPlayer_Interactions; 
-	float InputGauge[2] = { 0.0f }; 
+	int bPlayer_Interactions[3];  
 
 	FVector2D PlayerScreenLocation[2]; 
 
