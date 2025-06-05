@@ -18,21 +18,18 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override; 
 	
 private: 
-	void UpdateMask();
-	UFUNCTION(Server, Reliable) 
-	void FindPlayers();
-	UFUNCTION(Server, Reliable) 
+	void UpdateMask(); 
+	void FindPlayers(); 
 	void CalcPlayerScreenLocation(); 
-	UFUNCTION(Server, Reliable) 
 	void SetCameraLocation(); 
 
 	UPROPERTY(EditAnywhere)
 	class USpringArmComponent* SpringArmComp;
-	UPROPERTY(EditAnywhere, Replicated)
+	UPROPERTY(EditAnywhere)
 	class USceneCaptureComponent2D* CameraComp; 
-	UPROPERTY(EditAnywhere, Replicated)
+	UPROPERTY(EditAnywhere)
 	class USceneCaptureComponent2D* MaskComp;
-	UPROPERTY(EditAnywhere, Replicated)
+	UPROPERTY(EditAnywhere)
 	class USceneCaptureComponent2D* BoundaryComp;
 
 	UPROPERTY(EditAnywhere, Replicated)
@@ -46,7 +43,11 @@ private:
 	UPROPERTY(EditAnywhere, Replicated)
 	class APawn* Player2; 
 	
-	UPROPERTY(Replicated) 
-	FVector2D ScreenAvgPos; 
+	//UPROPERTY(ReplicatedUsing=UpdateMask)  
+	UPROPERTY(Replicated)  
+	FVector2D ScreenAvgPos;
+
+	UPROPERTY(EditAnywhere)
+	FVector 
 
 };

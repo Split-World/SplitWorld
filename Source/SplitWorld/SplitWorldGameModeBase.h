@@ -25,14 +25,16 @@ public:
 	ASplitWorldGameModeBase();
 	virtual AActor* ChoosePlayerStart_Implementation(AController* Player) override; 
 	virtual void Tick(float DeltaTime) override; 
+
+	void ChangeMapPart(EMapPart Part); 
 	
 	UPROPERTY() 
 	TArray<class AController*> Players;
 
-	int bPlayer_Interactions[4];
-
-	EMapPart CurPart; 
+	int bPlayer_Interactions[3];
 
 	FVector2D PlayerScreenLocation[2]; 
+
+	EMapPart CurPart; 
 
 };

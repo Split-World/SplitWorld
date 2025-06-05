@@ -16,18 +16,22 @@ ACaptureCamera::ACaptureCamera()
 	SpringArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp"));
 	SetRootComponent(SpringArmComp);
 	SpringArmComp->TargetArmLength = 3500.0f; 
+	SpringArmComp->SetIsReplicated(true); 
 
 	CameraComp = CreateDefaultSubobject<USceneCaptureComponent2D>(TEXT("CameraComp"));
 	CameraComp->SetupAttachment(SpringArmComp);
-	CameraComp->SetRelativeRotation(FRotator(27.5f, 0.0f, 0.0f)); 
+	CameraComp->SetRelativeRotation(FRotator(12.5f, 0.0f, 0.0f));
+	CameraComp->SetIsReplicated(true); 
 
 	MaskComp = CreateDefaultSubobject<USceneCaptureComponent2D>(TEXT("MaskComp"));
 	MaskComp->SetupAttachment(SpringArmComp);
-	MaskComp->SetRelativeRotation(FRotator(27.5f, 0.0f, 0.0f)); 
+	MaskComp->SetRelativeRotation(FRotator(12.5f, 0.0f, 0.0f)); 
+	MaskComp->SetIsReplicated(true); 
 
 	BoundaryComp = CreateDefaultSubobject<USceneCaptureComponent2D>(TEXT("BoundaryComp"));
 	BoundaryComp->SetupAttachment(SpringArmComp);
-	BoundaryComp->SetRelativeRotation(FRotator(27.5f, 0.0f, 0.0f));
+	BoundaryComp->SetRelativeRotation(FRotator(12.5f, 0.0f, 0.0f));
+	BoundaryComp->SetIsReplicated(true); 
 
 	SetReplicates(true); 
 	SetReplicateMovement(true); 
@@ -42,7 +46,7 @@ void ACaptureCamera::BeginPlay()
 
 	if (HasAuthority())
 	{
-		GM = Cast<ASplitWorldGameModeBase>(GetWorld()->GetAuthGameMode());
+		GM = Cast<ASplitWorldGameModeBase>(GetWorld()->GetAuthGameMode()); 
 	} 
 
 	if (!CameraIdx)
@@ -57,14 +61,20 @@ void ACaptureCamera::Tick(float DeltaTime)
 	Super::Tick(DeltaTime); 
 	
 	if (IsValid(Player1) && IsValid(Player2))
-	{ 
-		CalcPlayerScreenLocation(); 
-		SetCameraLocation(); 
+	{
+		if (HasAuthority())
+		{
+			CalcPlayerScreenLocation(); 
+		}
+		
 		UpdateMask(); 
-	} 
+	}
 	else
 	{
-		FindPlayers(); 
+		if (HasAuthority())
+		{
+			FindPlayers();
+		}
 	}
 } 
 
@@ -72,9 +82,6 @@ void ACaptureCamera::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& Out
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(ACaptureCamera, CameraComp); 
-	DOREPLIFETIME(ACaptureCamera, MaskComp); 
-	DOREPLIFETIME(ACaptureCamera, BoundaryComp); 
 	DOREPLIFETIME(ACaptureCamera, CameraIdx); 
 	DOREPLIFETIME(ACaptureCamera, Player1); 
 	DOREPLIFETIME(ACaptureCamera, Player2); 
@@ -105,11 +112,11 @@ void ACaptureCamera::UpdateMask()
 		MaskComp->ClipPlaneNormal = -Dist.GetSafeNormal(); 
 		BoundaryComp->ClipPlaneNormal = -Dist.GetSafeNormal(); 
 		MaskComp->ClipPlaneBase = AvgPos + MaskComp->ClipPlaneNormal * 15.0f; 
-		BoundaryComp->ClipPlaneBase = AvgPos - MaskComp->ClipPlaneNormal * 15.0f; 
+		BoundaryComp->ClipPlaneBase = AvgPos - MaskComp->ClipPlaneNormal * 15.0f;
 	} 
-}
+} 
 
-void ACaptureCamera::FindPlayers_Implementation()
+void ACaptureCamera::FindPlayers()
 { 
 	if (GM->Players.Num() != 2)
 	{
@@ -132,10 +139,12 @@ void ACaptureCamera::FindPlayers_Implementation()
 	{
 		Player1 = P1->ClonePlayer; 
 		Player2 = P2; 
-	} 
+	}
+	
+	CalcPlayerScreenLocation(); 
 } 
 
-void ACaptureCamera::CalcPlayerScreenLocation_Implementation()
+void ACaptureCamera::CalcPlayerScreenLocation()
 {
 	FVector pos = CameraComp->GetComponentLocation();
 	FVector r = CameraComp->GetRightVector();
@@ -161,22 +170,46 @@ void ACaptureCamera::CalcPlayerScreenLocation_Implementation()
 		px = vx / z;
 		py = vy / z; 
 	}
-	GM->PlayerScreenLocation[CameraIdx] = FVector2D(px, py); 
+	GM->PlayerScreenLocation[CameraIdx] = FVector2D(px, py);
+
+	SetCameraLocation(); 
 }
 
-void ACaptureCamera::SetCameraLocation_Implementation()
+void ACaptureCamera::SetCameraLocation()
 { 
 	FVector2D P1 = GM->PlayerScreenLocation[0]; 
 	FVector2D P2 = GM->PlayerScreenLocation[1]; 
-	ScreenAvgPos = (P1 - P2) * 0.5f + P2; 
+	ScreenAvgPos = (P1 - P2) * 0.5f + P2;
 
-	float Min_X = FMath::Min(P1.X, P2.X); 
-	if (Min_X < -0.5f) 
-	{ 
-		SetActorLocation(GetActorLocation() + FVector(0, -1, 0) * 2000.0f * GetWorld()->GetDeltaSeconds()); 
-	} 
-	else if (Min_X > -0.15f) 
+	switch (GM->CurPart)
 	{
-		SetActorLocation(GetActorLocation() + FVector(0, 1, 0) * 2000.0f * GetWorld()->GetDeltaSeconds()); 
-	} 
+	case EMapPart::Part1: 
+		float Min_X = FMath::Min(P1.X, P2.X); 
+		if (Min_X < -0.5f) 
+		{ 
+			SetActorLocation(GetActorLocation() + FVector(0, -1, 0) * 1000.0f * GetWorld()->GetDeltaSeconds()); 
+		} 
+		else if (Min_X > -0.15f)
+		{
+			SetActorLocation(GetActorLocation() + FVector(0, 1, 0) * 1000.0f * GetWorld()->GetDeltaSeconds());
+		}
+		break;
+	case EMapPart::Part2:
+		float Min_Y = FMath::Min(P1.Y, P2.Y); 
+		if (Min_Y < -0.4f) 
+		{ 
+			SetActorLocation(GetActorLocation() + FVector(0, -1, 0) * 1000.0f * GetWorld()->GetDeltaSeconds()); 
+		} 
+		else if (Min_Y > -0.2f)
+		{
+			SetActorLocation(GetActorLocation() + FVector(0, 1, 0) * 1000.0f * GetWorld()->GetDeltaSeconds());
+		}
+		break;
+	case EMapPart::Part2_5: 
+		break;
+	case EMapPart::Part3: 
+		break; 
+	case EMapPart::Part4: 
+		break; 
+	}
 }

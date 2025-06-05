@@ -31,11 +31,7 @@ void ASplitWorldGameModeBase::Tick(float DeltaTime)
 		{
 			CurPart = EMapPart::Part2; 
 		} 
-		break;
-	case EMapPart::Part2: 
 		break; 
-	case EMapPart::Part2_5: 
-		break;
 	case EMapPart::Part3: 
 		if (bPlayer_Interactions[2] == 3)
 		{
@@ -43,4 +39,9 @@ void ASplitWorldGameModeBase::Tick(float DeltaTime)
 		}
 		break; 
 	} 
+}
+
+void ASplitWorldGameModeBase::ChangeMapPart(EMapPart Part)
+{
+	CurPart = Part; 
 }

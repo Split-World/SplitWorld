@@ -2,6 +2,8 @@
 
 
 #include "ViewChanger.h" 
+
+#include "SplitWorldGameModeBase.h"
 #include "Components/BoxComponent.h" 
 
 AViewChanger::AViewChanger()
@@ -17,7 +19,12 @@ void AViewChanger::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	BoxComp->OnComponentBeginOverlap.AddDynamic(this, &AViewChanger::OnBoxBeginOverlap); 
+	BoxComp->OnComponentBeginOverlap.AddDynamic(this, &AViewChanger::OnBoxBeginOverlap);
+
+	if (HasAuthority())
+	{
+		GM = Cast<ASplitWorldGameModeBase>(GetWorld()->GetAuthGameMode()); 
+	}
 }
 
 void AViewChanger::Tick(float DeltaTime)
@@ -28,5 +35,8 @@ void AViewChanger::Tick(float DeltaTime)
 
 void AViewChanger::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 { 
-
+	if (HasAuthority())
+	{
+		GM->ChangeMapPart(ChangeView); 
+	} 
 }
