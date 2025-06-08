@@ -4,13 +4,15 @@
 #include "SplitWorldGameModeBase.h" 
 
 ASplitWorldGameModeBase::ASplitWorldGameModeBase()
-{
+{ 
+	PrimaryActorTick.bCanEverTick = true; 
+
 	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(
 		TEXT("/Script/Engine.Blueprint'/Game/JS_Folder/BluePrints/BP_SplitPlayer.BP_SplitPlayer_C'"));
 	if (PlayerPawnBPClass.Class != nullptr)
 	{
 		DefaultPawnClass = PlayerPawnBPClass.Class;
-	}
+	} 
 }
 
 AActor* ASplitWorldGameModeBase::ChoosePlayerStart_Implementation(AController* Player)
@@ -23,9 +25,26 @@ AActor* ASplitWorldGameModeBase::ChoosePlayerStart_Implementation(AController* P
 void ASplitWorldGameModeBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	if (InputGauge[0] + InputGauge[1] > 6.0f)
+	UE_LOG(LogTemp, Warning, TEXT("MapPart %s"), *UEnum::GetValueAsString(CurPart)); 
+	switch (CurPart)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Rotate Door Handle"));
-	}
+	case EMapPart::Part1:
+		if (bPlayer_Interactions[0] == 3)
+		{
+			ChangeMapPart(EMapPart::PartDoor); 
+		} 
+		break; 
+	case EMapPart::Part3: 
+		if (bPlayer_Interactions[2] == 3)
+		{
+			CurPart = EMapPart::Part4; 
+		}
+		break; 
+	} 
+}
+
+void ASplitWorldGameModeBase::ChangeMapPart(EMapPart Part)
+{
+	CurPart = Part; 
+	ChangePartDelegate.Broadcast();
 }

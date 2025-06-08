@@ -23,9 +23,7 @@ void ARaser::Tick(float DeltaTime)
 }
 
 void ARaser::Execute()
-{
-	GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, TEXT("Raser"));
-
+{ 
 	if (Player) 
 	{
 		Player->Die(); 

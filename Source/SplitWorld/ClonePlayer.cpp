@@ -7,7 +7,9 @@ AClonePlayer::AClonePlayer()
 { 
 	PrimaryActorTick.bCanEverTick = true;
 
-	bAlwaysRelevant = true;  
+	SetReplicates(true); 
+	SetReplicateMovement(true); 
+	bAlwaysRelevant = true; 
 }
 
 void AClonePlayer::BeginPlay()

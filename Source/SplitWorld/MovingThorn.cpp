@@ -22,16 +22,18 @@ void AMovingThorn::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (Idx)
-	{
-		BoxComp->SetCollisionProfileName(TEXT("MovingThorn")); 
-	}
+	
 }
 
 void AMovingThorn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (Idx && BoxComp->GetCollisionProfileName() != TEXT("Objects")) 
+	{
+		BoxComp->SetCollisionProfileName(TEXT("Objects"));
+	}
+	
 	SetActorLocation(GetActorLocation() + GetActorForwardVector() * Speed * DeltaTime); 
 }
 
@@ -47,7 +49,7 @@ void AMovingThorn::Execute()
 	GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, TEXT("MovingThron")); 
 	if (!Idx && Player)
 	{
-		Player->Die();
+		Player->Die(); 
 	}
 }
 

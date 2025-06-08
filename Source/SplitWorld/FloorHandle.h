@@ -3,18 +3,18 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h" 
 #include "InteractableActorBase.h"
-#include "DoorHandle.generated.h"
+#include "GameFramework/Actor.h"
+#include "FloorHandle.generated.h"
 
 UCLASS()
-class SPLITWORLD_API ADoorHandle : public AInteractableActorBase 
+class SPLITWORLD_API AFloorHandle : public AInteractableActorBase 
 {
 	GENERATED_BODY()
 	
-public: 
-	ADoorHandle(); 
-	virtual void BeginPlay() override; 
+public:	
+	AFloorHandle();
+	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void Interaction_Implementation() override; 
@@ -25,5 +25,4 @@ private:
 	
 	UPROPERTY()
 	class ASplitWorldGameModeBase* GM; 
-	
-}; 
+};
