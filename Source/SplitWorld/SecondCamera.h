@@ -4,24 +4,22 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Snake.generated.h"
+#include "SecondCamera.generated.h"
 
 UCLASS()
-class SPLITWORLD_API ASnake : public AActor
+class SPLITWORLD_API ASecondCamera : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
-	ASnake(); 
+	ASecondCamera(); 
 	virtual void BeginPlay() override; 
 	virtual void Tick(float DeltaTime) override;
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override; 
-
-	UPROPERTY(Replicated) 
-	bool bActive; 
 
 private: 
 	UPROPERTY(EditAnywhere)
-	class UStaticMeshComponent* Mesh; 
-	
+	class USpringArmComponent* SpringArmComp;
+	UPROPERTY(EditAnywhere)
+	class USceneCaptureComponent2D* CameraComp; 
+
 };

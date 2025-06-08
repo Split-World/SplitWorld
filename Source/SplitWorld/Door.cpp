@@ -26,13 +26,13 @@ void ADoor::BeginPlay()
 	{
 		GM = Cast<ASplitWorldGameModeBase>(GetWorld()->GetAuthGameMode());
 	} 
-}
+} 
 
 void ADoor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime); 
 	
-	if (!bActive && GM && GM->bPlayer_Interactions[0] == 3)
+	if (!bActive && GM && GM->CurPart == EMapPart::Part2)
 	{
 		bActive = true; 
 		Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision); 

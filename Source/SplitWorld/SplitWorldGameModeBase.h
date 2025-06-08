@@ -4,15 +4,19 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
-#include "SplitWorldGameModeBase.generated.h"
+#include "SplitWorldGameModeBase.generated.h" 
 
-UENUM()
+DECLARE_MULTICAST_DELEGATE(FChangePart) 
+
+UENUM(BlueprintType)
 enum class EMapPart : uint8
 { 
-	Part1,
+	Part1, 
+	PartDoor, 
 	Part2,
 	Part2_5,
-	Part3,
+	Part3, 
+	Part3_5, 
 	Part4 
 };
 
@@ -29,12 +33,15 @@ public:
 	void ChangeMapPart(EMapPart Part); 
 	
 	UPROPERTY() 
-	TArray<class AController*> Players;
+	TArray<class AController*> Players; 
 
-	int bPlayer_Interactions[3];
+	bool Player1_MoveCheck[4]; 
+	bool Player2_MoveCheck[4]; 
 
-	FVector2D PlayerScreenLocation[2]; 
+	int bPlayer_Interactions[4]; 
 
-	EMapPart CurPart; 
+	EMapPart CurPart = EMapPart::Part1; 
+
+	FChangePart ChangePartDelegate; 
 
 };

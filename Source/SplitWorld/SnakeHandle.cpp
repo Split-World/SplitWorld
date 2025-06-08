@@ -36,6 +36,7 @@ void ASnakeHandle::Tick(float DeltaTime)
 
 void ASnakeHandle::Interaction_Implementation()
 {
+	GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, FString::Printf(TEXT("Active"))); 
 	if (!bActive && !(GM->bPlayer_Interactions[1] & 1))
 	{
 		bActive = true;
@@ -43,6 +44,8 @@ void ASnakeHandle::Interaction_Implementation()
 		{
 			Snake->bActive = true; 
 		} 
+
+		GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, FString::Printf(TEXT("Active"))); 
 		
 		GetWorldTimerManager().SetTimer(ActiveTimerHandle, [&]()
 		{

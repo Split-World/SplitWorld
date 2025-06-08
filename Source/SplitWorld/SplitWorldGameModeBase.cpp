@@ -4,13 +4,15 @@
 #include "SplitWorldGameModeBase.h" 
 
 ASplitWorldGameModeBase::ASplitWorldGameModeBase()
-{
+{ 
+	PrimaryActorTick.bCanEverTick = true; 
+
 	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(
 		TEXT("/Script/Engine.Blueprint'/Game/JS_Folder/BluePrints/BP_SplitPlayer.BP_SplitPlayer_C'"));
 	if (PlayerPawnBPClass.Class != nullptr)
 	{
 		DefaultPawnClass = PlayerPawnBPClass.Class;
-	}
+	} 
 }
 
 AActor* ASplitWorldGameModeBase::ChoosePlayerStart_Implementation(AController* Player)
@@ -23,19 +25,19 @@ AActor* ASplitWorldGameModeBase::ChoosePlayerStart_Implementation(AController* P
 void ASplitWorldGameModeBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	UE_LOG(LogTemp, Warning, TEXT("MapPart %s"), *UEnum::GetValueAsString(CurPart)); 
 	switch (CurPart)
 	{
 	case EMapPart::Part1:
 		if (bPlayer_Interactions[0] == 3)
 		{
-			CurPart = EMapPart::Part2; 
+			ChangeMapPart(EMapPart::PartDoor); 
 		} 
 		break; 
 	case EMapPart::Part3: 
 		if (bPlayer_Interactions[2] == 3)
 		{
-			CurPart = EMapPart::Part2; 
+			CurPart = EMapPart::Part4; 
 		}
 		break; 
 	} 
@@ -44,4 +46,5 @@ void ASplitWorldGameModeBase::Tick(float DeltaTime)
 void ASplitWorldGameModeBase::ChangeMapPart(EMapPart Part)
 {
 	CurPart = Part; 
+	ChangePartDelegate.Broadcast();
 }

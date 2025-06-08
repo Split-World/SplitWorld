@@ -3,7 +3,7 @@
 
 #include "MovingFloor.h"
 #include "SplitWorldGameModeBase.h" 
-#include "Net/UnrealNetwork.h"
+#include "Net/UnrealNetwork.h" 
 
 AMovingFloor::AMovingFloor()
 {
@@ -35,13 +35,13 @@ void AMovingFloor::Tick(float DeltaTime)
 
 	if (GM && GM->bPlayer_Interactions[2] == 3 && MoveDistance < 0.0f)
 	{
-		SetActorLocation(GetActorLocation() + GetActorForwardVector() * 1750.0f * DeltaTime);
+		SetActorLocation(GetActorLocation() + GetActorForwardVector() * 3500.0f * DeltaTime); 
 		for (auto handle : Handles)
 		{
-			handle->SetActorLocation(handle->GetActorLocation() + GetActorForwardVector() * 1750.0f * DeltaTime); 
+			handle->SetActorLocation(handle->GetActorLocation() + GetActorForwardVector() * 3500.0f * DeltaTime); 
 		}
 
-		MoveDistance -= 1750.0f * DeltaTime; 
+		MoveDistance -= 3500.0f * DeltaTime; 
 	}
 }
 

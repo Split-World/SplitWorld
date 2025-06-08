@@ -133,4 +133,5 @@ public:
 
 	UFUNCTION(Server, Reliable)
 	void Interact(class AInteractableActorBase* Actor); 
+
 };

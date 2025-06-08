@@ -11,8 +11,7 @@ ASnake::ASnake()
 
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	SetRootComponent(Mesh);
-	Mesh->SetCollisionProfileName(TEXT("Snake"));
-	Mesh->SetIsReplicated(true);
+	Mesh->SetCollisionProfileName(TEXT("Snake")); 
 
 	SetReplicates(true); 
 	bAlwaysRelevant = true; 

@@ -37,6 +37,9 @@ void AViewChanger::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, A
 { 
 	if (HasAuthority())
 	{
-		GM->ChangeMapPart(ChangeView); 
+		if (int(GM->CurPart) == int(ChangeView) - 1)
+		{ 
+			GM->ChangeMapPart(ChangeView);
+		} 
 	} 
 }

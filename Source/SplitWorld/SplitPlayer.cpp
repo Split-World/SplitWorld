@@ -126,7 +126,7 @@ void ASplitPlayer::Tick(float DeltaTime)
 
 	if (ClonePlayer && IsLocallyControlled())
 	{ 
-		ClonePlayer->SetActorLocation((HasAuthority() ? CloneDist : -CloneDist) + GetActorLocation());
+		CloneLocation((HasAuthority() ? CloneDist : -CloneDist) + GetActorLocation());
 	}
 	
 	if (!GetCharacterMovement()->IsFalling())
@@ -440,7 +440,7 @@ FVector ASplitPlayer::MoveVectorLeftward(FVector InVector, FRotator InRotation, 
 FRotator ASplitPlayer::ReveseNormal(FVector InNormal)
 {
 	return UKismetMathLibrary::NormalizedDeltaRotator(UKismetMathLibrary::MakeRotFromX(InNormal),FRotator(0.f ,0.f ,180.f));
-}
+} 
 
 void ASplitPlayer::CloneLocation_Implementation(FVector Location)
 {
@@ -454,7 +454,7 @@ void ASplitPlayer::SpawnClone_Implementation(FVector PlayerStart, FVector Locati
 	
 	SetActorLocation(PlayerStart);
 
-	ClonePlayer = GetWorld()-> SpawnActor<AClonePlayer>(ClonePlayerFactory, SpawnTransform);
+	ClonePlayer = GetWorld()-> SpawnActor<AClonePlayer>(ClonePlayerFactory, CloneSpawnTransform);
 }
 
 void ASplitPlayer::Interact_Implementation(AInteractableActorBase* Actor)
