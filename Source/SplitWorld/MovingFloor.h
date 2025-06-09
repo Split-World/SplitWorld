@@ -23,11 +23,17 @@ public:
 	UPROPERTY()
 	class ASplitWorldGameModeBase* GM;
 
+
 private:
+	UPROPERTY(EditAnywhere)
+	AActor* OtherFloor; 
 	UPROPERTY(EditAnywhere)
 	TArray<class AActor*> Handles;
 
 	UPROPERTY(Replicated)
 	float MoveDistance = 7000.0f;
+
+	UPROPERTY(EditAnywhere)
+	int Idx; 
 	
 };

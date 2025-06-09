@@ -52,7 +52,7 @@ void AFishHandle::Interaction_Implementation()
 				{
 					bLaunched = false;
 					GM->bPlayer_Interactions[1] &= ~1; 
-				}, 0.75f, false); 
+				}, 4.5f, false); 
 			}, 0.25f, false); 
 		}, 0.25f, false); 
 	}

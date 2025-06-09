@@ -31,7 +31,7 @@ void AMovingThornSpawner::Tick(float DeltaTime)
 void AMovingThornSpawner::SpawnMovingThorn()
 { 
 	FTransform t = GetActorTransform(); 
-	t.SetScale3D(FVector(3.0f, 3.0f, 1.0f)); 
+	t.SetScale3D(FVector(4.0f, 4.0f, 1.0f)); 
 	GetWorld()->SpawnActor<AMovingThorn>(MovingThornFactory, t); 
 	t.SetLocation(t.GetLocation() + SpawnOffset);
 	auto P2 = GetWorld()->SpawnActor<AMovingThorn>(MovingThornFactory, t); 
@@ -40,5 +40,5 @@ void AMovingThornSpawner::SpawnMovingThorn()
 	GetWorldTimerManager().SetTimer(SpawnTimerHandle, [&]()
 	{
 		SpawnMovingThorn();
-	}, FMath::RandRange(4.0f, 7.0f), false);
+	}, FMath::RandRange(4.0f, 6.5f), false);
 }
