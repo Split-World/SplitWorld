@@ -176,7 +176,8 @@ void ASplitPlayer::Tick(float DeltaTime)
 	}
 	if (bAdjustAnimaition)
 	{
-		SetActorLocation(GetActorLocation() + GetActorUpVector() * GetWorld()->GetDeltaSeconds() * 1333.788f);
+		SetActorLocation(GetActorLocation() + GetActorUpVector() * GetWorld()->GetDeltaSeconds() * 700.f);
+		SetActorLocation(GetActorLocation() + GetActorForwardVector() * GetWorld()->GetDeltaSeconds() * 100.f);
 	}
 }
 

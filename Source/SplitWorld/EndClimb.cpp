@@ -25,5 +25,8 @@ void UEndClimb::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* A
 {
 	Super::NotifyEnd(MeshComp, Animation);
 
-	player->bAdjustAnimaition = false;
+	if (player)
+	{
+		player->bAdjustAnimaition = false;
+	}
 }
