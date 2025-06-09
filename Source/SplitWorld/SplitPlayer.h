@@ -3,7 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Character.h"
+#include "SplitWorldGameModeBase.h" 
+#include "GameFramework/Character.h" 
 #include "SplitPlayer.generated.h"
 
 struct FInputActionValue;
@@ -125,8 +126,26 @@ public:
 	FVector CloneDist;
 
 	UFUNCTION(Server, Reliable)
-	void CloneLocation(FVector Location);
+
+	void CloneLocation(FVector Location); 
 	
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AClonePlayer> ClonePlayerFactory;
+
+	UFUNCTION(Server, Reliable)
+	void Interact(class AInteractableActorBase* Actor);
+
+	UPROPERTY() 
+	class ASplitWorldGameModeBase* GM; 
+
+	UPROPERTY(EditAnywhere)
+	TArray<FVector> Forwards; 
+	UPROPERTY(EditAnywhere)
+	TArray<FVector> Rights;
+
+	UPROPERTY(Replicated)
+	int CurPart = 0;
+
+	void ChangePart(); 
+	
 };

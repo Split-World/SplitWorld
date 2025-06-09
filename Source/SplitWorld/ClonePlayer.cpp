@@ -7,7 +7,9 @@ AClonePlayer::AClonePlayer()
 { 
 	PrimaryActorTick.bCanEverTick = true;
 
-	bAlwaysRelevant = true;  
+	SetReplicates(true); 
+	SetReplicateMovement(true); 
+	bAlwaysRelevant = true; 
 }
 
 void AClonePlayer::BeginPlay()
@@ -16,7 +18,7 @@ void AClonePlayer::BeginPlay()
 	
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
-	bUseControllerRotationRoll = false;
+	bUseControllerRotationRoll = false; 
 }
 
 void AClonePlayer::Tick(float DeltaTime)
@@ -24,4 +26,3 @@ void AClonePlayer::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
-

@@ -9,11 +9,13 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "Interactable.h"
+#include "InteractableActorBase.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Net/UnrealNetwork.h"
+#include "SplitWorldGameModeBase.h" 
 
 // Sets default values
 ASplitPlayer::ASplitPlayer()
@@ -101,7 +103,13 @@ void ASplitPlayer::BeginPlay()
 
 	if (IsLocallyControlled())
 	{
-		
+		SpawnClone(HasAuthority() ? Player1Start : Player2Start, HasAuthority() ? CloneDist : -CloneDist);
+	}
+
+	if (HasAuthority())
+	{
+		GM = Cast<ASplitWorldGameModeBase>(GetWorld()->GetAuthGameMode());
+		GM->ChangePartDelegate.AddLambda([&](){ ChangePart(); }); 
 	}
 }
 
@@ -123,9 +131,9 @@ void ASplitPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (IsLocallyControlled())
-	{
-		ClonePlayer->SetActorLocation((HasAuthority() ? CloneDist : -CloneDist) + GetActorLocation());
+	if (ClonePlayer && IsLocallyControlled())
+	{ 
+		CloneLocation((HasAuthority() ? CloneDist : -CloneDist) + GetActorLocation());
 	}
 	
 	if (!GetCharacterMovement()->IsFalling())
@@ -135,6 +143,8 @@ void ASplitPlayer::Tick(float DeltaTime)
 		bFailClimb = false;
 		bClimb = false;
 		bTraversal = false;
+		bCanDash = true;
+		bDashing = false;
 		GetCharacterMovement()->GravityScale = 1.0f;
 	}
 	else
@@ -195,7 +205,8 @@ void ASplitPlayer::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(ASplitPlayer, ClonePlayer);
+	DOREPLIFETIME(ASplitPlayer, ClonePlayer); 
+	DOREPLIFETIME(ASplitPlayer, CurPart); 
 }
 
 void ASplitPlayer::MoveAction(const FInputActionValue& Value)
@@ -204,9 +215,9 @@ void ASplitPlayer::MoveAction(const FInputActionValue& Value)
 	if (bDashing) return;
 	bTryClimb = true;
 
-	FVector2D tempDir = Value.Get<FVector2D>();
-	Dir.X = tempDir.X;
-	Dir.Y = tempDir.Y;
+	FVector2D v = Value.Get<FVector2D>();
+	Dir += Forwards[CurPart] * v.X;
+	Dir += Rights[CurPart] * v.Y; 
 	
 	FRotator rot = GetControlRotation();
 	if (GetCharacterMovement()->IsFalling())
@@ -215,12 +226,14 @@ void ASplitPlayer::MoveAction(const FInputActionValue& Value)
 		// AddMovementInput(UKismetMathLibrary::GetRightVector(FRotator(rot.Roll, 0,rot.Yaw)), Value.Get<FVector>().X, false);
 		// AddMovementInput(UKismetMathLibrary::GetForwardVector(FRotator(0, 0,rot.Yaw)), Value.Get<FVector>().Y, false);
 	}
-	else
+	else 
 	{
 		AddMovementInput(Dir);
 		// AddMovementInput(UKismetMathLibrary::GetRightVector(FRotator(rot.Roll, 0,rot.Yaw)), Value.Get<FVector>().X, false);
 		// AddMovementInput(UKismetMathLibrary::GetForwardVector(FRotator(0, 0,rot.Yaw)), Value.Get<FVector>().Y, false);
 	}
+
+	Dir = FVector(0); 
 }
 
 void ASplitPlayer::MoveCancle(const FInputActionValue& Value)
@@ -234,14 +247,12 @@ void ASplitPlayer::JumpAction(const FInputActionValue& Value)
 	if (!bJumping)
 	{
 		Jump();
-		
 		JumpDir = Dir;
 		bJumping = true;
 	}
 	else if (!bDoubleJumping)
 	{
 		Jump();
-
 		JumpDir = Dir;
 		bDoubleJumping = true;
 	}
@@ -277,10 +288,10 @@ void ASplitPlayer::InteractAction(const FInputActionValue& Value)
 
 	if (bHit)
 	{
-		auto II = Cast<IInteractable>(OutHit.GetActor());
-		if (II)
+		auto II = Cast<AInteractableActorBase>(OutHit.GetActor()); 
+		if (II && ((!II->Idx && HasAuthority()) || (II->Idx && !HasAuthority())))
 		{
-			//II->Interactive();
+			Interact(II); 
 		}
 	}
 }
@@ -315,7 +326,7 @@ void ASplitPlayer::RunAction(const FInputActionValue& Value)
 }
 
 void ASplitPlayer::Die()
-{
+{ 
 	SetActorTransform(SpawnTransform);
 }
 
@@ -453,7 +464,15 @@ void ASplitPlayer::SpawnClone_Implementation(FVector PlayerStart, FVector Locati
 	
 	SetActorLocation(PlayerStart);
 
-	ClonePlayer = GetWorld()-> SpawnActor<AClonePlayer>(ClonePlayerFactory, SpawnTransform);
+	ClonePlayer = GetWorld()-> SpawnActor<AClonePlayer>(ClonePlayerFactory, CloneSpawnTransform);
 }
 
+void ASplitPlayer::Interact_Implementation(AInteractableActorBase* Actor)
+{
+	IInteractable::Execute_Interaction(Actor); 
+} 
 
+void ASplitPlayer::ChangePart()
+{ 
+	CurPart = int(GM->CurPart); 
+}

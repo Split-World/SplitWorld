@@ -4,11 +4,22 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
-#include "SplitWorldGameModeBase.generated.h"
+#include "SplitWorldGameModeBase.generated.h" 
 
-/**
- * 
- */
+DECLARE_MULTICAST_DELEGATE(FChangePart) 
+
+UENUM(BlueprintType)
+enum class EMapPart : uint8
+{ 
+	Part1, 
+	PartDoor, 
+	Part2,
+	Part2_5,
+	Part3, 
+	Part3_5, 
+	Part4 
+};
+
 UCLASS()
 class SPLITWORLD_API ASplitWorldGameModeBase : public AGameModeBase
 {
@@ -17,8 +28,20 @@ class SPLITWORLD_API ASplitWorldGameModeBase : public AGameModeBase
 public:
 	ASplitWorldGameModeBase();
 	virtual AActor* ChoosePlayerStart_Implementation(AController* Player) override; 
+	virtual void Tick(float DeltaTime) override; 
 
-	UPROPERTY() 
-	TArray<class AController*> Players;
+	void ChangeMapPart(EMapPart Part); 
 	
+	UPROPERTY() 
+	TArray<class AController*> Players; 
+
+	bool Player1_MoveCheck[4]; 
+	bool Player2_MoveCheck[4]; 
+
+	int bPlayer_Interactions[4]; 
+
+	EMapPart CurPart = EMapPart::Part1; 
+
+	FChangePart ChangePartDelegate; 
+
 };
