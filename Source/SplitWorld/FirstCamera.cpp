@@ -61,7 +61,7 @@ void AFirstCamera::BeginPlay()
 void AFirstCamera::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime); 
-	if (IsValid(Player1) && IsValid(Player2)) 
+	if (IsValid(Player1) && IsValid(Player2_Clone)) 
 	{
 		if (HasAuthority())
 		{ 
@@ -87,13 +87,14 @@ void AFirstCamera::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLi
 	DOREPLIFETIME(AFirstCamera, SecondCamera); 
 	DOREPLIFETIME(AFirstCamera, Player1); 
 	DOREPLIFETIME(AFirstCamera, Player2); 
+	DOREPLIFETIME(AFirstCamera, Player2_Clone); 
 	DOREPLIFETIME(AFirstCamera, ScreenAvgPos); 
 }
 
 void AFirstCamera::UpdateMask(float DeltaTime)
 {
 	FVector P1 = Player1->GetActorLocation();
-	FVector P2 = Player2->GetActorLocation();
+	FVector P2 = Player2_Clone->GetActorLocation();
 	FVector Dist = P1 - P2; 
 	FVector AvgPos = Dist * 0.5f + P2; 
 
@@ -131,7 +132,8 @@ void AFirstCamera::FindPlayers()
 	} 
 	
 	Player1 = P1; 
-	Player2 = P2->ClonePlayer; 
+	Player2 = P2; 
+	Player2_Clone = P2->ClonePlayer; 
 } 
 
 void AFirstCamera::CalcPlayerScreenLocation()
@@ -149,12 +151,12 @@ void AFirstCamera::CalcPlayerScreenLocation()
 	float py = vy / z; 
 	PlayerScreenLocation[0] = FVector2D(px, py); 
 	
-	GM->Player1_MoveCheck[0] = px < 0.9f; 
-	GM->Player1_MoveCheck[1] = px > -0.9f; 
-	GM->Player1_MoveCheck[2] = py < 0.45f; 
-	GM->Player1_MoveCheck[3] = py > -0.45f; 
+	Player1->MoveCheck.X = int(px < 0.9f); 
+	Player1->MoveCheck.Y = int(px > -0.9f); 
+	Player1->MoveCheck.Z = int(py < 0.45f);  
+	Player1->MoveCheck.W = int(py > -0.45f); 
 
-	pp = Player2->GetActorLocation(); 
+	pp = Player2_Clone->GetActorLocation(); 
 	z = f.Dot(pp - pos);
 	vx = r.Dot(pp - pos);
 	vy = u.Dot(pp - pos);
@@ -162,10 +164,10 @@ void AFirstCamera::CalcPlayerScreenLocation()
 	py = vy / z;
 	PlayerScreenLocation[1] = FVector2D(px, py); 
 
-	GM->Player2_MoveCheck[0] = px < 0.9f;
-	GM->Player2_MoveCheck[1] = px > -0.9f;
-	GM->Player2_MoveCheck[2] = py < 0.45f;
-	GM->Player2_MoveCheck[3] = py > -0.45f; 
+	Player2->MoveCheck.X = int(px < 0.9f);
+	Player2->MoveCheck.Y = int(px > -0.9f);
+	Player2->MoveCheck.Z = int(py < 0.45f);
+	Player2->MoveCheck.W = int(py > -0.45f);
 } 
 
 void AFirstCamera::SetCameraLocation(float DeltaTime)

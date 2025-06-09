@@ -33,10 +33,7 @@ public:
 	void ChangeMapPart(EMapPart Part); 
 	
 	UPROPERTY() 
-	TArray<class AController*> Players; 
-
-	bool Player1_MoveCheck[4]; 
-	bool Player2_MoveCheck[4]; 
+	TArray<class AController*> Player; 
 
 	int bPlayer_Interactions[4]; 
 

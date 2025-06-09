@@ -3,24 +3,22 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "GameFramework/Actor.h" 
+#include "Trap.h" 
 #include "FireLaser.generated.h"
 
 UCLASS()
-class SPLITWORLD_API AFireLaser : public AActor
+class SPLITWORLD_API AFireLaser : public ATrap
 {
 	GENERATED_BODY()
 	
-public:	
-	// Sets default values for this actor's properties
-	AFireLaser();
-
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
+public: 
+	AFireLaser(); 
+	virtual void BeginPlay() override; 
 	virtual void Tick(float DeltaTime) override;
+
+	virtual void Execute() override; 
+
+	void Fire(); 
 
 };

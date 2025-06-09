@@ -147,5 +147,10 @@ public:
 	int CurPart = 0;
 
 	void ChangePart(); 
+
+	UPROPERTY(Replicated) 
+	FVector4 MoveCheck; 
+
+	void ConveyorBeltCheck(float DeltaTime);
 	
 };

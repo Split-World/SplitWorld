@@ -24,8 +24,8 @@ AActor* ASplitWorldGameModeBase::ChoosePlayerStart_Implementation(AController* P
 
 void ASplitWorldGameModeBase::Tick(float DeltaTime)
 {
-	Super::Tick(DeltaTime);
-	UE_LOG(LogTemp, Warning, TEXT("MapPart %s"), *UEnum::GetValueAsString(CurPart)); 
+	Super::Tick(DeltaTime); 
+
 	switch (CurPart)
 	{
 	case EMapPart::Part1:

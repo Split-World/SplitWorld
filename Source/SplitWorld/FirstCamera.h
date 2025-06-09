@@ -68,9 +68,12 @@ private:
 	class ASplitWorldGameModeBase* GM; 
 	
 	UPROPERTY(EditAnywhere, Replicated)
-	class APawn* Player1;
+	class ASplitPlayer* Player1; 
 	UPROPERTY(EditAnywhere, Replicated)
-	class APawn* Player2; 
+	class ASplitPlayer* Player2; 
+	UPROPERTY(EditAnywhere, Replicated)
+	class APawn* Player2_Clone; 
+
 	
 private: 
 	UPROPERTY(EditAnywhere) 

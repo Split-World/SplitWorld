@@ -12,7 +12,7 @@ AMovingFloor::AMovingFloor()
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	SetRootComponent(Mesh);
 	Mesh->SetCollisionProfileName(TEXT("Objects"));
-	Mesh->SetIsReplicated(true);
+	Mesh->SetIsReplicated(true); 
 
 	SetReplicates(true); 
 	SetReplicateMovement(true); 

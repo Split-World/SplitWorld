@@ -13,8 +13,14 @@ ATrap::ATrap()
 
 	BoxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComp")); 
 	SetRootComponent(BoxComp);
-	BoxComp->SetBoxExtent(FVector(50.0f));
+	BoxComp->SetBoxExtent(FVector(50.0f)); 
+	BoxComp->SetCollisionProfileName(TEXT("Trap")); 
 	BoxComp->SetIsReplicated(true); 
+
+	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp")); 
+	MeshComp->SetupAttachment(BoxComp); 
+	MeshComp->SetCollisionProfileName(TEXT("NoCollision"));  
+	MeshComp->SetIsReplicated(true); 
 }
 
 void ATrap::BeginPlay()
