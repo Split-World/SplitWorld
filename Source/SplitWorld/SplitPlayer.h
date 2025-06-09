@@ -78,23 +78,33 @@ public:
 	UFUNCTION()
 	void Die();
 
+	UPROPERTY(Replicated)
 	bool bJumping = false;
+	UPROPERTY(Replicated)
 	bool bDoubleJumping = false;
 	float JumpSpeed = 0.0f;
 	FVector JumpDir;
 	FVector Dir;
 	
+	UPROPERTY(Replicated)
 	bool bClimb = false;
-	bool bCanClimb = false;
-	bool bTryClimb = false;
+	UPROPERTY(Replicated)
 	bool bFailClimb = false;
+	UPROPERTY(Replicated)
+	bool bTryClimb = false;
+	UPROPERTY(Replicated)
 	bool bTryCanClimb = false;
+	UPROPERTY(Replicated)
 	bool bTraversal = false;
+	UPROPERTY(Replicated)
 	bool bAdjustAnimaition = false;
 
+	UPROPERTY(Replicated)
 	bool bDashing = false;
+	UPROPERTY(Replicated)
 	bool bCanDash = false;
 
+	UPROPERTY(Replicated)
 	bool bRunning = false;
 	
 	bool DetectWall(FHitResult& Out_Hit, FVector& HitLocation, FVector& Normal, int& index);

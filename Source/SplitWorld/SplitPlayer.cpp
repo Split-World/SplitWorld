@@ -130,11 +130,13 @@ void ASplitPlayer::NotifyControllerChanged()
 void ASplitPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	
 	if (ClonePlayer && IsLocallyControlled())
 	{ 
 		CloneLocation((HasAuthority() ? CloneDist : -CloneDist) + GetActorLocation());
 	}
+	
+	if (!HasAuthority()) return;
 	
 	if (!GetCharacterMovement()->IsFalling())
 	{
@@ -153,8 +155,8 @@ void ASplitPlayer::Tick(float DeltaTime)
 		FVector HitLocation;
 		FVector Normal;
 		int index;
-
-		if (bTryClimb && bCanClimb && !bFailClimb && !bTraversal) bTryCanClimb = DetectWall(OutHit, HitLocation, Normal, index);
+		
+		if (bTryClimb && !bFailClimb && !bTraversal) bTryCanClimb = DetectWall(OutHit, HitLocation, Normal, index);
 		
 		if (bTryCanClimb)
 		{
@@ -205,9 +207,24 @@ void ASplitPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 void ASplitPlayer::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
+	
+	DOREPLIFETIME(ASplitPlayer, bJumping);
+	DOREPLIFETIME(ASplitPlayer, bDoubleJumping);
+	
+	DOREPLIFETIME(ASplitPlayer, bClimb);
+	DOREPLIFETIME(ASplitPlayer, bFailClimb);
+	DOREPLIFETIME(ASplitPlayer, bTryClimb);
+	DOREPLIFETIME(ASplitPlayer, bTryCanClimb);
+	DOREPLIFETIME(ASplitPlayer, bTraversal);
+	DOREPLIFETIME(ASplitPlayer, bAdjustAnimaition);
+	
+	DOREPLIFETIME(ASplitPlayer, bDashing);
+	DOREPLIFETIME(ASplitPlayer, bCanDash);
+	
+	DOREPLIFETIME(ASplitPlayer, bRunning);
+	
 	DOREPLIFETIME(ASplitPlayer, ClonePlayer); 
-	DOREPLIFETIME(ASplitPlayer, CurPart); 
+	DOREPLIFETIME(ASplitPlayer, CurPart);
 }
 
 void ASplitPlayer::MoveAction(const FInputActionValue& Value)
@@ -244,7 +261,6 @@ void ASplitPlayer::MoveCancle(const FInputActionValue& Value)
 
 void ASplitPlayer::JumpAction(const FInputActionValue& Value)
 {
-	bCanClimb = true;
 	if (!bJumping)
 	{
 		Jump();
@@ -257,11 +273,6 @@ void ASplitPlayer::JumpAction(const FInputActionValue& Value)
 		JumpDir = Dir;
 		bDoubleJumping = true;
 	}
-}
-
-void ASplitPlayer::JumpCancle(const FInputActionValue& Value)
-{
-	bCanClimb = false;
 }
 
 void ASplitPlayer::InteractAction(const FInputActionValue& Value)
