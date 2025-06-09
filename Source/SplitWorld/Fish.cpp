@@ -41,7 +41,7 @@ void AFish::Tick(float DeltaTime)
 
 	if (bLaunched)
 	{
-		SetActorLocation(GetActorLocation() + GetActorForwardVector() * 500.0f * DeltaTime); 
+		SetActorLocation(GetActorLocation() + GetActorForwardVector() * 400.0f * DeltaTime); 
 	} 
 }
 
@@ -54,7 +54,8 @@ void AFish::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePro
 
 void AFish::Launch()
 {
-	bLaunched = true; 
+	bLaunched = true;
+	GM->bPlayer_Interactions[1] &= ~4;  
 }
 
 void AFish::OnMeshBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -74,7 +75,8 @@ void AFish::UpdateSuccess_Implementation(bool bActive)
 	}
 	else
 	{
-		SetActorLocation(StartLocation); 
+		SetActorLocation(StartLocation);
+		GM->bPlayer_Interactions[1] |= 4;
 	}
 	
 	bLaunched = false; 

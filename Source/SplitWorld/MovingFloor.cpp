@@ -23,7 +23,7 @@ void AMovingFloor::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	if (HasAuthority())
+	if (Idx && HasAuthority())
 	{
 		GM = Cast<ASplitWorldGameModeBase>(GetWorld()->GetAuthGameMode());
 	} 
@@ -33,12 +33,14 @@ void AMovingFloor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (GM && GM->bPlayer_Interactions[2] == 3 && MoveDistance < 0.0f)
+	if (Idx && GM && GM->bPlayer_Interactions[2] == 3 && MoveDistance > 0.0f)
 	{
-		SetActorLocation(GetActorLocation() + GetActorForwardVector() * 3500.0f * DeltaTime); 
+		FVector Dir = GetActorForwardVector() * -3500.0f * DeltaTime; 
+		SetActorLocation(GetActorLocation() + Dir); 
+		OtherFloor->SetActorLocation(OtherFloor->GetActorLocation() + Dir); 
 		for (auto handle : Handles)
 		{
-			handle->SetActorLocation(handle->GetActorLocation() + GetActorForwardVector() * 3500.0f * DeltaTime); 
+			handle->SetActorLocation(handle->GetActorLocation() + Dir); 
 		}
 
 		MoveDistance -= 3500.0f * DeltaTime; 

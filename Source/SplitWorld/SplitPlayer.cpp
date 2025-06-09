@@ -15,6 +15,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Net/UnrealNetwork.h"
+#include "SplitWorldGameModeBase.h" 
 
 // Sets default values
 ASplitPlayer::ASplitPlayer()
@@ -103,6 +104,12 @@ void ASplitPlayer::BeginPlay()
 	if (IsLocallyControlled())
 	{
 		SpawnClone(HasAuthority() ? Player1Start : Player2Start, HasAuthority() ? CloneDist : -CloneDist);
+	}
+
+	if (HasAuthority())
+	{
+		GM = Cast<ASplitWorldGameModeBase>(GetWorld()->GetAuthGameMode());
+		GM->ChangePartDelegate.AddLambda([&](){ ChangePart(); }); 
 	}
 }
 
@@ -198,7 +205,8 @@ void ASplitPlayer::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(ASplitPlayer, ClonePlayer);
+	DOREPLIFETIME(ASplitPlayer, ClonePlayer); 
+	DOREPLIFETIME(ASplitPlayer, CurPart); 
 }
 
 void ASplitPlayer::MoveAction(const FInputActionValue& Value)
@@ -207,9 +215,9 @@ void ASplitPlayer::MoveAction(const FInputActionValue& Value)
 	if (bDashing) return;
 	bTryClimb = true;
 
-	FVector2D tempDir = Value.Get<FVector2D>();
-	Dir.X = tempDir.X;
-	Dir.Y = tempDir.Y;
+	FVector2D v = Value.Get<FVector2D>();
+	Dir += Forwards[CurPart] * v.X;
+	Dir += Rights[CurPart] * v.Y; 
 	
 	FRotator rot = GetControlRotation();
 	if (GetCharacterMovement()->IsFalling())
@@ -218,12 +226,14 @@ void ASplitPlayer::MoveAction(const FInputActionValue& Value)
 		// AddMovementInput(UKismetMathLibrary::GetRightVector(FRotator(rot.Roll, 0,rot.Yaw)), Value.Get<FVector>().X, false);
 		// AddMovementInput(UKismetMathLibrary::GetForwardVector(FRotator(0, 0,rot.Yaw)), Value.Get<FVector>().Y, false);
 	}
-	else
+	else 
 	{
 		AddMovementInput(Dir);
 		// AddMovementInput(UKismetMathLibrary::GetRightVector(FRotator(rot.Roll, 0,rot.Yaw)), Value.Get<FVector>().X, false);
 		// AddMovementInput(UKismetMathLibrary::GetForwardVector(FRotator(0, 0,rot.Yaw)), Value.Get<FVector>().Y, false);
 	}
+
+	Dir = FVector(0); 
 }
 
 void ASplitPlayer::MoveCancle(const FInputActionValue& Value)
@@ -440,7 +450,7 @@ FVector ASplitPlayer::MoveVectorLeftward(FVector InVector, FRotator InRotation, 
 FRotator ASplitPlayer::ReveseNormal(FVector InNormal)
 {
 	return UKismetMathLibrary::NormalizedDeltaRotator(UKismetMathLibrary::MakeRotFromX(InNormal),FRotator(0.f ,0.f ,180.f));
-} 
+}
 
 void ASplitPlayer::CloneLocation_Implementation(FVector Location)
 {
@@ -461,3 +471,8 @@ void ASplitPlayer::Interact_Implementation(AInteractableActorBase* Actor)
 {
 	IInteractable::Execute_Interaction(Actor); 
 } 
+
+void ASplitPlayer::ChangePart()
+{ 
+	CurPart = int(GM->CurPart); 
+}
