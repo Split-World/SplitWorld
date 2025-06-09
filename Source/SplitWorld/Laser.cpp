@@ -1,28 +1,28 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Raser.h" 
+#include "Laser.h" 
 #include "SplitPlayer.h"
 
-ARaser::ARaser()
+ALaser::ALaser()
 { 
 	PrimaryActorTick.bCanEverTick = true;
 
 }
 
-void ARaser::BeginPlay()
+void ALaser::BeginPlay()
 {
 	Super::BeginPlay();
 	
 }
 
-void ARaser::Tick(float DeltaTime)
+void ALaser::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 }
 
-void ARaser::Execute()
+void ALaser::Execute()
 { 
 	if (Player) 
 	{

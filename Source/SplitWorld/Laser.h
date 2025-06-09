@@ -5,15 +5,15 @@
 #include "CoreMinimal.h"
 #include "Trap.h"
 #include "GameFramework/Actor.h"
-#include "Raser.generated.h"
+#include "Laser.generated.h"
 
 UCLASS()
-class SPLITWORLD_API ARaser : public ATrap
+class SPLITWORLD_API ALaser : public ATrap
 {
 	GENERATED_BODY()
 	
 public:	
-	ARaser(); 
+	ALaser(); 
 	virtual void BeginPlay() override; 
 	virtual void Tick(float DeltaTime) override;
 
