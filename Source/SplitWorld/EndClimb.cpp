@@ -13,7 +13,7 @@ void UEndClimb::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase*
 	
 	player = Cast<ASplitPlayer>(MeshComp->GetOwner());
 
-	if (player)
+	if (IsValid(player))
 	{
 		player->GetCharacterMovement()->GravityScale = 1.0f;
 		player->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::Type::QueryAndPhysics);
@@ -25,7 +25,7 @@ void UEndClimb::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* A
 {
 	Super::NotifyEnd(MeshComp, Animation);
 
-	if (player)
+	if (IsValid(player))
 	{
 		player->bAdjustAnimaition = false;
 	}
