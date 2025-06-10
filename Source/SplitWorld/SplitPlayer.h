@@ -61,9 +61,6 @@ public:
 	void JumpAction(const FInputActionValue& Value);
 
 	UFUNCTION()
-	void JumpCancle(const FInputActionValue& Value);
-
-	UFUNCTION()
 	void InteractAction(const FInputActionValue& Value);
 
 	UFUNCTION()
@@ -78,23 +75,40 @@ public:
 	UFUNCTION()
 	void Die();
 
+	UFUNCTION(Server, Reliable)
+	void JumpServer(); 
+	
+	UPROPERTY(Replicated)
 	bool bJumping = false;
+	UPROPERTY(Replicated)
 	bool bDoubleJumping = false;
 	float JumpSpeed = 0.0f;
 	FVector JumpDir;
 	FVector Dir;
 	
-	bool bClimb = false;
-	bool bCanClimb = false;
-	bool bTryClimb = false;
+	UPROPERTY(Replicated)
+	bool bClimbing = false;
+	UPROPERTY(Replicated)
 	bool bFailClimb = false;
+	UPROPERTY(Replicated)
+	bool bTryClimb = false;
+	UPROPERTY(Replicated)
 	bool bTryCanClimb = false;
+	UPROPERTY(Replicated)
 	bool bTraversal = false;
+	UPROPERTY(Replicated)
 	bool bAdjustAnimaition = false;
 
+	UFUNCTION(Server, Reliable)
+	void DashServer();
+	
+	UPROPERTY(Replicated)
 	bool bDashing = false;
-	bool bCanDash = false;
 
+	UFUNCTION(Server, Reliable)
+	void RunServer();
+	
+	UPROPERTY(Replicated)
 	bool bRunning = false;
 	
 	bool DetectWall(FHitResult& Out_Hit, FVector& HitLocation, FVector& Normal, int& index);
