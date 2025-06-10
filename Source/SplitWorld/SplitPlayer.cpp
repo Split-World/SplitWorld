@@ -23,7 +23,7 @@ ASplitPlayer::ASplitPlayer()
  	PrimaryActorTick.bCanEverTick = true;
 
 	ConstructorHelpers::FObjectFinder<USkeletalMesh>tempMesh
-	(TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/Characters/Mannequins/Meshes/SKM_Manny.SKM_Manny'"));
+	(TEXT("/Script/Engine.SkeletalMesh'/Game/Slay/Assets/Chr/Echo/Meshes/SK_Echo.SK_Echo'"));
 	if (tempMesh.Succeeded())
 	{
 		GetMesh()->SetSkeletalMesh(tempMesh.Object);
@@ -135,17 +135,19 @@ void ASplitPlayer::Tick(float DeltaTime)
 	{ 
 		CloneLocation((HasAuthority() ? CloneDist : -CloneDist) + GetActorLocation());
 	}
-	
-	if (!HasAuthority()) return;
-	
+
+	if (!HasAuthority())
+	{
+		return; 
+	}
+
 	if (!GetCharacterMovement()->IsFalling())
 	{
 		bJumping = false;
 		bDoubleJumping = false;
 		bFailClimb = false;
-		bClimb = false;
+		bClimbing = false;
 		bTraversal = false;
-		bCanDash = true;
 		bDashing = false;
 		GetCharacterMovement()->GravityScale = 1.0f;
 	}
@@ -176,10 +178,17 @@ void ASplitPlayer::Tick(float DeltaTime)
 			}
 		}
 	}
+	
 	if (bAdjustAnimaition)
 	{
 		SetActorLocation(GetActorLocation() + GetActorUpVector() * GetWorld()->GetDeltaSeconds() * 700.f);
 		SetActorLocation(GetActorLocation() + GetActorForwardVector() * GetWorld()->GetDeltaSeconds() * 100.f);
+	}
+	
+	if (bDashing)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("%d"), bDashing));
+		SetActorLocation(GetActorLocation() + GetActorForwardVector() * GetWorld()->GetDeltaSeconds() * 1000.f);
 	}
 }
 
@@ -210,7 +219,7 @@ void ASplitPlayer::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	DOREPLIFETIME(ASplitPlayer, bJumping);
 	DOREPLIFETIME(ASplitPlayer, bDoubleJumping);
 	
-	DOREPLIFETIME(ASplitPlayer, bClimb);
+	DOREPLIFETIME(ASplitPlayer, bClimbing);
 	DOREPLIFETIME(ASplitPlayer, bFailClimb);
 	DOREPLIFETIME(ASplitPlayer, bTryClimb);
 	DOREPLIFETIME(ASplitPlayer, bTryCanClimb);
@@ -218,7 +227,6 @@ void ASplitPlayer::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	DOREPLIFETIME(ASplitPlayer, bAdjustAnimaition);
 	
 	DOREPLIFETIME(ASplitPlayer, bDashing);
-	DOREPLIFETIME(ASplitPlayer, bCanDash);
 	
 	DOREPLIFETIME(ASplitPlayer, bRunning);
 	
@@ -228,7 +236,7 @@ void ASplitPlayer::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 
 void ASplitPlayer::MoveAction(const FInputActionValue& Value)
 {
-	if (bClimb) return;
+	if (bClimbing) return;
 	if (bDashing) return;
 	bTryClimb = true;
 
@@ -258,20 +266,27 @@ void ASplitPlayer::MoveCancle(const FInputActionValue& Value)
 	bTryClimb = false;
 }
 
-void ASplitPlayer::JumpAction(const FInputActionValue& Value)
+void ASplitPlayer::JumpServer_Implementation()
 {
 	if (!bJumping)
 	{
-		Jump();
 		JumpDir = Dir;
 		bJumping = true;
 	}
 	else if (!bDoubleJumping)
 	{
-		Jump();
 		JumpDir = Dir;
 		bDoubleJumping = true;
 	}
+}
+
+void ASplitPlayer::JumpAction(const FInputActionValue& Value)
+{
+	if ((!bJumping || !bDoubleJumping) && !bDashing)
+	{
+		Jump();
+	}
+	JumpServer();
 }
 
 void ASplitPlayer::InteractAction(const FInputActionValue& Value)
@@ -302,38 +317,41 @@ void ASplitPlayer::InteractAction(const FInputActionValue& Value)
 		auto II = Cast<AInteractableActorBase>(OutHit.GetActor()); 
 		if (II && ((!II->Idx && HasAuthority()) || (II->Idx && !HasAuthority())))
 		{
-			Interact(II); 
+			Interact(II);
 		}
 	}
 }
 
+void ASplitPlayer::DashServer_Implementation()
+{
+	bDashing = true;
+}
+
 void ASplitPlayer::DashAction(const FInputActionValue& Value)
 {
-	if (bCanDash)
+	if (!bRunning && !bDashing && !bClimbing)
 	{
-		bCanDash = false;
-		bDashing = true;
-
-		LaunchCharacter(GetActorForwardVector() * 700.f, false, false);
-	}
-	else if (bDashing && !GetCharacterMovement()->IsFalling())
-	{
-		
+		DashServer_Implementation();
 	}
 }
 
-void ASplitPlayer::RunAction(const FInputActionValue& Value)
+void ASplitPlayer::RunServer_Implementation()
 {
-	if (!bRunning)
+	if (!bRunning && !bDashing && !bClimbing && !bJumping)
 	{
 		bRunning = true;
 		GetCharacterMovement()->MaxWalkSpeed = 1000.f;
 	}
 	else
 	{
-		bRunning = true;
+		bRunning = false;
 		GetCharacterMovement()->MaxWalkSpeed = 600.f;
 	}
+}
+
+void ASplitPlayer::RunAction(const FInputActionValue& Value)
+{
+	RunServer_Implementation();
 }
 
 void ASplitPlayer::Die()
@@ -388,7 +406,7 @@ void ASplitPlayer::ClimbWall(float Value)
 	if (Value > 5.0f) return;
 
 	GetCharacterMovement()->GravityScale = 0.f;
-	bClimb = true;
+	bClimbing = true;
 	
 	FHitResult OutHit;
 	TArray<AActor*> ignoreActors;
@@ -417,7 +435,7 @@ void ASplitPlayer::ClimbWall(float Value)
 	else if (bHit)
 	{
 		bFailClimb = true;
-		bClimb = false;
+		bClimbing = false;
 		GetCharacterMovement()->GravityScale = 1.f;
 	}
 }
