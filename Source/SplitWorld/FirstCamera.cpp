@@ -101,8 +101,6 @@ void AFirstCamera::UpdateMask(float DeltaTime)
 	FVector Dist = P1 - P2; 
 	FVector AvgPos = Dist * 0.5f + P2; 
 
-	GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, FString::Printf(TEXT("%f, %f, %f"), AvgPos.X, AvgPos.Y, AvgPos.Z)); 
-
 	FVector Normal = bIsLastPart ? GetNormal2D_YZ(-Dist) : -Dist.GetSafeNormal2D(); 
 	MaskComp->ClipPlaneNormal = FMath::Lerp(MaskComp->ClipPlaneNormal, Normal, 6.0f * DeltaTime);
 	BoundaryComp->ClipPlaneNormal = FMath::Lerp(BoundaryComp->ClipPlaneNormal, Normal, 6.0f * DeltaTime); 

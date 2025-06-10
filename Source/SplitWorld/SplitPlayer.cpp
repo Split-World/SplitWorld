@@ -137,7 +137,7 @@ void ASplitPlayer::Tick(float DeltaTime)
 	}
 
 	if (!HasAuthority())
-	{
+	{ 
 		return; 
 	}
 
@@ -148,7 +148,7 @@ void ASplitPlayer::Tick(float DeltaTime)
 		bFailClimb = false;
 		bClimbing = false;
 		bTraversal = false;
-		bDashing = false;
+		bDashing = false; 
 		GetCharacterMovement()->GravityScale = 1.0f;
 	}
 	else
@@ -187,7 +187,6 @@ void ASplitPlayer::Tick(float DeltaTime)
 
 	if (bDashing)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("%d"), bDashing));
 		SetActorLocation(GetActorLocation() + GetActorForwardVector() * GetWorld()->GetDeltaSeconds() * 1000.f);
 	}
 
@@ -335,7 +334,7 @@ void ASplitPlayer::DashAction(const FInputActionValue& Value)
 {
 	if (!bRunning && !bDashing && !bClimbing)
 	{
-		DashServer_Implementation();
+		DashServer();
 	}
 }
 
@@ -355,7 +354,7 @@ void ASplitPlayer::RunServer_Implementation()
 
 void ASplitPlayer::RunAction(const FInputActionValue& Value)
 {
-	RunServer_Implementation();
+	RunServer();
 }
 
 void ASplitPlayer::Die()
@@ -430,9 +429,9 @@ void ASplitPlayer::ClimbWall(float Value)
 	FColor::Red,
 	FColor::Blue,
 	5.f
-	);
+	); 
 	
-	if (!bHit)
+	if (!bHit) 
 	{
 		SetActorLocation(GetActorLocation() + GetActorUpVector() * GetWorld()->GetDeltaSeconds());
 	}
