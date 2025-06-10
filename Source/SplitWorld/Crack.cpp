@@ -1,18 +1,32 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Crack.h"
+#include "Crack.h" 
+#include "Components/BoxComponent.h" 
+#include "SplitWorldGameModeBase.h" 
 
 ACrack::ACrack()
 {
 	PrimaryActorTick.bCanEverTick = true;
+	
+	BoxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComp"));
+	SetRootComponent(BoxComp);
+	BoxComp->SetBoxExtent(FVector(50.0f));
+	BoxComp->SetCollisionProfileName(TEXT("Crack"));
+	BoxComp->SetIsReplicated(true); 
 
+	SetReplicates(true);
+	bAlwaysRelevant = true; 
 }
 
 void ACrack::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	if (HasAuthority())
+	{
+		GM = Cast<ASplitWorldGameModeBase>(GetWorld()->GetAuthGameMode());
+	} 
 }
 
 void ACrack::Tick(float DeltaTime)
@@ -23,6 +37,9 @@ void ACrack::Tick(float DeltaTime)
 
 void ACrack::Interaction_Implementation()
 { 
-
+	if (!(GM->bPlayer_Interactions[3] & (1 << Idx)))
+	{
+		GM->bPlayer_Interactions[3] |= (1 << Idx);
+	}
 }
 

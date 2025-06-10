@@ -17,7 +17,8 @@ enum class EMapPart : uint8
 	Part2_5,
 	Part3, 
 	Part3_5, 
-	Part4 
+	Part4, 
+	PartCrack 
 };
 
 UCLASS()
@@ -34,9 +35,6 @@ public:
 	
 	UPROPERTY() 
 	TArray<class AController*> Players; 
-
-	bool Player1_MoveCheck[4]; 
-	bool Player2_MoveCheck[4]; 
 
 	int bPlayer_Interactions[4]; 
 

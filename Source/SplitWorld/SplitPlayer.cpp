@@ -137,7 +137,7 @@ void ASplitPlayer::Tick(float DeltaTime)
 	}
 
 	if (!HasAuthority())
-	{
+	{ 
 		return; 
 	}
 
@@ -148,7 +148,7 @@ void ASplitPlayer::Tick(float DeltaTime)
 		bFailClimb = false;
 		bClimbing = false;
 		bTraversal = false;
-		bDashing = false;
+		bDashing = false; 
 		GetCharacterMovement()->GravityScale = 1.0f;
 	}
 	else
@@ -183,13 +183,14 @@ void ASplitPlayer::Tick(float DeltaTime)
 	{
 		SetActorLocation(GetActorLocation() + GetActorUpVector() * GetWorld()->GetDeltaSeconds() * 700.f);
 		SetActorLocation(GetActorLocation() + GetActorForwardVector() * GetWorld()->GetDeltaSeconds() * 100.f);
-	}
-	
+	} 
+
 	if (bDashing)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("%d"), bDashing));
 		SetActorLocation(GetActorLocation() + GetActorForwardVector() * GetWorld()->GetDeltaSeconds() * 1000.f);
 	}
+
+	ConveyorBeltCheck(DeltaTime); 
 }
 
 // Called to bind functionality to input
@@ -231,7 +232,9 @@ void ASplitPlayer::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	DOREPLIFETIME(ASplitPlayer, bRunning);
 	
 	DOREPLIFETIME(ASplitPlayer, ClonePlayer); 
-	DOREPLIFETIME(ASplitPlayer, CurPart);
+
+	DOREPLIFETIME(ASplitPlayer, CurPart); 
+	DOREPLIFETIME(ASplitPlayer, MoveCheck); 
 }
 
 void ASplitPlayer::MoveAction(const FInputActionValue& Value)
@@ -241,8 +244,8 @@ void ASplitPlayer::MoveAction(const FInputActionValue& Value)
 	bTryClimb = true;
 
 	FVector2D v = Value.Get<FVector2D>();
-	Dir += Forwards[CurPart] * v.X;
-	Dir += Rights[CurPart] * v.Y; 
+	Dir += Forwards[CurPart] * v.X * (v.X > 0 ? MoveCheck.Z : MoveCheck.W); 
+	Dir += Rights[CurPart] * v.Y * (v.Y > 0 ? MoveCheck.X : MoveCheck.Y); 
 	
 	FRotator rot = GetControlRotation();
 	if (GetCharacterMovement()->IsFalling())
@@ -331,7 +334,7 @@ void ASplitPlayer::DashAction(const FInputActionValue& Value)
 {
 	if (!bRunning && !bDashing && !bClimbing)
 	{
-		DashServer_Implementation();
+		DashServer();
 	}
 }
 
@@ -351,7 +354,7 @@ void ASplitPlayer::RunServer_Implementation()
 
 void ASplitPlayer::RunAction(const FInputActionValue& Value)
 {
-	RunServer_Implementation();
+	RunServer();
 }
 
 void ASplitPlayer::Die()
@@ -426,9 +429,9 @@ void ASplitPlayer::ClimbWall(float Value)
 	FColor::Red,
 	FColor::Blue,
 	5.f
-	);
+	); 
 	
-	if (!bHit)
+	if (!bHit) 
 	{
 		SetActorLocation(GetActorLocation() + GetActorUpVector() * GetWorld()->GetDeltaSeconds());
 	}
@@ -504,4 +507,18 @@ void ASplitPlayer::Interact_Implementation(AInteractableActorBase* Actor)
 void ASplitPlayer::ChangePart()
 { 
 	CurPart = int(GM->CurPart); 
+}
+
+void ASplitPlayer::ConveyorBeltCheck(float DeltaTime)
+{ 
+	FHitResult Hit; 
+	FVector Start = GetActorLocation(); 
+	FVector End = Start + FVector(0, 0, -(GetCapsuleComponent()->GetScaledCapsuleHalfHeight() + 10)); 
+	FCollisionQueryParams CQP; 
+	CQP.AddIgnoredActor(this); 
+
+	if (GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECC_GameTraceChannel4, CQP)) 
+	{ 
+		SetActorLocation(GetActorLocation() + FVector(0, -300.0f, 0) * DeltaTime); 
+	}
 }

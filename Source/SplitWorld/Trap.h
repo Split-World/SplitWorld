@@ -20,7 +20,9 @@ public:
 
 protected: 
 	UPROPERTY(EditAnywhere) 
-	class UBoxComponent* BoxComp;
+	class UBoxComponent* BoxComp; 
+	UPROPERTY(EditAnywhere) 
+	class UStaticMeshComponent* MeshComp; 
 
 	UPROPERTY()
 	class ASplitPlayer* Player; 

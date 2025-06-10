@@ -3,7 +3,9 @@
 
 #include "FishHandle.h"
 
+#include "FireLaser.h"
 #include "Fish.h"
+#include "Laser.h"
 #include "SplitWorldGameModeBase.h"
 
 AFishHandle::AFishHandle()
@@ -41,17 +43,25 @@ void AFishHandle::Interaction_Implementation()
 		bLaunched = true;
 		GM->bPlayer_Interactions[1] |= 1; 
 
-		Fishes[0]->Launch(); 
+		Fishes[0]->Launch();
+		FireLasers[0]->Fire(); 
 		GetWorldTimerManager().SetTimer(FishTimerManager, [&]()
 		{
-			Fishes[1]->Launch(); 
+			Fishes[1]->Launch();
+			FireLasers[1]->Fire(); 
 			GetWorldTimerManager().SetTimer(FishTimerManager, [&]()
 			{
 				Fishes[2]->Launch();
+				FireLasers[2]->Fire(); 
 				GetWorldTimerManager().SetTimer(FishTimerManager, [&]()
 				{
 					bLaunched = false;
-					GM->bPlayer_Interactions[1] &= ~1; 
+					GM->bPlayer_Interactions[1] &= ~1;
+
+					if (GM->bPlayer_Interactions[1] & 2)
+					{
+						NormalLaser->Disable();
+					} 
 				}, 4.5f, false); 
 			}, 0.25f, false); 
 		}, 0.25f, false); 

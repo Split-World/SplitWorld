@@ -2,10 +2,12 @@
 
 
 #include "FirstCamera.h" 
-#include "ClonePlayer.h" 
+
+#include "ClonePlayer.h"
+#include "FireLaser.h"
 #include "SplitPlayer.h"
-#include "SplitWorldGameModeBase.h"
-#include "Components/SceneCaptureComponent2D.h"
+#include "SplitWorldGameModeBase.h" 
+#include "Components/SceneCaptureComponent2D.h" 
 #include "GameFramework/SpringArmComponent.h" 
 #include "Net/UnrealNetwork.h" 
 #include "SecondCamera.h" 
@@ -43,10 +45,8 @@ AFirstCamera::AFirstCamera()
 
 void AFirstCamera::BeginPlay()
 {
-	Super::BeginPlay();
-
-	SetActorRotation(FRotator(-90.0f, 0.0f, 0.0f));
-
+	Super::BeginPlay(); 
+	
 	if (HasAuthority())
 	{
 		GM = Cast<ASplitWorldGameModeBase>(GetWorld()->GetAuthGameMode()); 
@@ -55,13 +55,16 @@ void AFirstCamera::BeginPlay()
 		FTransform t = GetActorTransform(); 
 		t.SetLocation(t.GetLocation() + LocationOffset); 
 		SecondCamera = GetWorld()->SpawnActor<ASecondCamera>(SecondCameraFactory, t); 
+
+		SetActorRotation(FRotator(-90.0f, 0.0f, 0.0f)); 
+		ChangePart(); 
 	} 
 } 
 
 void AFirstCamera::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime); 
-	if (IsValid(Player1) && IsValid(Player2)) 
+	if (IsValid(Player1) && IsValid(Player2_Clone)) 
 	{
 		if (HasAuthority())
 		{ 
@@ -87,31 +90,20 @@ void AFirstCamera::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLi
 	DOREPLIFETIME(AFirstCamera, SecondCamera); 
 	DOREPLIFETIME(AFirstCamera, Player1); 
 	DOREPLIFETIME(AFirstCamera, Player2); 
-	DOREPLIFETIME(AFirstCamera, ScreenAvgPos); 
+	DOREPLIFETIME(AFirstCamera, Player2_Clone);
+	DOREPLIFETIME(AFirstCamera, LastData); 
 }
 
 void AFirstCamera::UpdateMask(float DeltaTime)
 {
 	FVector P1 = Player1->GetActorLocation();
-	FVector P2 = Player2->GetActorLocation();
+	FVector P2 = Player2_Clone->GetActorLocation();
 	FVector Dist = P1 - P2; 
 	FVector AvgPos = Dist * 0.5f + P2; 
 
-	//FVector pos = CameraComp->GetComponentLocation();
-	//FVector r = CameraComp->GetRightVector();
-	//FVector u = CameraComp->GetUpVector();
-	//FVector f = CameraComp->GetForwardVector();
-
-	//FVector rx(r.X, u.X, f.X);
-	//FVector ry(r.Y, u.Y, f.Y);
-	//FVector rz(r.Z, u.Z, f.Z);
-
-	//float z = f.Dot(P1 - pos);
-	//FVector vpos(ScreenAvgPos.X * z, ScreenAvgPos.Y * z, z);
-	//FVector AvgPos = FVector(vpos.Dot(rx), vpos.Dot(ry), vpos.Dot(rz)) + pos; 
-
-	MaskComp->ClipPlaneNormal = FMath::Lerp(MaskComp->ClipPlaneNormal, -Dist.GetSafeNormal2D(), 6.0f * DeltaTime);
-	BoundaryComp->ClipPlaneNormal = FMath::Lerp(BoundaryComp->ClipPlaneNormal, -Dist.GetSafeNormal2D(), 6.0f * DeltaTime); 
+	FVector Normal = bIsLastPart ? GetNormal2D_YZ(-Dist) : -Dist.GetSafeNormal2D(); 
+	MaskComp->ClipPlaneNormal = FMath::Lerp(MaskComp->ClipPlaneNormal, Normal, 6.0f * DeltaTime);
+	BoundaryComp->ClipPlaneNormal = FMath::Lerp(BoundaryComp->ClipPlaneNormal, Normal, 6.0f * DeltaTime); 
 	MaskComp->ClipPlaneBase = FMath::Lerp(MaskComp->ClipPlaneBase, AvgPos + MaskComp->ClipPlaneNormal * 15.0f, 6.0f * DeltaTime);
 	BoundaryComp->ClipPlaneBase = FMath::Lerp(BoundaryComp->ClipPlaneBase, AvgPos - MaskComp->ClipPlaneNormal * 15.0f, 6.0f * DeltaTime); 
 } 
@@ -131,7 +123,8 @@ void AFirstCamera::FindPlayers()
 	} 
 	
 	Player1 = P1; 
-	Player2 = P2->ClonePlayer; 
+	Player2 = P2; 
+	Player2_Clone = P2->ClonePlayer; 
 } 
 
 void AFirstCamera::CalcPlayerScreenLocation()
@@ -149,12 +142,12 @@ void AFirstCamera::CalcPlayerScreenLocation()
 	float py = vy / z; 
 	PlayerScreenLocation[0] = FVector2D(px, py); 
 	
-	GM->Player1_MoveCheck[0] = px < 0.9f; 
-	GM->Player1_MoveCheck[1] = px > -0.9f; 
-	GM->Player1_MoveCheck[2] = py < 0.45f; 
-	GM->Player1_MoveCheck[3] = py > -0.45f; 
+	Player1->MoveCheck.X = int(px < 0.975f); 
+	Player1->MoveCheck.Y = int(px > -0.975f); 
+	Player1->MoveCheck.Z = int(py < 0.495f);  
+	Player1->MoveCheck.W = int(py > -0.495f); 
 
-	pp = Player2->GetActorLocation(); 
+	pp = Player2_Clone->GetActorLocation(); 
 	z = f.Dot(pp - pos);
 	vx = r.Dot(pp - pos);
 	vy = u.Dot(pp - pos);
@@ -162,26 +155,25 @@ void AFirstCamera::CalcPlayerScreenLocation()
 	py = vy / z;
 	PlayerScreenLocation[1] = FVector2D(px, py); 
 
-	GM->Player2_MoveCheck[0] = px < 0.9f;
-	GM->Player2_MoveCheck[1] = px > -0.9f;
-	GM->Player2_MoveCheck[2] = py < 0.45f;
-	GM->Player2_MoveCheck[3] = py > -0.45f; 
+	Player2->MoveCheck.X = int(px < 0.975f);
+	Player2->MoveCheck.Y = int(px > -0.975f);
+	Player2->MoveCheck.Z = int(py < 0.535f);
+	Player2->MoveCheck.W = int(py > -0.535f);
 } 
 
 void AFirstCamera::SetCameraLocation(float DeltaTime)
 { 
 	if (ViewChangePercent < 1.0f)
 	{ 
-		ViewChangePercent = FMath::Min(ViewChangePercent + DeltaTime / 2.0f, 1.0f); 
-		SetActorLocation(FMath::Lerp(GetActorLocation(), CameraDatas[int(GM->CurPart)].Location, ViewChangePercent));
-		SetActorRotation(FQuat::Slerp(GetActorRotation().Quaternion(), CameraDatas[int(GM->CurPart)].Rotation.Quaternion(), ViewChangePercent));
-		SpringArmComp->TargetArmLength = FMath::Lerp(SpringArmComp->TargetArmLength, CameraDatas[int(GM->CurPart)].Length, ViewChangePercent);
+		ViewChangePercent = FMath::Min(ViewChangePercent + DeltaTime / 3.0f, 1.0f); 
+		SetActorLocation(FMath::Lerp(LastData.Location, CameraDatas[int(GM->CurPart)].Location, ViewChangePercent));
+		SetActorRotation(FQuat::Slerp(LastData.Rotation.Quaternion(), CameraDatas[int(GM->CurPart)].Rotation.Quaternion(), ViewChangePercent));
+		SpringArmComp->TargetArmLength = FMath::Lerp(LastData.Length, CameraDatas[int(GM->CurPart)].Length, ViewChangePercent);
 	} 
 	else
 	{ 
 		FVector2D P1 = PlayerScreenLocation[0];
 		FVector2D P2 = PlayerScreenLocation[1];
-		ScreenAvgPos = (P1 - P2) * 0.5f + P2; 
 		float Min_X = FMath::Min(P1.X, P2.X); 
 		float Min_Y = FMath::Min(P1.Y, P2.Y); 
 
@@ -238,6 +230,34 @@ void AFirstCamera::CameraTransformSync()
 
 void AFirstCamera::ChangePart()
 { 
-	ViewChangePercent = 0.0f; 
+	ViewChangePercent = 0.0f;
+	if (GM->CurPart == EMapPart::Part4)
+	{
+		ChangeMask();
+	}
+	
+	LastData.Location = GetActorLocation();
+	LastData.Rotation = GetActorRotation();
+	LastData.Length = SpringArmComp->TargetArmLength; 
+}
 
+FVector AFirstCamera::GetNormal2D_YZ(const FVector& origin)
+{
+	FVector2D t(origin.Y, origin.Z);
+	t.Normalize();
+	return FVector(0, t.X, t.Y); 
+}
+
+void AFirstCamera::ChangeMask_Implementation()
+{
+	FTimerHandle handle;
+	GetWorldTimerManager().SetTimer(handle, [&]()
+	{
+		MaskComp->ShowOnlyActors.RemoveAt(0); 
+		BoundaryComp->ShowOnlyActors.RemoveAt(0);
+		MaskComp->ShowOnlyActors.Add(MaskFloors); 
+		BoundaryComp->ShowOnlyActors.Add(MaskFloors);
+
+		bIsLastPart = true; 
+	}, 1.0f, false); 
 }
