@@ -3,11 +3,14 @@
 
 #include "Laser.h" 
 #include "SplitPlayer.h"
+#include "Components/BoxComponent.h"
 
 ALaser::ALaser()
 { 
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = true; 
 
+	SetReplicates(true);
+	bAlwaysRelevant = true; 
 }
 
 void ALaser::BeginPlay()
@@ -19,13 +22,18 @@ void ALaser::BeginPlay()
 void ALaser::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-}
+} 
 
 void ALaser::Execute()
 { 
 	if (Player) 
 	{
-		Player->Die(); 
+		Player->Die();
 	} 
+}
+
+void ALaser::Disable_Implementation()
+{
+	BoxComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	MeshComp->SetVisibility(false);  
 }

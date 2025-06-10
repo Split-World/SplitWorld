@@ -20,5 +20,5 @@ public:
 	virtual void Execute() override; 
 
 	void Fire(); 
-
+	
 };

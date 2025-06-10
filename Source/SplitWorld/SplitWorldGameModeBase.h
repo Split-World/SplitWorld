@@ -33,7 +33,7 @@ public:
 	void ChangeMapPart(EMapPart Part); 
 	
 	UPROPERTY() 
-	TArray<class AController*> Player; 
+	TArray<class AController*> Players; 
 
 	int bPlayer_Interactions[4]; 
 

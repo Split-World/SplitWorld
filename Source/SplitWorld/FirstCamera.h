@@ -38,7 +38,10 @@ private:
 	void CalcPlayerScreenLocation(); 
 	void SetCameraLocation(float DeltaTime);
 	void CameraTransformSync(); 
-	void ChangePart(); 
+	void ChangePart();
+	UFUNCTION(NetMulticast, Reliable)
+	void ChangeMask();
+	FVector GetNormal2D_YZ(const FVector& origin); 
 	
 private: 
 	UPROPERTY(EditAnywhere)
@@ -57,10 +60,8 @@ private:
 	class ASecondCamera* SecondCamera; 
 
 	UPROPERTY(EditAnywhere) 
-	FVector LocationOffset; 
-
-	UPROPERTY(Replicated)
-	FVector2D ScreenAvgPos; 
+	FVector LocationOffset;
+	
 	FVector2D PlayerScreenLocation[2]; 
 
 private: 
@@ -74,11 +75,18 @@ private:
 	UPROPERTY(EditAnywhere, Replicated)
 	class APawn* Player2_Clone; 
 
-	
 private: 
 	UPROPERTY(EditAnywhere) 
 	TArray<FCameraData> CameraDatas; 
 
 	float ViewChangePercent; 
+
+	UPROPERTY(Replicated)
+	FCameraData LastData; 
+
+	UPROPERTY(EditAnywhere)
+	AActor* MaskFloors;
+
+	bool bIsLastPart; 
 	
 };

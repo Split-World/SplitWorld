@@ -30,6 +30,12 @@ private:
 	FTimerHandle FishTimerManager;
 
 	UPROPERTY(EditAnywhere)
-	TArray<class AFish*> Fishes; 
+	TArray<class AFish*> Fishes;
+
+	UPROPERTY(EditAnywhere)
+	TArray<class AFireLaser*> FireLasers;
+
+	UPROPERTY(EditAnywhere)
+	class ALaser* NormalLaser; 
 	
 };

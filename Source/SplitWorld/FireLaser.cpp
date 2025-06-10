@@ -9,6 +9,8 @@ AFireLaser::AFireLaser()
 {
  	PrimaryActorTick.bCanEverTick = true;
 
+	SetReplicates(true);
+	bAlwaysRelevant = true; 
 }
 
 void AFireLaser::BeginPlay()
@@ -22,8 +24,8 @@ void AFireLaser::BeginPlay()
 void AFireLaser::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-}
+	
+} 
 
 void AFireLaser::Execute()
 { 
