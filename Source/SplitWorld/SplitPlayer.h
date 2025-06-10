@@ -75,6 +75,9 @@ public:
 	UFUNCTION()
 	void Die();
 
+	UFUNCTION(Server, Reliable)
+	void JumpServer(); 
+	
 	UPROPERTY(Replicated)
 	bool bJumping = false;
 	UPROPERTY(Replicated)
@@ -84,7 +87,7 @@ public:
 	FVector Dir;
 	
 	UPROPERTY(Replicated)
-	bool bClimb = false;
+	bool bClimbing = false;
 	UPROPERTY(Replicated)
 	bool bFailClimb = false;
 	UPROPERTY(Replicated)
@@ -96,11 +99,15 @@ public:
 	UPROPERTY(Replicated)
 	bool bAdjustAnimaition = false;
 
+	UFUNCTION(Server, Reliable)
+	void DashServer();
+	
 	UPROPERTY(Replicated)
 	bool bDashing = false;
-	UPROPERTY(Replicated)
-	bool bCanDash = false;
 
+	UFUNCTION(Server, Reliable)
+	void RunServer();
+	
 	UPROPERTY(Replicated)
 	bool bRunning = false;
 	
