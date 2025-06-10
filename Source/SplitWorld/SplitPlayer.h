@@ -61,9 +61,6 @@ public:
 	void JumpAction(const FInputActionValue& Value);
 
 	UFUNCTION()
-	void JumpCancle(const FInputActionValue& Value);
-
-	UFUNCTION()
 	void InteractAction(const FInputActionValue& Value);
 
 	UFUNCTION()

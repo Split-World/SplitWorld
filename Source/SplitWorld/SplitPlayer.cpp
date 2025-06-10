@@ -194,7 +194,6 @@ void ASplitPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 		EnhancedInputComponent->BindAction(IA_Move, ETriggerEvent::Canceled, this, &ASplitPlayer::MoveCancle);
 
 		EnhancedInputComponent->BindAction(IA_Jump, ETriggerEvent::Started, this, &ASplitPlayer::JumpAction);
-		EnhancedInputComponent->BindAction(IA_Jump, ETriggerEvent::Canceled, this, &ASplitPlayer::JumpCancle);
 		
 		EnhancedInputComponent->BindAction(IA_Interact, ETriggerEvent::Triggered, this, &ASplitPlayer::InteractAction);
 		
