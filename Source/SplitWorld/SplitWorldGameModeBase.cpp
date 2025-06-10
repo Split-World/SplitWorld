@@ -40,6 +40,12 @@ void ASplitWorldGameModeBase::Tick(float DeltaTime)
 			ChangeMapPart(EMapPart::Part4); 
 		}
 		break; 
+	case EMapPart::Part4: 
+		if (bPlayer_Interactions[3] == 3)
+		{
+			ChangeMapPart(EMapPart::PartCrack);
+		}
+		break; 
 	} 
 }
 
