@@ -41,7 +41,7 @@ void ARoadExtinction::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (HasAuthority())
+	if (HasAuthority() && bStart)
 	{ 
 		SetActorLocation(GetActorLocation() + FVector(0.0f, 0.0f, 1.0f) * 100.0f * DeltaTime); 
 		if (auto MPC_Instance = GetWorld()->GetParameterCollectionInstance(MPC_Extinction))
@@ -52,10 +52,14 @@ void ARoadExtinction::Tick(float DeltaTime)
 }
 
 void ARoadExtinction::OnStartBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{ 
-	bStart = true; 
-	StartBoxComp->SetCollisionEnabled(ECollisionEnabled::NoCollision); 
-}
+{
+	auto Player = Cast<ASplitPlayer>(OtherActor);
+	if (Player)
+	{
+		bStart = true;
+		StartBoxComp->SetCollisionEnabled(ECollisionEnabled::NoCollision); 
+	} 
+} 
 
 void ARoadExtinction::OnDestroyBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 { 
