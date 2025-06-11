@@ -4,6 +4,8 @@
 #include "RoadExtinction.h" 
 #include "Components/BoxComponent.h" 
 #include "SplitPlayer.h" 
+#include "Materials/MaterialParameterCollection.h" 
+#include "Materials/MaterialParameterCollectionInstance.h" 
 
 ARoadExtinction::ARoadExtinction()
 { 
@@ -39,9 +41,13 @@ void ARoadExtinction::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (bStart)
+	if (HasAuthority())
 	{ 
 		SetActorLocation(GetActorLocation() + FVector(0.0f, 0.0f, 1.0f) * 100.0f * DeltaTime); 
+		if (auto MPC_Instance = GetWorld()->GetParameterCollectionInstance(MPC_Extinction))
+		{
+			MPC_Instance->SetScalarParameterValue(FName(TEXT("World_Z")), GetActorLocation().Z);
+		}
 	} 
 }
 
@@ -59,4 +65,3 @@ void ARoadExtinction::OnDestroyBoxBeginOverlap(UPrimitiveComponent* OverlappedCo
 		Player->Die(); 
 	} 
 }
-
