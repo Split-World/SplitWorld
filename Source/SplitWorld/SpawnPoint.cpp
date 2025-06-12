@@ -32,9 +32,6 @@ void ASpawnPoint::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	ASplitPlayer *player = Cast<ASplitPlayer>(OtherActor);
-	if (nullptr != player)
-	{
-		player -> SpawnTransform = GetActorTransform();
-	}
+	if (nullptr != player && player->CurPart != 6) player -> SpawnTransform = GetActorTransform();
 }
 

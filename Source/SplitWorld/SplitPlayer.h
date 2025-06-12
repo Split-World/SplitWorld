@@ -205,4 +205,7 @@ public:
 	FVector4 MoveCheck; 
 
 	void ConveyorBeltCheck(float DeltaTime);
+
+	UPROPERTY(Replicated)
+	class UMaterialParameterCollection* collection;
 };

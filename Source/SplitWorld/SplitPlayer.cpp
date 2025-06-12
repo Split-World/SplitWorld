@@ -17,6 +17,10 @@
 #include "Net/UnrealNetwork.h"
 #include "SplitWorldGameModeBase.h" 
 #include "GroomComponent.h" 
+#include "SpawnPoint.h"
+#include "Kismet/GameplayStatics.h"
+#include "Materials/MaterialParameterCollection.h"
+#include "Materials/MaterialParameterCollectionInstance.h"
 #include "UniversalObjectLocators/AnimInstanceLocatorFragment.h"
 
 // Sets default values
@@ -165,8 +169,8 @@ void ASplitPlayer::NotifyControllerChanged()
 void ASplitPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
-	if (ClonePlayer && IsLocallyControlled())
+	if (!ClonePlayer) return;
+	if (IsLocallyControlled())
 	{ 
 		CloneLocation((HasAuthority() ? CloneDist : -CloneDist) + GetActorLocation());
 	}
@@ -190,7 +194,7 @@ void ASplitPlayer::Tick(float DeltaTime)
 		anim->bClimbing = false;
 		anim->bTraversal = false;
 		anim->bDashing = false;
-
+		
 		ClonePlayer->anim->bJumping = false;
 		ClonePlayer->anim->bDoubleJumping = false;
 		ClonePlayer->anim->bClimbing = false;
@@ -450,7 +454,7 @@ void ASplitPlayer::RunMulti_Implementation(bool isRunning)
 {
 	anim->bRunning = isRunning;
 
-	ClonePlayer->
+	ClonePlayer->anim->bRunning = isRunning;
 }
 
 void ASplitPlayer::RunServer_Implementation()
@@ -476,6 +480,26 @@ void ASplitPlayer::RunAction(const FInputActionValue& Value)
 
 void ASplitPlayer::Die()
 { 
+	if (CurPart == 6)
+	{
+		TArray<class AActor*> FoundActors;
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASpawnPoint::StaticClass(), FoundActors);
+
+		float Z;
+		GetWorld()->GetParameterCollectionInstance(collection)->GetScalarParameterValue(FName(TEXT("World_Z")),Z);
+		
+		float distance = 999999.f;
+		for (auto Actor : FoundActors)
+		{
+			if (Actor->GetActorLocation().Z > Z)
+				if (distance > FVector::Dist(GetActorLocation(), Actor->GetActorLocation()))
+				{
+					distance = FVector::Dist(GetActorLocation(), Actor->GetActorLocation());
+					SpawnTransform = Actor->GetActorTransform();
+				}
+		}
+	}
+
 	SetActorTransform(SpawnTransform);
 }
 
@@ -612,7 +636,7 @@ FRotator ASplitPlayer::ReveseNormal(FVector InNormal)
 
 void ASplitPlayer::CloneLocation_Implementation(FVector Location)
 {
-	ClonePlayer->SetActorLocation(Location);
+	ClonePlayer->SetActorLocation(Location - FVector(0, 0, 90));
 }
 
 void ASplitPlayer::SpawnClone_Implementation(FVector PlayerStart, FVector LocationOffset)
