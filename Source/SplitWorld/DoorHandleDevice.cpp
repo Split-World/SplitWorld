@@ -29,7 +29,7 @@ void ADoorHandleDevice::Tick(float DeltaTime)
 
 	if (HasAuthority()) 
 	{ 
-		SetActorRotation(FQuat::Slerp(FRotator(0).Quaternion(), FRotator(0, 450.0f, 0).Quaternion(), GM->DoorGauge / 5.0f));
+		SetActorRotation(FQuat::Slerp(FRotator(0).Quaternion(), FRotator(0, 450.0f, 0).Quaternion(), GM->DoorGauge / 10.0f));
 		Door->SetActorLocation(Door->GetActorLocation() + FVector(0, 0, -100.0f) * DeltaTime); 
 	} 
 }

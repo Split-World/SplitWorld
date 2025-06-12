@@ -7,14 +7,15 @@
 #include "Fish.h"
 #include "Laser.h"
 #include "SplitWorldGameModeBase.h"
+#include "Components/BoxComponent.h"
 
 AFishHandle::AFishHandle()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
-	SetRootComponent(Mesh);
-	Mesh->SetCollisionProfileName(TEXT("Objects"));
+	Mesh->SetupAttachment(BoxComp);
+	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision); 
 
 	SetReplicates(true); 
 	bAlwaysRelevant = true; 

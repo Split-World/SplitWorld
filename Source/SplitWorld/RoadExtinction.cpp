@@ -23,7 +23,7 @@ ARoadExtinction::ARoadExtinction()
 	DestroyBoxComp->SetupAttachment(Root);
 	DestroyBoxComp->SetBoxExtent(FVector(50.0f));
 	DestroyBoxComp->SetIsReplicated(true); 
-
+	
 	SetReplicates(true); 
 	SetReplicateMovement(true); 
 	bAlwaysRelevant = true; 
@@ -46,7 +46,7 @@ void ARoadExtinction::Tick(float DeltaTime)
 		SetActorLocation(GetActorLocation() + FVector(0.0f, 0.0f, 1.0f) * 100.0f * DeltaTime); 
 		if (auto MPC_Instance = GetWorld()->GetParameterCollectionInstance(MPC_Extinction))
 		{
-			MPC_Instance->SetScalarParameterValue(FName(TEXT("World_Z")), GetActorLocation().Z);
+			MPC_Instance->SetScalarParameterValue(FName(TEXT("World_Z")), GetActorLocation().Z); 
 		}
 	} 
 }

@@ -28,7 +28,7 @@ void ASplitWorldGameModeBase::Tick(float DeltaTime)
 
 	if (CurPart == EMapPart::PartDoor)
 	{ 
-		RotateDoorHandle(DeltaTime);
+		RotateDoorHandle(DeltaTime); 
 	} 
 
 	if (CurPart == EMapPart::PartCrack)
@@ -71,9 +71,9 @@ void ASplitWorldGameModeBase::RotateDoorHandle(float DeltaTime)
 	if (DoorInput) 
 	{ 
 		DoorGauge += DeltaTime; 
-		if (DoorGauge >= 5.0f)
+		if (DoorGauge >= 10.0f)
 		{ 
-			DoorGauge = 5.0f; 
+			DoorGauge = 10.0f; 
 			ChangeMapPart(EMapPart::Part2); 
 		}
 	} 

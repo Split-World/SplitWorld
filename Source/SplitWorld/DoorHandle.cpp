@@ -3,14 +3,15 @@
 
 #include "DoorHandle.h" 
 #include "SplitWorldGameModeBase.h"
+#include "Components/BoxComponent.h"
 
 ADoorHandle::ADoorHandle()
 { 
 	PrimaryActorTick.bCanEverTick = true;
 
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
-	SetRootComponent(Mesh);
-	Mesh->SetCollisionProfileName(TEXT("Objects"));
+	Mesh->SetupAttachment(BoxComp);
+	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision); 
 
 	SetReplicates(true); 
 	bAlwaysRelevant = true; 

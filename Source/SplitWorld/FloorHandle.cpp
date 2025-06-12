@@ -3,14 +3,15 @@
 
 #include "FloorHandle.h" 
 #include "SplitWorldGameModeBase.h"
+#include "Components/BoxComponent.h"
 
 AFloorHandle::AFloorHandle()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
-	SetRootComponent(Mesh);
-	Mesh->SetCollisionProfileName(TEXT("Objects"));
+	Mesh->SetupAttachment(BoxComp);
+	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision); 
 
 	SetReplicates(true); 
 	SetReplicateMovement(true); 
