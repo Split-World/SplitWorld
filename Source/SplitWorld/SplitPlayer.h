@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "SplitPlayerAnimInstance.h"
 #include "SplitWorldGameModeBase.h" 
 #include "GameFramework/Character.h" 
 #include "SplitPlayer.generated.h"
@@ -33,6 +34,16 @@ public:
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+public:
+	UPROPERTY(EditAnywhere)
+	class USkeletalMeshComponent* BodyComp;
+
+	UPROPERTY(EditAnywhere)
+	class UGroomComponent* HairComp;
+
+	UPROPERTY(EditAnywhere)
+	class UGroomComponent* EyebrowsComp;
+	
 	UPROPERTY(EditAnywhere, Category = Input)
 	class UInputMappingContext* IMC_Default;
 	
@@ -76,7 +87,28 @@ public:
 	void Die();
 
 	UFUNCTION(Server, Reliable)
-	void JumpServer(); 
+	void MoveServer();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MoveMulti();
+	
+	UFUNCTION(Server, Reliable)
+	void MoveCancleServer();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MoveCancleMulti();
+	
+	UPROPERTY(Replicated)
+	bool bMoving = false;
+
+	UFUNCTION(Server, Reliable)
+	void JumpServer();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void JumpMulti();
+	
+	UFUNCTION(NetMulticast, Reliable)
+	void DoubleJumpMulti();
 	
 	UPROPERTY(Replicated)
 	bool bJumping = false;
@@ -85,31 +117,35 @@ public:
 	float JumpSpeed = 0.0f;
 	FVector JumpDir;
 	FVector Dir;
-	
-	UPROPERTY(Replicated)
-	bool bClimbing = false;
-	UPROPERTY(Replicated)
-	bool bFailClimb = false;
-	UPROPERTY(Replicated)
-	bool bTryClimb = false;
-	UPROPERTY(Replicated)
-	bool bTryCanClimb = false;
-	UPROPERTY(Replicated)
-	bool bTraversal = false;
-	UPROPERTY(Replicated)
-	bool bAdjustAnimaition = false;
 
 	UFUNCTION(Server, Reliable)
 	void DashServer();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void DashMulti();
 	
 	UPROPERTY(Replicated)
 	bool bDashing = false;
 
 	UFUNCTION(Server, Reliable)
 	void RunServer();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void RunMulti(bool isRunning);
 	
 	UPROPERTY(Replicated)
 	bool bRunning = false;
+
+	UPROPERTY(Replicated)
+	bool bClimbing = false;
+	UPROPERTY(Replicated)
+	bool bFailClimb = false;
+	UPROPERTY(Replicated)
+	bool bCanClimb = false;
+	UPROPERTY(Replicated)
+	bool bTraversal = false;
+	UPROPERTY(Replicated)
+	bool bAdjustAnimaition = false;
 	
 	bool DetectWall(FHitResult& Out_Hit, FVector& HitLocation, FVector& Normal, int& index);
 	void ClimbWall(float Value);
@@ -125,6 +161,9 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	UAnimMontage* ClimbMontage;
+
+	UPROPERTY()
+	class USplitPlayerAnimInstance* anim;
 	
 	UPROPERTY(Replicated)
 	class AClonePlayer* ClonePlayer;
@@ -166,5 +205,7 @@ public:
 	FVector4 MoveCheck; 
 
 	void ConveyorBeltCheck(float DeltaTime);
-	
+
+	UPROPERTY(Replicated)
+	class UMaterialParameterCollection* collection;
 };
