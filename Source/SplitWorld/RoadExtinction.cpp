@@ -4,6 +4,8 @@
 #include "RoadExtinction.h" 
 #include "Components/BoxComponent.h" 
 #include "SplitPlayer.h" 
+#include "Materials/MaterialParameterCollection.h" 
+#include "Materials/MaterialParameterCollectionInstance.h" 
 
 ARoadExtinction::ARoadExtinction()
 { 
@@ -21,7 +23,7 @@ ARoadExtinction::ARoadExtinction()
 	DestroyBoxComp->SetupAttachment(Root);
 	DestroyBoxComp->SetBoxExtent(FVector(50.0f));
 	DestroyBoxComp->SetIsReplicated(true); 
-
+	
 	SetReplicates(true); 
 	SetReplicateMovement(true); 
 	bAlwaysRelevant = true; 
@@ -39,17 +41,25 @@ void ARoadExtinction::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (bStart)
+	if (HasAuthority() && bStart)
 	{ 
 		SetActorLocation(GetActorLocation() + FVector(0.0f, 0.0f, 1.0f) * 100.0f * DeltaTime); 
+		if (auto MPC_Instance = GetWorld()->GetParameterCollectionInstance(MPC_Extinction))
+		{
+			MPC_Instance->SetScalarParameterValue(FName(TEXT("World_Z")), GetActorLocation().Z); 
+		}
 	} 
 }
 
 void ARoadExtinction::OnStartBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{ 
-	bStart = true; 
-	StartBoxComp->SetCollisionEnabled(ECollisionEnabled::NoCollision); 
-}
+{
+	auto Player = Cast<ASplitPlayer>(OtherActor);
+	if (Player)
+	{
+		bStart = true;
+		StartBoxComp->SetCollisionEnabled(ECollisionEnabled::NoCollision); 
+	} 
+} 
 
 void ARoadExtinction::OnDestroyBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 { 
@@ -59,4 +69,3 @@ void ARoadExtinction::OnDestroyBoxBeginOverlap(UPrimitiveComponent* OverlappedCo
 		Player->Die(); 
 	} 
 }
-

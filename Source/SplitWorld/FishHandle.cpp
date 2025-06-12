@@ -7,14 +7,15 @@
 #include "Fish.h"
 #include "Laser.h"
 #include "SplitWorldGameModeBase.h"
+#include "Components/BoxComponent.h"
 
 AFishHandle::AFishHandle()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
-	SetRootComponent(Mesh);
-	Mesh->SetCollisionProfileName(TEXT("Objects"));
+	Mesh->SetupAttachment(BoxComp);
+	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision); 
 
 	SetReplicates(true); 
 	bAlwaysRelevant = true; 
@@ -45,15 +46,15 @@ void AFishHandle::Interaction_Implementation()
 
 		Fishes[0]->Launch();
 		FireLasers[0]->Fire(); 
-		GetWorldTimerManager().SetTimer(FishTimerManager, [&]()
+		GetWorldTimerManager().SetTimer(FishTimerHandle, [&]()
 		{
 			Fishes[1]->Launch();
 			FireLasers[1]->Fire(); 
-			GetWorldTimerManager().SetTimer(FishTimerManager, [&]()
+			GetWorldTimerManager().SetTimer(FishTimerHandle, [&]()
 			{
 				Fishes[2]->Launch();
 				FireLasers[2]->Fire(); 
-				GetWorldTimerManager().SetTimer(FishTimerManager, [&]()
+				GetWorldTimerManager().SetTimer(FishTimerHandle, [&]()
 				{
 					bLaunched = false;
 					GM->bPlayer_Interactions[1] &= ~1;

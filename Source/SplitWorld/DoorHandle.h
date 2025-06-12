@@ -25,5 +25,7 @@ private:
 	
 	UPROPERTY()
 	class ASplitWorldGameModeBase* GM; 
+
+	FTimerHandle DoorInputTimerHandle; 
 	
 }; 

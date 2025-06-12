@@ -3,23 +3,23 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h" 
-#include "InteractableActorBase.h"
-#include "Crack.generated.h"
+#include "GameFramework/Actor.h"
+#include "DoorHandleDevice.generated.h"
 
 UCLASS()
-class SPLITWORLD_API ACrack : public AInteractableActorBase 
+class SPLITWORLD_API ADoorHandleDevice : public AActor
 {
 	GENERATED_BODY()
 	
-public:	
-	ACrack(); 
+public: 
+	ADoorHandleDevice(); 
 	virtual void BeginPlay() override; 
 	virtual void Tick(float DeltaTime) override;
 
-	virtual void Interaction_Implementation() override; 
-
 private: 
+	UPROPERTY(EditAnywhere) 
+	class ADoor* Door; 
+
 	UPROPERTY()
 	class ASplitWorldGameModeBase* GM; 
 
