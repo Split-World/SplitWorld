@@ -116,12 +116,12 @@ ASplitPlayer::ASplitPlayer()
 		IA_Run = tempIARun.Object;
 	}
 	
-	ConstructorHelpers::FObjectFinder<UAnimMontage>tempClimbMontage
-	(TEXT("/Script/Engine.AnimMontage'/Game/JS_Folder/Animations/AM/AM_Climb.AM_Climb'"));
+	ConstructorHelpers::FObjectFinder<UAnimMontage>tempTraversalMontage
+	(TEXT("/Script/Engine.AnimSequence'/Game/JS_Folder/Animations/AS/AS_Traversal.AS_Traversal'"));
 	
-	if (tempClimbMontage.Succeeded())
+	if (tempTraversalMontage.Succeeded())
 	{
-		ClimbMontage = tempClimbMontage.Object;
+		TraversalMontage = tempTraversalMontage.Object;
 	}
 	
 	bAlwaysRelevant = true;
@@ -169,7 +169,10 @@ void ASplitPlayer::NotifyControllerChanged()
 void ASplitPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (!ClonePlayer) return;
+	
+	if (!IsValid(ClonePlayer)) return;
+	if (!IsValid(anim)) return;
+	
 	if (IsLocallyControlled())
 	{ 
 		CloneLocation((HasAuthority() ? CloneDist : -CloneDist) + GetActorLocation());
@@ -182,24 +185,7 @@ void ASplitPlayer::Tick(float DeltaTime)
 
 	if (!GetCharacterMovement()->IsFalling())
 	{
-		bJumping = false;
-		bDoubleJumping = false;
-		bFailClimb = false;
-		bClimbing = false;
-		bTraversal = false;
-		bDashing = false;
-
-		anim->bJumping = false;
-		anim->bDoubleJumping = false;
-		anim->bClimbing = false;
-		anim->bTraversal = false;
-		anim->bDashing = false;
-		
-		ClonePlayer->anim->bJumping = false;
-		ClonePlayer->anim->bDoubleJumping = false;
-		ClonePlayer->anim->bClimbing = false;
-		ClonePlayer->anim->bTraversal = false;
-		ClonePlayer->anim->bDashing = false;
+		OnGroundServer();
 		
 		GetCharacterMovement()->GravityScale = 1.0f;
 	}
@@ -224,15 +210,11 @@ void ASplitPlayer::Tick(float DeltaTime)
 				GetCharacterMovement()->Velocity = FVector::ZeroVector;
 				GetCharacterMovement()->GravityScale = 0.0f;
 				GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-				bTraversal = true;
-				bCanClimb = false;
 				
-				anim->bTraversal = true;
+				TraversalServer();
 				
-				ClonePlayer->anim->bTraversal = true;
-				
-				anim->Montage_Play(ClimbMontage);
-				ClonePlayer->anim->Montage_Play(ClimbMontage);
+				anim->Montage_Play(TraversalMontage);
+				ClonePlayer->anim->Montage_Play(TraversalMontage);
 			}
 		}
 	}
@@ -251,6 +233,47 @@ void ASplitPlayer::Tick(float DeltaTime)
 	ConveyorBeltCheck(DeltaTime); 
 }
 
+void ASplitPlayer::OnGroundServer_Implementation()
+{
+	bJumping = false;
+	bDoubleJumping = false;
+	bFailClimb = false;
+	bClimbing = false;
+	bTraversal = false;
+	bDashing = false;
+
+	OnGroundMulti();
+}
+
+void ASplitPlayer::OnGroundMulti_Implementation()
+{
+	anim->bJumping = false;
+	anim->bDoubleJumping = false;
+	anim->bClimbing = false;
+	anim->bTraversal = false;
+	anim->bDashing = false;
+	
+	ClonePlayer->anim->bJumping = false;
+	ClonePlayer->anim->bDoubleJumping = false;
+	ClonePlayer->anim->bClimbing = false;
+	ClonePlayer->anim->bTraversal = false;
+	ClonePlayer->anim->bDashing = false;
+}
+
+void ASplitPlayer::TraversalServer_Implementation()
+{
+	bTraversal = true;
+	bCanClimb = false;
+
+	TraversalMulti();
+}
+
+void ASplitPlayer::TraversalMulti_Implementation()
+{
+	anim->bTraversal = true;
+				
+	ClonePlayer->anim->bTraversal = true;
+}
 // Called to bind functionality to input
 void ASplitPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -354,6 +377,22 @@ void ASplitPlayer::MoveCancleMulti_Implementation()
 	ClonePlayer->anim->bMoving = false;
 }
 
+void ASplitPlayer::DoubleJumpMulti_Implementation()
+{
+	anim->bDoubleJumping = true;
+
+	ClonePlayer->anim->bDoubleJumping = true;
+}
+
+void ASplitPlayer::JumpAction(const FInputActionValue& Value)
+{
+	if ((!bJumping || !bDoubleJumping) && !bDashing && !bClimbing)
+	{
+		Jump();
+		JumpServer();
+	}
+}
+
 void ASplitPlayer::JumpServer_Implementation()
 {
 	if (!bJumping)
@@ -373,22 +412,6 @@ void ASplitPlayer::JumpMulti_Implementation()
 	anim->bJumping = true;
 
 	ClonePlayer->anim->bJumping = true;
-}
-
-void ASplitPlayer::DoubleJumpMulti_Implementation()
-{
-	anim->bDoubleJumping = true;
-
-	ClonePlayer->anim->bDoubleJumping = true;
-}
-
-void ASplitPlayer::JumpAction(const FInputActionValue& Value)
-{
-	if ((!bJumping || !bDoubleJumping) && !bDashing)
-	{
-		Jump();
-	}
-	JumpServer();
 }
 
 void ASplitPlayer::InteractAction(const FInputActionValue& Value)
@@ -424,19 +447,6 @@ void ASplitPlayer::InteractAction(const FInputActionValue& Value)
 	}
 }
 
-void ASplitPlayer::DashServer_Implementation()
-{
-	bDashing = true;
-	DashMulti();
-}
-
-void ASplitPlayer::DashMulti_Implementation()
-{
-	anim->bDashing = true;
-
-	ClonePlayer->anim->bDashing = true;
-}
-
 void ASplitPlayer::DashAction(const FInputActionValue& Value)
 {
 	if (!bRunning && !bDashing && !bClimbing)
@@ -450,11 +460,22 @@ void ASplitPlayer::DashAction(const FInputActionValue& Value)
 	}
 }
 
-void ASplitPlayer::RunMulti_Implementation(bool isRunning)
+void ASplitPlayer::DashServer_Implementation()
 {
-	anim->bRunning = isRunning;
+	bDashing = true;
+	DashMulti();
+}
 
-	ClonePlayer->anim->bRunning = isRunning;
+void ASplitPlayer::DashMulti_Implementation()
+{
+	anim->bDashing = true;
+
+	ClonePlayer->anim->bDashing = true;
+}
+
+void ASplitPlayer::RunAction(const FInputActionValue& Value)
+{
+	RunServer();
 }
 
 void ASplitPlayer::RunServer_Implementation()
@@ -473,9 +494,11 @@ void ASplitPlayer::RunServer_Implementation()
 	}
 }
 
-void ASplitPlayer::RunAction(const FInputActionValue& Value)
+void ASplitPlayer::RunMulti_Implementation(bool isRunning)
 {
-	RunServer();
+	anim->bRunning = isRunning;
+
+	ClonePlayer->anim->bRunning = isRunning;
 }
 
 void ASplitPlayer::Die()

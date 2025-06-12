@@ -87,6 +87,12 @@ public:
 	void Die();
 
 	UFUNCTION(Server, Reliable)
+	void OnGroundServer();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void OnGroundMulti();
+	
+	UFUNCTION(Server, Reliable)
 	void MoveServer();
 
 	UFUNCTION(NetMulticast, Reliable)
@@ -150,6 +156,12 @@ public:
 	bool DetectWall(FHitResult& Out_Hit, FVector& HitLocation, FVector& Normal, int& index);
 	void ClimbWall(float Value);
 
+	UFUNCTION(Server, Reliable)
+	void TraversalServer();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void TraversalMulti();
+
 	FVector MoveVectorUpward(FVector InVector, float AddValue);
 	FVector MoveVectorDownward(FVector InVector, float SubtractValue);
 	FVector MoveVectorForward(FVector InVector, FRotator InRotation, float AddValue);
@@ -160,7 +172,7 @@ public:
 	FRotator ReveseNormal(FVector InNormal);
 
 	UPROPERTY(EditAnywhere)
-	UAnimMontage* ClimbMontage;
+	UAnimMontage* TraversalMontage;
 
 	UPROPERTY()
 	class USplitPlayerAnimInstance* anim;
