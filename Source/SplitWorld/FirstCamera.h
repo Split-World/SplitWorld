@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "FirstCamera.generated.h" 
 
+class ASecondCamera;
+
 USTRUCT() 
 struct FCameraData
 {
@@ -31,6 +33,9 @@ public:
 	virtual void BeginPlay() override; 
 	virtual void Tick(float DeltaTime) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override; 
+
+	FVector GetCameraLocation(); 
+	ASecondCamera* GetSecondCamera(); 
 	
 private: 
 	void UpdateMask(float DeltaTime);

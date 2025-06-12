@@ -16,6 +16,8 @@ public:
 	virtual void BeginPlay() override; 
 	virtual void Tick(float DeltaTime) override;
 
+	FVector GetCameraLocation(); 
+
 private: 
 	UPROPERTY(EditAnywhere)
 	class USpringArmComponent* SpringArmComp;

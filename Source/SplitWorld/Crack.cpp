@@ -9,9 +9,6 @@ ACrack::ACrack()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	
-	BoxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComp"));
-	SetRootComponent(BoxComp);
-	BoxComp->SetBoxExtent(FVector(50.0f));
 	BoxComp->SetCollisionProfileName(TEXT("Crack"));
 	BoxComp->SetIsReplicated(true); 
 

@@ -32,6 +32,8 @@ public:
 	virtual void Tick(float DeltaTime) override; 
 
 	void ChangeMapPart(EMapPart Part); 
+	void RotateDoorHandle(float DeltaTime); 
+	void CrackInput(float DeltaTime); 
 	
 	UPROPERTY() 
 	TArray<class AController*> Players; 
@@ -41,5 +43,10 @@ public:
 	EMapPart CurPart = EMapPart::Part1; 
 
 	FChangePart ChangePartDelegate; 
+
+	int DoorInput; 
+	float DoorGauge; 
+	
+	float CrackGauge[2]; 
 
 };

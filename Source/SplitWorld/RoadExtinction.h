@@ -16,8 +16,10 @@ public:
 	virtual void BeginPlay() override; 
 	virtual void Tick(float DeltaTime) override; 
 
-private: 
+private:
+	UFUNCTION()
 	void OnStartBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult); 
+	UFUNCTION()
 	void OnDestroyBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult); 
 
 	UPROPERTY(EditAnywhere) 
@@ -28,6 +30,9 @@ private:
 	class UBoxComponent* DestroyBoxComp; 
 
 	UPROPERTY(EditAnywhere) 
-	bool bStart; 
+	bool bStart;
+
+	UPROPERTY(EditAnywhere)
+	UMaterialParameterCollection* MPC_Extinction; 
 
 };

@@ -27,7 +27,7 @@ private:
 	class ASplitWorldGameModeBase* GM;
 
 	bool bLaunched; 
-	FTimerHandle FishTimerManager;
+	FTimerHandle FishTimerHandle;
 
 	UPROPERTY(EditAnywhere)
 	TArray<class AFish*> Fishes;
