@@ -16,18 +16,55 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Net/UnrealNetwork.h"
 #include "SplitWorldGameModeBase.h" 
+#include "GroomComponent.h" 
+#include "SpawnPoint.h"
+#include "Kismet/GameplayStatics.h"
+#include "Materials/MaterialParameterCollection.h"
+#include "Materials/MaterialParameterCollectionInstance.h"
+#include "UniversalObjectLocators/AnimInstanceLocatorFragment.h"
 
 // Sets default values
 ASplitPlayer::ASplitPlayer()
 {
  	PrimaryActorTick.bCanEverTick = true;
 
-	ConstructorHelpers::FObjectFinder<USkeletalMesh>tempMesh
+	BodyComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Body"));
+	BodyComp->SetupAttachment(GetMesh());
+
+	BodyComp->SetRelativeLocation(FVector(0, 0, -90));
+	BodyComp->SetRelativeRotation(FRotator(0, -90, 0));
+	
+	ConstructorHelpers::FObjectFinder<USkeletalMesh>tempBodyComp
 	(TEXT("/Script/Engine.SkeletalMesh'/Game/Slay/Assets/Chr/Echo/Meshes/SK_Echo.SK_Echo'"));
-	if (tempMesh.Succeeded())
+
+	if (tempBodyComp.Succeeded())
 	{
-		GetMesh()->SetSkeletalMesh(tempMesh.Object);
+		BodyComp->SetSkeletalMesh(tempBodyComp.Object);
 	}
+	
+	HairComp = CreateDefaultSubobject<UGroomComponent>(TEXT("Hair"));
+	HairComp->SetupAttachment(BodyComp);
+
+	ConstructorHelpers::FObjectFinder<UGroomAsset>tempHairGroomAsset
+	(TEXT("/Script/HairStrandsCore.GroomAsset'/Game/Slay/Assets/Chr/Echo/Hair/Hair_S_UpdoBuns.Hair_S_UpdoBuns'"));
+
+	ConstructorHelpers::FObjectFinder<UGroomBindingAsset>tempHairBindingAsset
+	(TEXT("/Script/HairStrandsCore.GroomBindingAsset'/Game/Slay/Assets/Chr/Echo/Hair/Hair_S_UpdoBuns_Echo_M3D_LOD0_Binding.Hair_S_UpdoBuns_Echo_M3D_LOD0_Binding'"));
+
+	HairComp->SetGroomAsset(tempHairGroomAsset.Object);
+	HairComp->SetBindingAsset(tempHairBindingAsset.Object);
+	
+	EyebrowsComp = CreateDefaultSubobject<UGroomComponent>(TEXT("Eyebrows"));
+	EyebrowsComp->SetupAttachment(BodyComp);
+
+	ConstructorHelpers::FObjectFinder<UGroomAsset>tempEyebrowsGroomAsset
+	(TEXT("/Script/HairStrandsCore.GroomAsset'/Game/Slay/Assets/Chr/Echo/Hair/Eyebrows_L_Echo.Eyebrows_L_Echo'"));
+
+	ConstructorHelpers::FObjectFinder<UGroomBindingAsset>tempEyebrowsBindingAsset
+	(TEXT("/Script/HairStrandsCore.GroomBindingAsset'/Game/Slay/Assets/Chr/Echo/Hair/Eyebrows_L_Echo_Echo_M3D_LOD0_Binding.Eyebrows_L_Echo_Echo_M3D_LOD0_Binding'"));
+	
+	EyebrowsComp->SetGroomAsset(tempEyebrowsGroomAsset.Object);
+	EyebrowsComp->SetBindingAsset(tempEyebrowsBindingAsset.Object);
 	
 	GetCharacterMovement()->JumpZVelocity = 500.f;
 
@@ -86,7 +123,7 @@ ASplitPlayer::ASplitPlayer()
 	{
 		ClimbMontage = tempClimbMontage.Object;
 	}
-
+	
 	bAlwaysRelevant = true;
 }
 
@@ -99,13 +136,15 @@ void ASplitPlayer::BeginPlay()
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
 	
-	JumpMaxCount = 3;
+	JumpMaxCount = 2;
 
 	if (IsLocallyControlled())
 	{
 		SpawnClone(HasAuthority() ? Player1Start : Player2Start, HasAuthority() ? CloneDist : -CloneDist);
 	}
 
+	anim = Cast<USplitPlayerAnimInstance>(BodyComp->GetAnimInstance());
+	
 	if (HasAuthority())
 	{
 		GM = Cast<ASplitWorldGameModeBase>(GetWorld()->GetAuthGameMode());
@@ -130,8 +169,8 @@ void ASplitPlayer::NotifyControllerChanged()
 void ASplitPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
-	if (ClonePlayer && IsLocallyControlled())
+	if (!ClonePlayer) return;
+	if (IsLocallyControlled())
 	{ 
 		CloneLocation((HasAuthority() ? CloneDist : -CloneDist) + GetActorLocation());
 	}
@@ -148,7 +187,20 @@ void ASplitPlayer::Tick(float DeltaTime)
 		bFailClimb = false;
 		bClimbing = false;
 		bTraversal = false;
-		bDashing = false; 
+		bDashing = false;
+
+		anim->bJumping = false;
+		anim->bDoubleJumping = false;
+		anim->bClimbing = false;
+		anim->bTraversal = false;
+		anim->bDashing = false;
+		
+		ClonePlayer->anim->bJumping = false;
+		ClonePlayer->anim->bDoubleJumping = false;
+		ClonePlayer->anim->bClimbing = false;
+		ClonePlayer->anim->bTraversal = false;
+		ClonePlayer->anim->bDashing = false;
+		
 		GetCharacterMovement()->GravityScale = 1.0f;
 	}
 	else
@@ -158,9 +210,9 @@ void ASplitPlayer::Tick(float DeltaTime)
 		FVector Normal;
 		int index;
 		
-		if (bTryClimb && !bFailClimb && !bTraversal) bTryCanClimb = DetectWall(OutHit, HitLocation, Normal, index);
+		if (bMoving && !bFailClimb && !bTraversal) bCanClimb = DetectWall(OutHit, HitLocation, Normal, index);
 		
-		if (bTryCanClimb)
+		if (bCanClimb)
 		{
 			if (index == 0)
 			{
@@ -173,8 +225,14 @@ void ASplitPlayer::Tick(float DeltaTime)
 				GetCharacterMovement()->GravityScale = 0.0f;
 				GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 				bTraversal = true;
-				bTryCanClimb = false;
-				PlayAnimMontage(ClimbMontage);
+				bCanClimb = false;
+				
+				anim->bTraversal = true;
+				
+				ClonePlayer->anim->bTraversal = true;
+				
+				anim->Montage_Play(ClimbMontage);
+				ClonePlayer->anim->Montage_Play(ClimbMontage);
 			}
 		}
 	}
@@ -187,7 +245,7 @@ void ASplitPlayer::Tick(float DeltaTime)
 
 	if (bDashing)
 	{
-		SetActorLocation(GetActorLocation() + GetActorForwardVector() * GetWorld()->GetDeltaSeconds() * 1000.f);
+		SetActorLocation(GetActorLocation() + GetActorForwardVector() * GetWorld()->GetDeltaSeconds() * 700.f);
 	}
 
 	ConveyorBeltCheck(DeltaTime); 
@@ -201,7 +259,7 @@ void ASplitPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent)) 
 	{
 		EnhancedInputComponent->BindAction(IA_Move, ETriggerEvent::Triggered, this, &ASplitPlayer::MoveAction);
-		EnhancedInputComponent->BindAction(IA_Move, ETriggerEvent::Canceled, this, &ASplitPlayer::MoveCancle);
+		EnhancedInputComponent->BindAction(IA_Move, ETriggerEvent::Completed, this, &ASplitPlayer::MoveCancle);
 
 		EnhancedInputComponent->BindAction(IA_Jump, ETriggerEvent::Started, this, &ASplitPlayer::JumpAction);
 		
@@ -217,13 +275,14 @@ void ASplitPlayer::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	
+	DOREPLIFETIME(ASplitPlayer, bMoving);
+	
 	DOREPLIFETIME(ASplitPlayer, bJumping);
 	DOREPLIFETIME(ASplitPlayer, bDoubleJumping);
 	
 	DOREPLIFETIME(ASplitPlayer, bClimbing);
 	DOREPLIFETIME(ASplitPlayer, bFailClimb);
-	DOREPLIFETIME(ASplitPlayer, bTryClimb);
-	DOREPLIFETIME(ASplitPlayer, bTryCanClimb);
+	DOREPLIFETIME(ASplitPlayer, bCanClimb);
 	DOREPLIFETIME(ASplitPlayer, bTraversal);
 	DOREPLIFETIME(ASplitPlayer, bAdjustAnimaition);
 	
@@ -241,7 +300,7 @@ void ASplitPlayer::MoveAction(const FInputActionValue& Value)
 {
 	if (bClimbing) return;
 	if (bDashing) return;
-	bTryClimb = true;
+	MoveServer();
 
 	FVector2D v = Value.Get<FVector2D>();
 	Dir += Forwards[CurPart] * v.X * (v.X > 0 ? MoveCheck.Z : MoveCheck.W); 
@@ -251,36 +310,76 @@ void ASplitPlayer::MoveAction(const FInputActionValue& Value)
 	if (GetCharacterMovement()->IsFalling())
 	{
 		AddMovementInput(Dir);
-		// AddMovementInput(UKismetMathLibrary::GetRightVector(FRotator(rot.Roll, 0,rot.Yaw)), Value.Get<FVector>().X, false);
-		// AddMovementInput(UKismetMathLibrary::GetForwardVector(FRotator(0, 0,rot.Yaw)), Value.Get<FVector>().Y, false);
 	}
 	else 
 	{
 		AddMovementInput(Dir);
-		// AddMovementInput(UKismetMathLibrary::GetRightVector(FRotator(rot.Roll, 0,rot.Yaw)), Value.Get<FVector>().X, false);
-		// AddMovementInput(UKismetMathLibrary::GetForwardVector(FRotator(0, 0,rot.Yaw)), Value.Get<FVector>().Y, false);
 	}
 
 	Dir = FVector(0); 
 }
 
+void ASplitPlayer::MoveServer_Implementation()
+{
+	bMoving = true;
+	MoveMulti();
+}
+
+void ASplitPlayer::MoveMulti_Implementation()
+{
+	anim->bMoving = true;
+	
+	ClonePlayer->anim->bMoving = true;
+}
+
 void ASplitPlayer::MoveCancle(const FInputActionValue& Value)
 {
-	bTryClimb = false;
+	MoveCancleServer();
+}
+
+void ASplitPlayer::MoveCancleServer_Implementation()
+{
+	bMoving = false;
+	MoveCancleMulti();
+
+	bRunning = false;
+	RunMulti(false);
+	GetCharacterMovement()->MaxWalkSpeed = 600.f;
+}
+
+void ASplitPlayer::MoveCancleMulti_Implementation()
+{
+	anim->bMoving = false;
+
+	ClonePlayer->anim->bMoving = false;
 }
 
 void ASplitPlayer::JumpServer_Implementation()
 {
 	if (!bJumping)
 	{
-		JumpDir = Dir;
 		bJumping = true;
+		JumpMulti();
 	}
 	else if (!bDoubleJumping)
 	{
-		JumpDir = Dir;
 		bDoubleJumping = true;
+		DoubleJumpMulti();
 	}
+}
+
+void ASplitPlayer::JumpMulti_Implementation()
+{
+	anim->bJumping = true;
+
+	ClonePlayer->anim->bJumping = true;
+}
+
+void ASplitPlayer::DoubleJumpMulti_Implementation()
+{
+	anim->bDoubleJumping = true;
+
+	ClonePlayer->anim->bDoubleJumping = true;
 }
 
 void ASplitPlayer::JumpAction(const FInputActionValue& Value)
@@ -328,6 +427,14 @@ void ASplitPlayer::InteractAction(const FInputActionValue& Value)
 void ASplitPlayer::DashServer_Implementation()
 {
 	bDashing = true;
+	DashMulti();
+}
+
+void ASplitPlayer::DashMulti_Implementation()
+{
+	anim->bDashing = true;
+
+	ClonePlayer->anim->bDashing = true;
 }
 
 void ASplitPlayer::DashAction(const FInputActionValue& Value)
@@ -336,18 +443,32 @@ void ASplitPlayer::DashAction(const FInputActionValue& Value)
 	{
 		DashServer();
 	}
+	
+	if (GetCharacterMovement()->IsFalling())
+	{
+		
+	}
+}
+
+void ASplitPlayer::RunMulti_Implementation(bool isRunning)
+{
+	anim->bRunning = isRunning;
+
+	ClonePlayer->anim->bRunning = isRunning;
 }
 
 void ASplitPlayer::RunServer_Implementation()
 {
-	if (!bRunning && !bDashing && !bClimbing && !bJumping)
+	if (!bRunning && !bDashing && !bClimbing && !bJumping && bMoving)
 	{
 		bRunning = true;
+		RunMulti(true);
 		GetCharacterMovement()->MaxWalkSpeed = 1000.f;
 	}
 	else
 	{
 		bRunning = false;
+		RunMulti(false);
 		GetCharacterMovement()->MaxWalkSpeed = 600.f;
 	}
 }
@@ -359,6 +480,26 @@ void ASplitPlayer::RunAction(const FInputActionValue& Value)
 
 void ASplitPlayer::Die()
 { 
+	if (CurPart == 6)
+	{
+		TArray<class AActor*> FoundActors;
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASpawnPoint::StaticClass(), FoundActors);
+
+		float Z;
+		GetWorld()->GetParameterCollectionInstance(collection)->GetScalarParameterValue(FName(TEXT("World_Z")),Z);
+		
+		float distance = 999999.f;
+		for (auto Actor : FoundActors)
+		{
+			if (Actor->GetActorLocation().Z > Z)
+				if (distance > FVector::Dist(GetActorLocation(), Actor->GetActorLocation()))
+				{
+					distance = FVector::Dist(GetActorLocation(), Actor->GetActorLocation());
+					SpawnTransform = Actor->GetActorTransform();
+				}
+		}
+	}
+
 	SetActorTransform(SpawnTransform);
 }
 
@@ -411,6 +552,10 @@ void ASplitPlayer::ClimbWall(float Value)
 	GetCharacterMovement()->GravityScale = 0.f;
 	bClimbing = true;
 	
+	anim->bClimbing = true;
+	
+	ClonePlayer->anim->bClimbing = true;
+	
 	FHitResult OutHit;
 	TArray<AActor*> ignoreActors;
 	ignoreActors.Add(this);
@@ -439,6 +584,11 @@ void ASplitPlayer::ClimbWall(float Value)
 	{
 		bFailClimb = true;
 		bClimbing = false;
+		
+		anim->bClimbing = false;
+
+		ClonePlayer->anim->bClimbing = false;
+		
 		GetCharacterMovement()->GravityScale = 1.f;
 	}
 }
@@ -486,7 +636,7 @@ FRotator ASplitPlayer::ReveseNormal(FVector InNormal)
 
 void ASplitPlayer::CloneLocation_Implementation(FVector Location)
 {
-	ClonePlayer->SetActorLocation(Location);
+	ClonePlayer->SetActorLocation(Location - FVector(0, 0, 90));
 }
 
 void ASplitPlayer::SpawnClone_Implementation(FVector PlayerStart, FVector LocationOffset)
