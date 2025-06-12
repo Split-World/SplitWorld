@@ -2,3 +2,14 @@
 
 
 #include "SplitWorldGameInstance.h"
+
+void USplitWorldGameInstance::Init()
+{
+	Super::Init();
+
+	
+}
+
+void USplitWorldGameInstance::CreateSession(int32 playerCount)
+{
+}
