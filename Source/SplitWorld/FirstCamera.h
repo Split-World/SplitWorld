@@ -20,7 +20,9 @@ public:
 	FRotator Rotation;
 	UPROPERTY(EditAnywhere)
 	float Length;
-
+	UPROPERTY(EditAnywhere)
+	float Speed; 
+	
 };
 
 UCLASS()

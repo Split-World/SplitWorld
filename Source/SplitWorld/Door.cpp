@@ -12,7 +12,7 @@ ADoor::ADoor()
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	SetRootComponent(Mesh);
 	Mesh->SetCollisionProfileName(TEXT("Objects"));
-	Mesh->SetIsReplicated(true);
+	Mesh->SetIsReplicated(true); 
 
 	SetReplicates(true); 
 	SetReplicateMovement(true); 
@@ -26,23 +26,24 @@ void ADoor::BeginPlay()
 	if (HasAuthority())
 	{
 		GM = Cast<ASplitWorldGameModeBase>(GetWorld()->GetAuthGameMode());
-	} 
+	}
+
+	StartLocation = GetActorLocation(); 
 } 
 
 void ADoor::Tick(float DeltaTime)
 {
-	Super::Tick(DeltaTime); 
-	
-	if (GM && GM->CurPart == EMapPart::Part2) 
-	{ 
-		if (!bActive) 
+	Super::Tick(DeltaTime);
+
+	if (HasAuthority()) 
+	{
+		if (GM->DoorInput)
 		{
-			bActive = true;
-			Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			SetActorLocation(FMath::Lerp(StartLocation, StartLocation + FVector(0, 0, -300.0f), GM->DoorGauge / 10.0f));
 		} 
-		else if (GetActorLocation().Z > -800.0f)
+		else if (GM->CurPart == EMapPart::Part2 && GetActorLocation().Z > -800.0f) 
 		{
-			SetActorLocation(GetActorLocation() + FVector(0, 0, -1200.0f) * DeltaTime); 
+			SetActorLocation(GetActorLocation() + FVector(0, 0, -1200.0f) * DeltaTime);
 		}
 	} 
 }

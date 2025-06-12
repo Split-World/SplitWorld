@@ -42,7 +42,7 @@ ASplitPlayer::ASplitPlayer()
 		BodyComp->SetSkeletalMesh(tempBodyComp.Object);
 	}
 	
-	HairComp = CreateDefaultSubobject<UGroomComponent>(TEXT("Hair"));
+	/*HairComp = CreateDefaultSubobject<UGroomComponent>(TEXT("Hair"));
 	HairComp->SetupAttachment(BodyComp);
 
 	ConstructorHelpers::FObjectFinder<UGroomAsset>tempHairGroomAsset
@@ -64,7 +64,7 @@ ASplitPlayer::ASplitPlayer()
 	(TEXT("/Script/HairStrandsCore.GroomBindingAsset'/Game/Slay/Assets/Chr/Echo/Hair/Eyebrows_L_Echo_Echo_M3D_LOD0_Binding.Eyebrows_L_Echo_Echo_M3D_LOD0_Binding'"));
 	
 	EyebrowsComp->SetGroomAsset(tempEyebrowsGroomAsset.Object);
-	EyebrowsComp->SetBindingAsset(tempEyebrowsBindingAsset.Object);
+	EyebrowsComp->SetBindingAsset(tempEyebrowsBindingAsset.Object);*/
 	
 	GetCharacterMovement()->JumpZVelocity = 500.f;
 

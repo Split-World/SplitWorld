@@ -14,8 +14,9 @@ AMovingThorn::AMovingThorn()
 	Mesh->SetupAttachment(BoxComp); 
 	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision); 
 
-	bReplicates = true; 
-	SetReplicateMovement(true); 
+	SetReplicates(true); 
+	SetReplicateMovement(true);
+	bAlwaysRelevant = true; 
 } 
 
 void AMovingThorn::BeginPlay()
@@ -46,7 +47,6 @@ void AMovingThorn::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 
 void AMovingThorn::Execute()
 { 
-	GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, TEXT("MovingThron")); 
 	if (!Idx && Player)
 	{
 		Player->Die(); 
