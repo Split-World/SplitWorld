@@ -15,11 +15,15 @@ public:
 	virtual void NativeConstruct() override; 
 
 	UFUNCTION() 
-	void Play(); 
+	void Play();
+	UFUNCTION() 
+	void Quit();
 
 	UPROPERTY(meta=(BindWidget)) 
 	class UButton* Btn_Play; 
-
+	UPROPERTY(meta=(BindWidget)) 
+	class UButton* Btn_Quit; 
+	
 	UPROPERTY()
 	class USplitWorldGameInstance* GI; 
 	

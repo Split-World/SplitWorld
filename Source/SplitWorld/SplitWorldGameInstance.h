@@ -17,7 +17,13 @@ public:
 	
 	void CreateSession();
 	void FindSession();
-	void JoinSession(); 
+	void JoinSession();
+
+	void ExitRoom();
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_ExitRoom();
+	UFUNCTION(NetMulticast, Reliable)
+	void MultiRPC_ExitRoom();
 
 private:
 	UFUNCTION()
@@ -25,6 +31,9 @@ private:
 	UFUNCTION()
 	void OnFindSessionsComplete(bool bWasSuccessful); 
 	void OnJoinSessionComplete(FName sessionName, EOnJoinSessionCompleteResult::Type result); 
+	UFUNCTION() 
+	void OnExitRoomComplete(FName sessionName, bool bWasSuccessful); 
+	void OnNetworkFailure(UWorld * World, UNetDriver *NetDriver, ENetworkFailure::Type FailureType, const FString& ErrorString = TEXT(""));
 
 	IOnlineSessionPtr SessionInterface; 
 	TSharedPtr<FOnlineSessionSearch> SessionSearch;

@@ -3,6 +3,8 @@
 
 #include "SplitWorldGameModeBase.h" 
 
+#include "SplitWorldGameInstance.h"
+
 ASplitWorldGameModeBase::ASplitWorldGameModeBase()
 { 
 	PrimaryActorTick.bCanEverTick = true; 
@@ -20,6 +22,13 @@ AActor* ASplitWorldGameModeBase::ChoosePlayerStart_Implementation(AController* P
 	Players.Add(Player);
 	
 	return Super::ChoosePlayerStart_Implementation(Player); 
+}
+
+void ASplitWorldGameModeBase::BeginPlay()
+{
+	Super::BeginPlay();
+
+	GI = Cast<USplitWorldGameInstance>(GetWorld()->GetGameInstance()); 
 }
 
 void ASplitWorldGameModeBase::Tick(float DeltaTime)
@@ -83,4 +92,12 @@ void ASplitWorldGameModeBase::CrackInput(float DeltaTime)
 { 
 	CrackGauge[0] = FMath::Max(0.0f, CrackGauge[0] + DeltaTime * (bPlayer_Interactions[3] & 1 ? 1 : -1)); 
 	CrackGauge[1] = FMath::Max(0.0f, CrackGauge[1] + DeltaTime * (bPlayer_Interactions[3] & 2 ? 1 : -1)); 
+
+	if (CrackGauge[0] > 1.0f && CrackGauge[1] > 1.0f)
+	{
+		if (GI)
+		{
+			GI->ExitRoom(); 
+		}
+	}
 }

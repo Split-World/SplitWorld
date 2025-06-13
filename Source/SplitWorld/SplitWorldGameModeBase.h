@@ -28,7 +28,8 @@ class SPLITWORLD_API ASplitWorldGameModeBase : public AGameModeBase
 
 public:
 	ASplitWorldGameModeBase();
-	virtual AActor* ChoosePlayerStart_Implementation(AController* Player) override; 
+	virtual AActor* ChoosePlayerStart_Implementation(AController* Player) override;
+	virtual void BeginPlay() override; 
 	virtual void Tick(float DeltaTime) override; 
 
 	void ChangeMapPart(EMapPart Part); 
@@ -48,6 +49,9 @@ public:
 	int DoorInput; 
 	float DoorGauge; 
 	
-	float CrackGauge[2]; 
+	float CrackGauge[2];
+
+	UPROPERTY()
+	class USplitWorldGameInstance* GI;
 
 };

@@ -92,7 +92,7 @@ void AInteractableActorBase::OnInteractableRangeBeginOverlap(UPrimitiveComponent
 	if (!HasAuthority()) return; 
 	if (!Idx && !Cast<ASplitPlayer>(OtherActor)->IsLocallyControlled()) return; 
 	if (Idx && Cast<ASplitPlayer>(OtherActor)->IsLocallyControlled()) return;
-	GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, FString::Printf(TEXT("%s"), *UEnum::GetValueAsString(GetLocalRole()))); 
+
 	InteractionWidget->SetVisibility(ESlateVisibility::Visible);
 	Server_SetVisibleUI(ESlateVisibility::Visible); 
 }

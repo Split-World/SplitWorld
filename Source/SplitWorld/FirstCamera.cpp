@@ -251,7 +251,7 @@ void AFirstCamera::CameraTransformSync()
 	FTransform t = GetActorTransform(); 
 	t.SetLocation(t.GetLocation() + LocationOffset); 
 	SecondCamera->SetActorTransform(t); 
-	SpringArmComp->TargetArmLength = CurSpringArmLength; 
+	if (SpringArmComp) SpringArmComp->TargetArmLength = CurSpringArmLength; 
 	SecondCamera->GetSpringArm()->TargetArmLength = CurSpringArmLength; 
 }
 
