@@ -20,7 +20,9 @@ public:
 	FRotator Rotation;
 	UPROPERTY(EditAnywhere)
 	float Length;
-
+	UPROPERTY(EditAnywhere)
+	float Speed; 
+	
 };
 
 UCLASS()
@@ -93,5 +95,7 @@ private:
 	AActor* MaskFloors;
 
 	bool bIsLastPart; 
-	
+
+	UPROPERTY(Replicated) 
+	float CurSpringArmLength; 
 };

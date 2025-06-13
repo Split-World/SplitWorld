@@ -21,7 +21,7 @@ public:
 
 	virtual void Interaction_Implementation() override;
 
-	UPROPERTY(EditAnywhere, Replicated)
+	UPROPERTY(EditAnywhere, Replicated) 
 	int Idx; 
 
 protected: 
@@ -42,11 +42,17 @@ private:
 	UFUNCTION() 
 	void OnInteractableRangeEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
+	UFUNCTION(NetMulticast, Reliable)
+	void Server_SetVisibleUI(ESlateVisibility Visible); 
+	UFUNCTION(NetMulticast, Reliable)
+	void Multi_SetVisibleUI(ESlateVisibility Visible); 
+	
 	UPROPERTY(EditAnywhere)
 	class UUserWidget* InteractionWidget;
 
 	UPROPERTY(EditAnywhere)
 	class AFirstCamera* Camera;
 	UPROPERTY(EditAnywhere)
-	int Map; 
+	int Map;
+	
 };

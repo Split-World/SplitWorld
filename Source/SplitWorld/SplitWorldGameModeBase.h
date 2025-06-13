@@ -13,8 +13,8 @@ enum class EMapPart : uint8
 { 
 	Part1, 
 	PartDoor, 
-	Part2,
-	Part2_5,
+	Part2, 
+	Part2_5, 
 	Part3, 
 	Part3_5, 
 	Part4, 
@@ -38,7 +38,8 @@ public:
 	UPROPERTY() 
 	TArray<class AController*> Players; 
 
-	int bPlayer_Interactions[4]; 
+	int bPlayer_Interactions[4];
+	int bViewChanger[8]; 
 
 	EMapPart CurPart = EMapPart::Part1; 
 

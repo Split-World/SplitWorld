@@ -24,7 +24,7 @@ ARoadExtinction::ARoadExtinction()
 	DestroyBoxComp->SetBoxExtent(FVector(50.0f));
 	DestroyBoxComp->SetIsReplicated(true); 
 	
-	SetReplicates(true); 
+	bReplicates = true;
 	SetReplicateMovement(true); 
 	bAlwaysRelevant = true; 
 }
@@ -35,19 +35,17 @@ void ARoadExtinction::BeginPlay()
 	
 	StartBoxComp->OnComponentBeginOverlap.AddDynamic(this, &ARoadExtinction::OnStartBoxBeginOverlap); 
 	DestroyBoxComp->OnComponentBeginOverlap.AddDynamic(this, &ARoadExtinction::OnDestroyBoxBeginOverlap); 
+
+	MPC_Instance = GetWorld()->GetParameterCollectionInstance(MPC_Extinction); 
 }
 
 void ARoadExtinction::Tick(float DeltaTime)
 {
-	Super::Tick(DeltaTime);
-
+	Super::Tick(DeltaTime); 
 	if (HasAuthority() && bStart)
 	{ 
 		SetActorLocation(GetActorLocation() + FVector(0.0f, 0.0f, 1.0f) * 100.0f * DeltaTime); 
-		if (auto MPC_Instance = GetWorld()->GetParameterCollectionInstance(MPC_Extinction))
-		{
-			MPC_Instance->SetScalarParameterValue(FName(TEXT("World_Z")), GetActorLocation().Z); 
-		}
+		Multi_ChangeWorld_Z(GetActorLocation().Z); 
 	} 
 }
 
@@ -57,7 +55,7 @@ void ARoadExtinction::OnStartBoxBeginOverlap(UPrimitiveComponent* OverlappedComp
 	if (Player)
 	{
 		bStart = true;
-		StartBoxComp->SetCollisionEnabled(ECollisionEnabled::NoCollision); 
+		StartBoxComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	} 
 } 
 
@@ -68,4 +66,9 @@ void ARoadExtinction::OnDestroyBoxBeginOverlap(UPrimitiveComponent* OverlappedCo
 	{ 
 		Player->Die(); 
 	} 
+}
+
+void ARoadExtinction::Multi_ChangeWorld_Z_Implementation(float World_Z)
+{ 
+	MPC_Instance->SetScalarParameterValue(FName(TEXT("World_Z")), GetActorLocation().Z); 
 }
