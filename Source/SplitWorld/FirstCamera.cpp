@@ -11,6 +11,7 @@
 #include "GameFramework/SpringArmComponent.h" 
 #include "Net/UnrealNetwork.h" 
 #include "SecondCamera.h" 
+#include "Chaos/SoftsSpring.h"
 
 AFirstCamera::AFirstCamera()
 {
@@ -38,7 +39,7 @@ AFirstCamera::AFirstCamera()
 	BoundaryComp->SetIsReplicated(true); 
 	BoundaryComp->bEnableClipPlane = true; 
 
-	SetReplicates(true); 
+	bReplicates = true;
 	SetReplicateMovement(true); 
 	bAlwaysRelevant = true; 
 } 
@@ -65,13 +66,13 @@ void AFirstCamera::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime); 
 	if (IsValid(Player1) && IsValid(Player2_Clone)) 
-	{
+	{ 
 		if (HasAuthority())
 		{ 
 			CalcPlayerScreenLocation();
 			SetCameraLocation(DeltaTime); 
-			CameraTransformSync(); 
 		}
+		CameraTransformSync(); 
 		UpdateMask(DeltaTime); 
 	}
 	else
@@ -91,7 +92,8 @@ void AFirstCamera::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLi
 	DOREPLIFETIME(AFirstCamera, Player1); 
 	DOREPLIFETIME(AFirstCamera, Player2); 
 	DOREPLIFETIME(AFirstCamera, Player2_Clone);
-	DOREPLIFETIME(AFirstCamera, LastData); 
+	DOREPLIFETIME(AFirstCamera, LastData);
+	DOREPLIFETIME(AFirstCamera, CurSpringArmLength); 
 }
 
 FVector AFirstCamera::GetCameraLocation()
@@ -179,7 +181,8 @@ void AFirstCamera::SetCameraLocation(float DeltaTime)
 		SetActorLocation(FMath::Lerp(LastData.Location, CameraDatas[int(GM->CurPart)].Location, ViewChangePercent));
 		SetActorRotation(FQuat::Slerp(LastData.Rotation.Quaternion(), CameraDatas[int(GM->CurPart)].Rotation.Quaternion(), ViewChangePercent));
 		SpringArmComp->TargetArmLength = FMath::Lerp(LastData.Length, CameraDatas[int(GM->CurPart)].Length, ViewChangePercent); 
-
+		CurSpringArmLength = SpringArmComp->TargetArmLength; 
+		
 		if (GM->CurPart == EMapPart::PartDoor)
 		{
 			GM->DoorGauge = 0.0f; 
@@ -248,6 +251,8 @@ void AFirstCamera::CameraTransformSync()
 	FTransform t = GetActorTransform(); 
 	t.SetLocation(t.GetLocation() + LocationOffset); 
 	SecondCamera->SetActorTransform(t); 
+	SpringArmComp->TargetArmLength = CurSpringArmLength; 
+	SecondCamera->GetSpringArm()->TargetArmLength = CurSpringArmLength; 
 }
 
 void AFirstCamera::ChangePart()

@@ -14,7 +14,7 @@ AMovingThorn::AMovingThorn()
 	Mesh->SetupAttachment(BoxComp); 
 	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision); 
 
-	SetReplicates(true); 
+	bReplicates = true; 
 	SetReplicateMovement(true);
 	bAlwaysRelevant = true; 
 } 

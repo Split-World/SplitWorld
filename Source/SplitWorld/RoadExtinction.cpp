@@ -24,7 +24,7 @@ ARoadExtinction::ARoadExtinction()
 	DestroyBoxComp->SetBoxExtent(FVector(50.0f));
 	DestroyBoxComp->SetIsReplicated(true); 
 	
-	SetReplicates(true); 
+	bReplicates = true;
 	SetReplicateMovement(true); 
 	bAlwaysRelevant = true; 
 }

@@ -300,7 +300,7 @@ void ASplitPlayer::MoveAction(const FInputActionValue& Value)
 {
 	if (bClimbing) return;
 	if (bDashing) return;
-	MoveServer();
+	if (!bMoving) MoveServer();
 
 	FVector2D v = Value.Get<FVector2D>();
 	Dir += Forwards[CurPart] * v.X * (v.X > 0 ? MoveCheck.Z : MoveCheck.W); 

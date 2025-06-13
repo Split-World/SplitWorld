@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "SecondCamera.generated.h"
 
+class USpringArmComponent;
+
 UCLASS()
 class SPLITWORLD_API ASecondCamera : public AActor
 {
@@ -16,7 +18,9 @@ public:
 	virtual void BeginPlay() override; 
 	virtual void Tick(float DeltaTime) override;
 
-	FVector GetCameraLocation(); 
+	FVector GetCameraLocation();
+
+	USpringArmComponent* GetSpringArm(); 
 
 private: 
 	UPROPERTY(EditAnywhere)

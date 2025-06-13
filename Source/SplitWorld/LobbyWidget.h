@@ -14,10 +14,13 @@ class SPLITWORLD_API ULobbyWidget : public UUserWidget
 public: 
 	virtual void NativeConstruct() override; 
 
-	UPROPERTY(EditAnywhere) 
-	class UButton* Btn_Play; 
-
 	UFUNCTION() 
 	void Play(); 
 
+	UPROPERTY(meta=(BindWidget)) 
+	class UButton* Btn_Play; 
+
+	UPROPERTY()
+	class USplitWorldGameInstance* GI; 
+	
 };
