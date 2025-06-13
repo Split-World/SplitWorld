@@ -9,7 +9,7 @@ ALaser::ALaser()
 { 
 	PrimaryActorTick.bCanEverTick = true; 
 
-	SetReplicates(true);
+	bReplicates = true;
 	bAlwaysRelevant = true; 
 }
 

@@ -16,7 +16,7 @@ AFish::AFish()
 	Mesh->SetCollisionProfileName(TEXT("Fish"));
 	Mesh->SetIsReplicated(true);
 
-	SetReplicates(true);
+	bReplicates = true;
 	SetReplicateMovement(true); 
 	bAlwaysRelevant = true; 
 }

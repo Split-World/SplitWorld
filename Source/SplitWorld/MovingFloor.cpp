@@ -14,7 +14,7 @@ AMovingFloor::AMovingFloor()
 	Mesh->SetCollisionProfileName(TEXT("Objects"));
 	Mesh->SetIsReplicated(true); 
 
-	SetReplicates(true); 
+	bReplicates = true;
 	SetReplicateMovement(true); 
 	bAlwaysRelevant = true; 
 }

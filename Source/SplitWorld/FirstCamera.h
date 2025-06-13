@@ -95,5 +95,7 @@ private:
 	AActor* MaskFloors;
 
 	bool bIsLastPart; 
-	
+
+	UPROPERTY(Replicated) 
+	float CurSpringArmLength; 
 };

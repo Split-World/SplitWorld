@@ -13,10 +13,27 @@ class SPLITWORLD_API USplitWorldGameInstance : public UGameInstance
 	GENERATED_BODY()
 
 public:
-	virtual void Init() override; 
-	void CreateSession(int32 playerCount);
+	virtual void Init() override;
+	
+	void CreateSession();
+	void FindSession();
+	void JoinSession(); 
 
-	IOnlineSessionPtr sessionInterface;
+private:
+	UFUNCTION()
+	void OnCreateSessionComplete(FName sessionName, bool bWasSuccessful); 
+	UFUNCTION()
+	void OnFindSessionsComplete(bool bWasSuccessful); 
+	void OnJoinSessionComplete(FName sessionName, EOnJoinSessionCompleteResult::Type result); 
 
+	IOnlineSessionPtr SessionInterface; 
+	TSharedPtr<FOnlineSessionSearch> SessionSearch;
+
+	FString SessionName = "Default Room";
+	FString HostName = "SplitPlayer";
+
+	int SessionIndex;
+	FString FindSessionName; 
 	
 };
+

@@ -46,9 +46,12 @@ void ADoorHandle::Tick(float DeltaTime)
 
 void ADoorHandle::Interaction_Implementation()
 {
+	Super::Interaction_Implementation();
+	
 	if (GM->bPlayer_Interactions[0] == 3) 
 	{ 
-		GM->DoorInput |= (1 << Idx); 
+		GM->DoorInput |= (1 << Idx);
+		
 		GetWorldTimerManager().ClearTimer(DoorInputTimerHandle); 
 		GetWorldTimerManager().SetTimer(DoorInputTimerHandle, [&]()
 		{
