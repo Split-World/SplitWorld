@@ -35,15 +35,6 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 public:
-	UPROPERTY(EditAnywhere)
-	class USkeletalMeshComponent* BodyComp;
-
-	UPROPERTY(EditAnywhere)
-	class UGroomComponent* HairComp;
-
-	UPROPERTY(EditAnywhere)
-	class UGroomComponent* EyebrowsComp;
-	
 	UPROPERTY(EditAnywhere, Category = Input)
 	class UInputMappingContext* IMC_Default;
 	
@@ -86,9 +77,6 @@ public:
 	UFUNCTION()
 	void Die();
 
-	UFUNCTION(Server, Reliable)
-	void OnGroundServer();
-
 	UFUNCTION(NetMulticast, Reliable)
 	void OnGroundMulti();
 	
@@ -125,6 +113,21 @@ public:
 	FVector Dir;
 
 	UFUNCTION(Server, Reliable)
+	void InteractServer(class AInteractableActorBase* Actor);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void InteractMulti();
+
+	UFUNCTION()
+	void PushMulti();
+
+	UPROPERTY(Replicated)
+	bool bPush = false;
+	
+	UPROPERTY(ReplicatedUsing = PushMulti)
+	bool bPushing = false;
+	
+	UFUNCTION(Server, Reliable)
 	void DashServer();
 
 	UFUNCTION(NetMulticast, Reliable)
@@ -156,12 +159,21 @@ public:
 	bool DetectWall(FHitResult& Out_Hit, FVector& HitLocation, FVector& Normal, int& index);
 	void ClimbWall(float Value);
 
-	UFUNCTION(Server, Reliable)
-	void TraversalServer();
-
 	UFUNCTION(NetMulticast, Reliable)
 	void TraversalMulti();
 
+	UFUNCTION(Server, Reliable)
+	void ClimbServer();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void ClimbMulti();
+
+	UFUNCTION(Server, Reliable)
+	void FailClimbServer();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void FailClimbMulti();
+	
 	FVector MoveVectorUpward(FVector InVector, float AddValue);
 	FVector MoveVectorDownward(FVector InVector, float SubtractValue);
 	FVector MoveVectorForward(FVector InVector, FRotator InRotation, float AddValue);
@@ -173,6 +185,12 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	UAnimMontage* TraversalMontage;
+
+	UPROPERTY(EditAnywhere)
+	UAnimMontage* RollMontage;
+
+	UPROPERTY(EditAnywhere)
+	UAnimMontage* ControlInteractMontage;
 
 	UPROPERTY()
 	class USplitPlayerAnimInstance* anim;
@@ -191,14 +209,10 @@ public:
 	FVector CloneDist;
 
 	UFUNCTION(Server, Reliable)
-
-	void CloneLocation(FVector Location); 
+	void CloneLocation(FTransform Transform); 
 	
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AClonePlayer> ClonePlayerFactory;
-
-	UFUNCTION(Server, Reliable)
-	void Interact(class AInteractableActorBase* Actor);
 
 	UPROPERTY() 
 	class ASplitWorldGameModeBase* GM; 
@@ -211,7 +225,13 @@ public:
 	UPROPERTY(Replicated)
 	int CurPart = 0;
 
-	void ChangePart(); 
+	void ChangePart();
+
+	UFUNCTION(Server, Reliable)
+	void ChangePartServer();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void ChangePartMulti();
 
 	UPROPERTY(Replicated) 
 	FVector4 MoveCheck; 
