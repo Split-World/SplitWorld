@@ -20,9 +20,6 @@ public:
 	virtual void Interaction_Implementation() override; 
 
 private: 
-	UPROPERTY(EditAnywhere) 
-	class UBoxComponent* BoxComp; 
-
 	UPROPERTY()
 	class ASplitWorldGameModeBase* GM; 
 

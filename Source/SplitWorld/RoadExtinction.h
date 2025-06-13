@@ -13,12 +13,17 @@ class SPLITWORLD_API ARoadExtinction : public AActor
 	
 public: 
 	ARoadExtinction(); 
-	virtual void BeginPlay() override; 
+	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override; 
 
-private: 
+private:
+	UFUNCTION()
 	void OnStartBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult); 
+	UFUNCTION()
 	void OnDestroyBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult); 
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multi_ChangeWorld_Z(float World_Z);
 
 	UPROPERTY(EditAnywhere) 
 	class USceneComponent* Root; 
@@ -28,6 +33,11 @@ private:
 	class UBoxComponent* DestroyBoxComp; 
 
 	UPROPERTY(EditAnywhere) 
-	bool bStart; 
+	bool bStart;
 
+	UPROPERTY(EditAnywhere)
+	class UMaterialParameterCollection* MPC_Extinction;
+	UPROPERTY()
+	class UMaterialParameterCollectionInstance* MPC_Instance;
+	
 };
