@@ -34,7 +34,7 @@ public:
 
 	void ChangeMapPart(EMapPart Part); 
 	void RotateDoorHandle(float DeltaTime); 
-	void CrackInput(float DeltaTime); 
+	void CrackInteraction(float DeltaTime); 
 	
 	UPROPERTY() 
 	TArray<class AController*> Players; 
@@ -49,6 +49,7 @@ public:
 	int DoorInput; 
 	float DoorGauge; 
 	
+	int CrackInput; 
 	float CrackGauge[2];
 
 	UPROPERTY()

@@ -248,11 +248,14 @@ void AFirstCamera::SetCameraLocation(float DeltaTime)
 
 void AFirstCamera::CameraTransformSync() 
 { 
-	FTransform t = GetActorTransform(); 
-	t.SetLocation(t.GetLocation() + LocationOffset); 
-	SecondCamera->SetActorTransform(t); 
-	if (SpringArmComp) SpringArmComp->TargetArmLength = CurSpringArmLength; 
-	SecondCamera->GetSpringArm()->TargetArmLength = CurSpringArmLength; 
+	if (IsValid(SecondCamera))
+	{
+		FTransform t = GetActorTransform();
+		t.SetLocation(t.GetLocation() + LocationOffset);
+		SecondCamera->SetActorTransform(t);
+		SpringArmComp->TargetArmLength = CurSpringArmLength;
+		SecondCamera->GetSpringArm()->TargetArmLength = CurSpringArmLength;
+	} 
 }
 
 void AFirstCamera::ChangePart()

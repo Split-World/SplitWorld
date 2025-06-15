@@ -34,8 +34,19 @@ void ACrack::Tick(float DeltaTime)
 
 void ACrack::Interaction_Implementation()
 { 
-	Super::Interaction_Implementation();
-	
+	Super::Interaction_Implementation(); 
+
+	if (GM->bPlayer_Interactions[3] == 3)
+	{
+		GM->CrackInput |= (1 << Idx);
+
+		GetWorldTimerManager().ClearTimer(CrackTimerHandle);
+		GetWorldTimerManager().SetTimer(CrackTimerHandle, [&]()
+		{
+			GM->CrackInput &= ~(1 << Idx);
+		}, 0.05f, false); 
+	}
+	GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, TEXT("Interaction")); 
 	if (!(GM->bPlayer_Interactions[3] & (1 << Idx)))
 	{
 		GM->bPlayer_Interactions[3] |= (1 << Idx);

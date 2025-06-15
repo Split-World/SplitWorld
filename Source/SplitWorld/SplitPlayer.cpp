@@ -303,8 +303,8 @@ void ASplitPlayer::MoveAction(const FInputActionValue& Value)
 	if (!bMoving) MoveServer();
 
 	FVector2D v = Value.Get<FVector2D>();
-	Dir += Forwards[CurPart] * v.X * (v.X > 0 ? MoveCheck.Z : MoveCheck.W); 
-	Dir += Rights[CurPart] * v.Y * (v.Y > 0 ? MoveCheck.X : MoveCheck.Y); 
+	Dir += Forwards[CurPart] * v.X * (v.X > 0 ? MoveCheck.Z : MoveCheck.W) * 60.0f * GetWorld()->GetDeltaSeconds(); 
+	Dir += Rights[CurPart] * v.Y * (v.Y > 0 ? MoveCheck.X : MoveCheck.Y) * 60.0f * GetWorld()->GetDeltaSeconds();
 	
 	FRotator rot = GetControlRotation();
 	if (GetCharacterMovement()->IsFalling())
@@ -356,6 +356,7 @@ void ASplitPlayer::MoveCancleMulti_Implementation()
 
 void ASplitPlayer::JumpServer_Implementation()
 {
+	GetCharacterMovement()->SetBase(nullptr); 
 	if (!bJumping)
 	{
 		bJumping = true;
@@ -386,7 +387,7 @@ void ASplitPlayer::JumpAction(const FInputActionValue& Value)
 {
 	if ((!bJumping || !bDoubleJumping) && !bDashing)
 	{
-		Jump();
+		Jump(); 
 	}
 	JumpServer();
 }
@@ -403,7 +404,7 @@ void ASplitPlayer::InteractAction(const FInputActionValue& Value)
 	GetActorLocation() + GetActorForwardVector() * 50.f,
 	FVector(25.f, 30.f, 70.f),
 	GetActorRotation(),
-	(ETraceTypeQuery)ECC_Visibility,
+	ETraceTypeQuery::TraceTypeQuery1,
 	false,
 	ignoreActors,
 	EDrawDebugTrace::ForOneFrame,
@@ -514,7 +515,7 @@ bool ASplitPlayer::DetectWall(FHitResult& Out_Hit, FVector& HitLocation, FVector
 		FVector EndVector = (GetActorForwardVector() * 100.f) + tempLocation;
 		
 		TArray<AActor*> ignoreActors;
-		ignoreActors.Add(this);
+		ignoreActors.Add(this); 
 		
 		bool bHit = UKismetSystemLibrary::SphereTraceSingle(
 			GetWorld(),

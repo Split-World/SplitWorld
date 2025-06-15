@@ -10,6 +10,7 @@
 void ULobbyWidget::NativeConstruct()
 {
 	GI = Cast<USplitWorldGameInstance>(GetWorld()->GetGameInstance()); 
+
 	Btn_Play->OnClicked.AddDynamic(this, &ULobbyWidget::Play); 
 	Btn_Quit->OnClicked.AddDynamic(this, &ULobbyWidget::Quit); 
 }

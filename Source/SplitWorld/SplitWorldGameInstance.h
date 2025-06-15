@@ -17,9 +17,11 @@ public:
 	
 	void CreateSession();
 	void FindSession();
-	void JoinSession();
+	void JoinSession(); 
+	
+	void GameStart(); 
 
-	void ExitRoom();
+	void ExitRoom(); 
 	UFUNCTION(Server, Reliable)
 	void ServerRPC_ExitRoom();
 	UFUNCTION(NetMulticast, Reliable)
