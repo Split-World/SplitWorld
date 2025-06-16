@@ -24,15 +24,16 @@ public:
 	int Idx; 
 
 	UFUNCTION(Server, Reliable)
-	void Server_SetMesh(int _Idx); 
+	void Server_SetMesh(int _Idx);
 	UFUNCTION(NetMulticast, Reliable)
-	void Multi_SetMesh(int _Idx);
-	
+	void Multi_SetMesh(int _Idx); 
+
 	UPROPERTY(EditAnywhere)
-	float Speed; 
+	float Speed;
 
 	UPROPERTY(EditAnywhere)
 	TArray<class UStaticMesh*> Meshes;
+
 	UPROPERTY(EditAnywhere)
 	TArray<class UMaterialInstance*> Materials;
 

@@ -518,12 +518,17 @@ void ASplitPlayer::DashAction(const FInputActionValue& Value)
 	
 	if (!GetCharacterMovement()->IsFalling())
 	{
-		RollMulti();
+		RollServer();
 	}
 	else
 	{
 		DashServer();
 	}
+}
+
+void ASplitPlayer::RollServer_Implementation()
+{ 
+	RollMulti(); 
 }
 
 void ASplitPlayer::RollMulti_Implementation()
@@ -798,3 +803,4 @@ void ASplitPlayer::ConveyorBeltCheck(float DeltaTime)
 		SetActorLocation(GetActorLocation() + FVector(0, -300.0f, 0) * DeltaTime); 
 	}
 }
+

@@ -137,7 +137,10 @@ public:
 	void DashServer();
 
 	UFUNCTION(NetMulticast, Reliable)
-	void DashMulti();
+	void DashMulti(); 
+
+	UFUNCTION(Server, Reliable) 
+	void RollServer(); 
 
 	UFUNCTION(NetMulticast, Reliable)
 	void RollMulti();
