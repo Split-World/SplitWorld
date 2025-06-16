@@ -162,14 +162,8 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 	void TraversalMulti();
 
-	UFUNCTION(Server, Reliable)
-	void ClimbServer();
-
 	UFUNCTION(NetMulticast, Reliable)
 	void ClimbMulti();
-
-	UFUNCTION(Server, Reliable)
-	void FailClimbServer();
 
 	UFUNCTION(NetMulticast, Reliable)
 	void FailClimbMulti();
