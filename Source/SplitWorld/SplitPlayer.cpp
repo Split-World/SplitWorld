@@ -171,22 +171,18 @@ void ASplitPlayer::Tick(float DeltaTime)
 		CloneLocation(t);
 	}
 	
-	if (!HasAuthority()) return;
-
-	if (bPush) bPushing = GM->DoorInput & 1 << (int)!HasAuthority();
-		
+	if (bPush) PushingServer(!HasAuthority()); 
+	
+	if (!HasAuthority()) return; 
+	
 	if (!GetCharacterMovement()->IsFalling())
 	{
 		bJumping = false;
 		bDoubleJumping = false;
 		bFailClimb = false;
-		bClimbing = false;
-		bTraversal = false;
 		bDashing = false;
 		
 		OnGroundMulti();
-		
-		GetCharacterMovement()->GravityScale = 1.0f;
 	}
 	else
 	{
@@ -195,42 +191,34 @@ void ASplitPlayer::Tick(float DeltaTime)
 		FVector Normal;
 		int index;
 		
-		if (bMoving && !bFailClimb && !bTraversal && !bPush && !bDashing || bClimbing) bCanClimb = DetectWall(OutHit, HitLocation, Normal, index);
+		if ((bMoving && !bFailClimb && !bTraversal && !bDashing) || bClimbing) bCanClimb = DetectWall(OutHit, HitLocation, Normal, index);
 		
 		if (bCanClimb)
 		{
 			if (index == 0)
 			{
-				GetCharacterMovement()->Velocity = FVector::ZeroVector;
 				float value = GetActorForwardVector().Dot(-OutHit.ImpactNormal);
 				ClimbWall(FMath::RadiansToDegrees(FMath::Acos(value)));
 			}
 			else if (index == 1)
 			{
-				GetCharacterMovement()->Velocity = FVector::ZeroVector;
-				GetCharacterMovement()->GravityScale = 0.0f;
-				GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
 				bTraversal = true;
-				bCanClimb = false;
+				bClimbing = false; 
 				
 				TraversalMulti();
-				
-				anim->Montage_Play(TraversalMontage);
-				ClonePlayer->anim->Montage_Play(TraversalMontage);
 			}
 		}
 	}
 	
-	if (bAdjustAnimaition)
+	if (bAdjustAnimaition && bTraversal)
 	{
-		SetActorLocation(GetActorLocation() + GetActorUpVector() * GetWorld()->GetDeltaSeconds() * 700.f);
-		SetActorLocation(GetActorLocation() + GetActorForwardVector() * GetWorld()->GetDeltaSeconds() * 100.f);
+		SetActorLocation(GetActorLocation() + GetActorUpVector() * GetWorld()->GetDeltaSeconds() * 200.f);
+		SetActorLocation(GetActorLocation() + GetActorForwardVector() * GetWorld()->GetDeltaSeconds() * 100.f); 
 	} 
-
+ 
 	if (bDashing)
 	{
-		SetActorLocation(GetActorLocation() + GetActorForwardVector() * GetWorld()->GetDeltaSeconds() * 700.f);
+		SetActorLocation(GetActorLocation() + GetActorForwardVector() * GetWorld()->GetDeltaSeconds() * 600.f);
 	}
 
 	ConveyorBeltCheck(DeltaTime); 
@@ -240,26 +228,70 @@ void ASplitPlayer::OnGroundMulti_Implementation()
 {
 	if (IsValid(anim) && IsValid(ClonePlayer))
 	{
+		GetCharacterMovement()->GravityScale = 1.0f;
+		
 		anim->bJumping = false;
 		anim->bDoubleJumping = false;
-		anim->bClimbing = false;
-		anim->bTraversal = false;
 		anim->bDashing = false;
 	
 		ClonePlayer->anim->bJumping = false;
 		ClonePlayer->anim->bDoubleJumping = false;
-		ClonePlayer->anim->bClimbing = false;
-		ClonePlayer->anim->bTraversal = false;
 		ClonePlayer->anim->bDashing = false;
 	}
 }
 
 void ASplitPlayer::TraversalMulti_Implementation()
 {
-	anim->bTraversal = true;
-				
-	ClonePlayer->anim->bTraversal = true;
+	anim->bClimbing = false;
+	anim->Montage_Play(TraversalMontage);
+
+	ClonePlayer->anim->bClimbing = false;
+	ClonePlayer->anim->Montage_Play(TraversalMontage);
+
+	GetCharacterMovement()->GravityScale = 0.0f;
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetCharacterMovement()->Velocity = FVector::ZeroVector; 
 }
+
+void ASplitPlayer::StartTraversalServer_Implementation()
+{
+	bAdjustAnimaition = true;
+	
+	StartTraversalMulti();
+}
+
+void ASplitPlayer::StartTraversalMulti_Implementation()
+{
+
+}
+
+void ASplitPlayer::EndTraversalServer_Implementation()
+{
+	bAdjustAnimaition = false;
+	
+	EndTraversalMulti();
+}
+
+void ASplitPlayer::EndTraversalMulti_Implementation()
+{
+
+	
+}
+
+void ASplitPlayer::EndClimbServer_Implementation()
+{
+	bTraversal = false;
+
+	EndClimbMulti();
+}
+
+void ASplitPlayer::EndClimbMulti_Implementation()
+{
+	GetCharacterMovement()->GravityScale = 1.0f;
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::Type::QueryAndPhysics);
+	GetCharacterMovement()->Velocity = FVector::ZeroVector; 
+}
+
 // Called to bind functionality to input
 void ASplitPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -310,8 +342,8 @@ void ASplitPlayer::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 
 void ASplitPlayer::MoveAction(const FInputActionValue& Value)
 {
-	if (bClimbing) return;
-	if (bDashing) return;
+	if (bClimbing || bDashing || bTraversal) return;
+	
 	if (!bMoving) MoveServer();
 
 	FVector2D v = Value.Get<FVector2D>();
@@ -366,16 +398,9 @@ void ASplitPlayer::MoveCancleMulti_Implementation()
 	ClonePlayer->anim->bMoving = false;
 }
 
-void ASplitPlayer::DoubleJumpMulti_Implementation()
-{
-	anim->bDoubleJumping = true;
-
-	ClonePlayer->anim->bDoubleJumping = true;
-}
-
 void ASplitPlayer::JumpAction(const FInputActionValue& Value)
 {
-	if ((!bJumping || !bDoubleJumping) && !bDashing && !bClimbing && !bPush)
+	if ((!bJumping || !bDoubleJumping) && !bDashing && !bClimbing && !bPush && !bTraversal)
 	{
 		Jump();
 		JumpServer();
@@ -384,6 +409,7 @@ void ASplitPlayer::JumpAction(const FInputActionValue& Value)
 
 void ASplitPlayer::JumpServer_Implementation()
 {
+	GetCharacterMovement()->SetBase(nullptr);
 	if (!bJumping)
 	{
 		bJumping = true;
@@ -403,6 +429,14 @@ void ASplitPlayer::JumpMulti_Implementation()
 	ClonePlayer->anim->bJumping = true;
 }
 
+void ASplitPlayer::DoubleJumpMulti_Implementation()
+{
+	anim->bDoubleJumping = true;
+
+	ClonePlayer->anim->bDoubleJumping = true;
+	
+}
+
 void ASplitPlayer::InteractAction(const FInputActionValue& Value)
 {
 	FHitResult OutHit;
@@ -415,7 +449,7 @@ void ASplitPlayer::InteractAction(const FInputActionValue& Value)
 	GetActorLocation() + GetActorForwardVector() * 50.f,
 	FVector(25.f, 30.f, 70.f),
 	GetActorRotation(),
-	(ETraceTypeQuery)ECC_Visibility,
+	ETraceTypeQuery::TraceTypeQuery1,
 	false,
 	ignoreActors,
 	EDrawDebugTrace::ForOneFrame,
@@ -440,7 +474,7 @@ void ASplitPlayer::InteractServer_Implementation(AInteractableActorBase* Actor)
 {
 	IInteractable::Execute_Interaction(Actor);
 
-	if (Actor->IsA<ADoorHandle>() || Actor->IsA<ACrack>())
+	if (Actor->IsA<ADoorHandle>() && CurPart == int(EMapPart::Part1) || Actor->IsA<ACrack>() && CurPart == int(EMapPart::Part4))
 	{
 		bPush = true;
 
@@ -449,9 +483,7 @@ void ASplitPlayer::InteractServer_Implementation(AInteractableActorBase* Actor)
 	
 	if (Actor->IsA<AFishHandle>() || Actor->IsA<AFloorHandle>() || Actor->IsA<ASnakeHandle>())
 	{
-		anim->Montage_Play(ControlInteractMontage);
-		
-		ClonePlayer->anim->Montage_Play(ControlInteractMontage);
+		ControlMulti();
 	}
 } 
 
@@ -466,7 +498,19 @@ void ASplitPlayer::PushMulti()
 {
 	anim->bPushing = bPushing;
 
-	ClonePlayer->anim->bPushing = bPushing;
+	ClonePlayer->anim->bPushing = bPushing; 
+}
+
+void ASplitPlayer::PushingServer_Implementation(bool bIsClient)
+{
+	bPushing = GM->DoorInput & 1 << (int)bIsClient; 
+}
+
+void ASplitPlayer::ControlMulti_Implementation()
+{
+	anim->Montage_Play(ControlInteractMontage);
+		
+	ClonePlayer->anim->Montage_Play(ControlInteractMontage);
 }
 
 void ASplitPlayer::DashAction(const FInputActionValue& Value)
@@ -475,14 +519,19 @@ void ASplitPlayer::DashAction(const FInputActionValue& Value)
 	
 	if (!GetCharacterMovement()->IsFalling())
 	{
-		anim->Montage_Play(RollMontage);
-		
-		ClonePlayer->anim->Montage_Play(RollMontage);
+		RollMulti();
 	}
 	else
 	{
 		DashServer();
 	}
+}
+
+void ASplitPlayer::RollMulti_Implementation()
+{
+	anim->Montage_Play(RollMontage);
+		
+	ClonePlayer->anim->Montage_Play(RollMontage);
 }
 
 void ASplitPlayer::DashServer_Implementation()
@@ -569,7 +618,7 @@ bool ASplitPlayer::DetectWall(FHitResult& Out_Hit, FVector& HitLocation, FVector
 			StartVector,
 			EndVector,
 			10.f,
-			(ETraceTypeQuery)ECC_Visibility,
+			ETraceTypeQuery::TraceTypeQuery1,
 			false,
 			ignoreActors,
 			EDrawDebugTrace::ForOneFrame,
@@ -612,7 +661,7 @@ void ASplitPlayer::ClimbWall(float Value)
 	MoveVectorUpward(GetActorLocation(), 70.f),
 	MoveVectorUpward(GetActorLocation(), 90.f),
 	10.f,
-	(ETraceTypeQuery)ECC_Visibility,
+	ETraceTypeQuery::TraceTypeQuery1,
 	false,
 	ignoreActors,
 	EDrawDebugTrace::ForOneFrame,
@@ -625,7 +674,7 @@ void ASplitPlayer::ClimbWall(float Value)
 	
 	if (!bHit) 
 	{
-		SetActorLocation(GetActorLocation() + GetActorUpVector() * GetWorld()->GetDeltaSeconds());
+		SetActorLocation(GetActorLocation() + GetActorUpVector() * 700.f * GetWorld()->GetDeltaSeconds());
 	}
 	else if (bHit)
 	{
@@ -640,6 +689,8 @@ void ASplitPlayer::ClimbWall(float Value)
 
 void ASplitPlayer::ClimbMulti_Implementation()
 {
+	GetCharacterMovement()->Velocity = FVector::ZeroVector;
+	
 	anim->bClimbing = true;
 	
 	ClonePlayer->anim->bClimbing = true;
@@ -718,10 +769,10 @@ void ASplitPlayer::ChangePart()
 { 
 	CurPart = int(GM->CurPart);
 
-	ChangePartServer();
+	if (CurPart == 2) CanclePushServer();
 }
 
-void ASplitPlayer::ChangePartServer_Implementation()
+void ASplitPlayer::CanclePushServer_Implementation()
 {
 	bPush = false;
 

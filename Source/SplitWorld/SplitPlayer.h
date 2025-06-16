@@ -118,8 +118,14 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 	void InteractMulti();
 
+	UFUNCTION(NetMulticast, Reliable)
+	void ControlMulti();
+
 	UFUNCTION()
 	void PushMulti();
+
+	UFUNCTION(Server, Reliable)
+	void PushingServer(bool bIsClient); 
 
 	UPROPERTY(Replicated)
 	bool bPush = false;
@@ -132,6 +138,9 @@ public:
 
 	UFUNCTION(NetMulticast, Reliable)
 	void DashMulti();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void RollMulti();
 	
 	UPROPERTY(Replicated)
 	bool bDashing = false;
@@ -161,6 +170,24 @@ public:
 
 	UFUNCTION(NetMulticast, Reliable)
 	void TraversalMulti();
+
+	UFUNCTION(Server, Reliable)
+	void StartTraversalServer();
+	
+	UFUNCTION(NetMulticast, Reliable)
+	void StartTraversalMulti();
+
+	UFUNCTION(Server, Reliable)
+	void EndTraversalServer();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void EndTraversalMulti();
+
+	UFUNCTION(Server, Reliable)
+	void EndClimbServer();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void EndClimbMulti();
 
 	UFUNCTION(NetMulticast, Reliable)
 	void ClimbMulti();
@@ -222,7 +249,7 @@ public:
 	void ChangePart();
 
 	UFUNCTION(Server, Reliable)
-	void ChangePartServer();
+	void CanclePushServer();
 
 	UFUNCTION(NetMulticast, Reliable)
 	void ChangePartMulti();

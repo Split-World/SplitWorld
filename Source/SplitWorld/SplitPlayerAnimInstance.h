@@ -31,8 +31,6 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
 	bool bClimbing = false;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
-	bool bTraversal = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
 	bool bPush = false;

@@ -4,17 +4,19 @@
 
 #include "CoreMinimal.h"
 #include "Animation/AnimNotifies/AnimNotifyState.h"
-#include "EndClimb.generated.h"
+#include "TraversalNotify.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class SPLITWORLD_API UEndClimb : public UAnimNotifyState
+class SPLITWORLD_API UTraversalNotify : public UAnimNotifyState
 {
 	GENERATED_BODY()
-
+	
 public:
+	virtual void NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration) override;
+
 	virtual void NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation) override;
 public:
 	UPROPERTY() 
