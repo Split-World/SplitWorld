@@ -8,22 +8,24 @@
 #include "Components/Border.h" 
 
 void UWaitingWidget::NativeConstruct()
-{ 
+{
+	Super::NativeConstruct(); 
+	
 	GI = Cast<USplitWorldGameInstance>(GetWorld()->GetGameInstance()); 
 	GS = Cast<AGameStateBase>(GetWorld()->GetGameState()); 
 
-	Btn_ConnectionBreak->OnClicked.AddDynamic(this, &UWaitingWidget::ConnectionBreak); 
-	Btn_GameStart->OnClicked.AddDynamic(this, &UWaitingWidget::GameStart); 
+	BTN_ConnectionBreak->OnClicked.AddDynamic(this, &UWaitingWidget::ConnectionBreak); 
+	BTN_GameStart->OnClicked.AddDynamic(this, &UWaitingWidget::GameStart); 
 
-	Btn_GameStart->SetIsEnabled(false); 
+	BTN_GameStart->SetIsEnabled(false); 
 }
 
 void UWaitingWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 { 
 	Super::NativeTick(MyGeometry, InDeltaTime); 
-
+	
 	bool bIsFullRoom = GS->PlayerArray.Num() == 2; 
-	Btn_GameStart->SetIsEnabled(bIsFullRoom); 
+	BTN_GameStart->SetIsEnabled(bIsFullRoom); 
 
 	BD_Player2->SetBrushColor(FLinearColor(BD_Player1->GetBrushColor() * (bIsFullRoom ? 1.0f : 0.5f))); 
 } 

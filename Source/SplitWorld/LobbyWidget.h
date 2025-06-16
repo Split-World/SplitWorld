@@ -20,9 +20,9 @@ public:
 	void Quit();
 
 	UPROPERTY(meta=(BindWidget)) 
-	class UButton* Btn_Play; 
+	class UButton* BTN_Play; 
 	UPROPERTY(meta=(BindWidget)) 
-	class UButton* Btn_Quit; 
+	class UButton* BTN_Quit; 
 	
 	UPROPERTY()
 	class USplitWorldGameInstance* GI; 

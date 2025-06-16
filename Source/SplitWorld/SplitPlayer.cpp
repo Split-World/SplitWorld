@@ -404,7 +404,7 @@ void ASplitPlayer::InteractAction(const FInputActionValue& Value)
 	GetActorLocation() + GetActorForwardVector() * 50.f,
 	FVector(25.f, 30.f, 70.f),
 	GetActorRotation(),
-	ETraceTypeQuery::TraceTypeQuery1,
+	ETraceTypeQuery::TraceTypeQuery1, 
 	false,
 	ignoreActors,
 	EDrawDebugTrace::ForOneFrame,

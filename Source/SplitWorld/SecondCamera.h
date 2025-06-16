@@ -18,8 +18,7 @@ public:
 	virtual void BeginPlay() override; 
 	virtual void Tick(float DeltaTime) override;
 
-	FVector GetCameraLocation();
-
+	USceneCaptureComponent2D* GetCamera(); 
 	USpringArmComponent* GetSpringArm(); 
 
 private: 

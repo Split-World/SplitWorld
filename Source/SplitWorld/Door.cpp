@@ -14,7 +14,7 @@ ADoor::ADoor()
 	Mesh->SetCollisionProfileName(TEXT("Objects"));
 	Mesh->SetIsReplicated(true); 
 
-	SetReplicates(true); 
+	bReplicates = true; 
 	SetReplicateMovement(true); 
 	bAlwaysRelevant = true; 
 }

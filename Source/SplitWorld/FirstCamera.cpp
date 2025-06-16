@@ -96,9 +96,9 @@ void AFirstCamera::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLi
 	DOREPLIFETIME(AFirstCamera, CurSpringArmLength); 
 }
 
-FVector AFirstCamera::GetCameraLocation()
+USceneCaptureComponent2D* AFirstCamera::GetCamera()
 {
-	return CameraComp->GetComponentLocation(); 
+	return CameraComp; 
 }
 
 ASecondCamera* AFirstCamera::GetSecondCamera()

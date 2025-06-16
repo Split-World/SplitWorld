@@ -4,6 +4,7 @@
 #include "SplitWorldGameModeBase.h" 
 
 #include "SplitWorldGameInstance.h"
+#include "Materials/MaterialParameterCollectionInstance.h"
 
 ASplitWorldGameModeBase::ASplitWorldGameModeBase()
 { 
@@ -29,6 +30,7 @@ void ASplitWorldGameModeBase::BeginPlay()
 	Super::BeginPlay();
 
 	GI = Cast<USplitWorldGameInstance>(GetWorld()->GetGameInstance()); 
+	MPC_Instance = GetWorld()->GetParameterCollectionInstance(MPC_SplitWorld); 
 }
 
 void ASplitWorldGameModeBase::Tick(float DeltaTime) 
@@ -91,8 +93,11 @@ void ASplitWorldGameModeBase::RotateDoorHandle(float DeltaTime)
 void ASplitWorldGameModeBase::CrackInteraction(float DeltaTime)
 { 
 	CrackGauge[0] = FMath::Max(0.0f, CrackGauge[0] + DeltaTime * (CrackInput & 1 ? 1 : -1)); 
-	CrackGauge[1] = FMath::Max(0.0f, CrackGauge[1] + DeltaTime * (CrackInput & 2 ? 1 : -1)); 
-	GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, FString::Printf(TEXT("%f %f %f"), CrackGauge[0], CrackGauge[1])); 
+	CrackGauge[1] = FMath::Max(0.0f, CrackGauge[1] + DeltaTime * (CrackInput & 2 ? 1 : -1));
+
+	MPC_Instance->SetScalarParameterValue(FName(TEXT("CircularPercent_Pink")), CrackGauge[0]); 
+	MPC_Instance->SetScalarParameterValue(FName(TEXT("CircularPercent_Green")), CrackGauge[1]); 
+	
 	if (CrackGauge[0] > 1.0f || CrackGauge[1] > 1.0f)
 	{
 		if (GI)

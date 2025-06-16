@@ -7,6 +7,16 @@
 #include "Interactable.h"
 #include "InteractableActorBase.generated.h"
 
+UENUM()
+enum class EFunctionType : uint8
+{
+	ShowInteraction,
+	HideInteraction,
+	ChangeIMG,
+	ActiveKey,
+	DeactiveKey 
+};
+
 UCLASS()
 class SPLITWORLD_API AInteractableActorBase : public AActor, public IInteractable  
 {
@@ -25,6 +35,19 @@ public:
 	int Idx; 
 
 protected: 
+	UFUNCTION()
+	void OnVisibleUIRangeBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult); 
+	UFUNCTION() 
+	void OnVisibleUIRangeEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+	UFUNCTION()
+	void OnInteractableRangeBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	UFUNCTION() 
+	void OnInteractableRangeEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex); 
+	UFUNCTION(NetMulticast, Reliable)
+	void Multi_ExecuteFunction(EFunctionType Type, bool Value); 
+	UFUNCTION(NetMulticast, Reliable)
+	void Multi_SetVisibility(); 
+	
 	UPROPERTY(EditAnywhere)
 	class UBoxComponent* BoxComp; 
 	UPROPERTY(EditAnywhere)
@@ -33,26 +56,16 @@ protected:
 	class USphereComponent* InteractableRangeComp; 
 	UPROPERTY(EditAnywhere)
 	class UWidgetComponent* InteractionWidgetComp;
-	
-private:
-	UFUNCTION()
-	void OnVisibleUIRangeBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult); 
-	UFUNCTION()
-	void OnInteractableRangeBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-	UFUNCTION() 
-	void OnInteractableRangeEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
-	UFUNCTION(NetMulticast, Reliable)
-	void Server_SetVisibleUI(ESlateVisibility Visible); 
-	UFUNCTION(NetMulticast, Reliable)
-	void Multi_SetVisibleUI(ESlateVisibility Visible); 
+	bool bCanInteraction; 
 	
+private: 
 	UPROPERTY(EditAnywhere)
-	class UUserWidget* InteractionWidget;
+	class UInteractionWidget* InteractionWidget;
 
 	UPROPERTY(EditAnywhere)
 	class AFirstCamera* Camera;
 	UPROPERTY(EditAnywhere)
-	int Map;
+	int Map; 
 	
 };

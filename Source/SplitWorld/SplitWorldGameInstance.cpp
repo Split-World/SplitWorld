@@ -59,7 +59,7 @@ void USplitWorldGameInstance::JoinSession()
 
 void USplitWorldGameInstance::GameStart()
 { 
-	GetWorld()->ServerTravel(TEXT("/Game/SK/Levels/WP_Test_WP?listen?port=7777")); 
+	GetWorld()->ServerTravel(TEXT("/Game/SK/Levels/CameraTestMap?listen?port=7777")); 
 }
 
 void USplitWorldGameInstance::ExitRoom()
@@ -82,7 +82,7 @@ void USplitWorldGameInstance::OnCreateSessionComplete(FName sessionName, bool bW
 	UE_LOG(LogTemp, Warning, TEXT("SessionName = %s, bWasSuccessful = %d"), *sessionName.ToString(), bWasSuccessful) 
 	if (bWasSuccessful) 
 	{ 
-		GetWorld()->ServerTravel(TEXT("/Game/SK/Levels/WaitingMap?listen?port=7777")); 
+		GetWorld()->ServerTravel(TEXT("/Game/WaitingMap?listen?port=7777")); 
 	}
 }
 

@@ -24,15 +24,14 @@ public:
 	void GameStart(); 
 
 	UPROPERTY(meta=(BindWidget)) 
-	class UButton* Btn_GameStart; 
+	class UButton* BTN_GameStart; 
 	UPROPERTY(meta=(BindWidget))
-	class UButton* Btn_ConnectionBreak; 
+	class UButton* BTN_ConnectionBreak; 
 	UPROPERTY(meta=(BindWidget))
 	class UBorder* BD_Player1; 
 	UPROPERTY(meta=(BindWidget))
 	class UBorder* BD_Player2;
-	UPROPERTY(meta=(BindWidget)) 
-
+	
 	UPROPERTY()
 	class USplitWorldGameInstance* GI; 
 	UPROPERTY() 
