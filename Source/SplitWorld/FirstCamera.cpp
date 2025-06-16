@@ -11,7 +11,6 @@
 #include "GameFramework/SpringArmComponent.h" 
 #include "Net/UnrealNetwork.h" 
 #include "SecondCamera.h" 
-#include "Chaos/SoftsSpring.h"
 
 AFirstCamera::AFirstCamera()
 {
@@ -39,7 +38,7 @@ AFirstCamera::AFirstCamera()
 	BoundaryComp->SetIsReplicated(true); 
 	BoundaryComp->bEnableClipPlane = true; 
 
-	bReplicates = true;
+	SetReplicates(true); 
 	SetReplicateMovement(true); 
 	bAlwaysRelevant = true; 
 } 
@@ -66,13 +65,13 @@ void AFirstCamera::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime); 
 	if (IsValid(Player1) && IsValid(Player2_Clone)) 
-	{ 
+	{
 		if (HasAuthority())
 		{ 
 			CalcPlayerScreenLocation();
 			SetCameraLocation(DeltaTime); 
+			CameraTransformSync(); 
 		}
-		CameraTransformSync(); 
 		UpdateMask(DeltaTime); 
 	}
 	else
@@ -92,8 +91,7 @@ void AFirstCamera::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLi
 	DOREPLIFETIME(AFirstCamera, Player1); 
 	DOREPLIFETIME(AFirstCamera, Player2); 
 	DOREPLIFETIME(AFirstCamera, Player2_Clone);
-	DOREPLIFETIME(AFirstCamera, LastData);
-	DOREPLIFETIME(AFirstCamera, CurSpringArmLength); 
+	DOREPLIFETIME(AFirstCamera, LastData); 
 }
 
 FVector AFirstCamera::GetCameraLocation()
@@ -177,25 +175,19 @@ void AFirstCamera::SetCameraLocation(float DeltaTime)
 {
 	if (ViewChangePercent < 1.0f)
 	{ 
-		ViewChangePercent = FMath::Min(ViewChangePercent + DeltaTime / CameraDatas[int(GM->CurPart)].Speed, 1.0f); 
+		ViewChangePercent = FMath::Min(ViewChangePercent + DeltaTime / 3.0f, 1.0f); 
 		SetActorLocation(FMath::Lerp(LastData.Location, CameraDatas[int(GM->CurPart)].Location, ViewChangePercent));
 		SetActorRotation(FQuat::Slerp(LastData.Rotation.Quaternion(), CameraDatas[int(GM->CurPart)].Rotation.Quaternion(), ViewChangePercent));
-		SpringArmComp->TargetArmLength = FMath::Lerp(LastData.Length, CameraDatas[int(GM->CurPart)].Length, ViewChangePercent); 
-		CurSpringArmLength = SpringArmComp->TargetArmLength; 
-		
-		if (GM->CurPart == EMapPart::PartDoor)
-		{
-			GM->DoorGauge = 0.0f; 
-		}
+		SpringArmComp->TargetArmLength = FMath::Lerp(LastData.Length, CameraDatas[int(GM->CurPart)].Length, ViewChangePercent);
+		GM->DoorGauge = 0.0f; 
 	}
 	else if (GM->CurPart == EMapPart::PartDoor)
 	{
 		FRotator Rot = CameraDatas[int(GM->CurPart)].Rotation; 
-		float Yaw = FMath::Lerp(0, 90.0f, GM->DoorGauge / 10.0f); 
-		Rot.Yaw = Yaw;
-		SetActorRotation(Rot); 
-	} 
-	else 
+		FRotator TargetRot(Rot.Pitch, 90.0f, Rot.Roll); 
+		SetActorRotation(FQuat::Slerp(Rot.Quaternion(), TargetRot.Quaternion(), GM->DoorGauge / 10.0f)); 
+	}
+	else
 	{
 		FVector2D P1 = PlayerScreenLocation[0];
 		FVector2D P2 = PlayerScreenLocation[1];
@@ -207,39 +199,39 @@ void AFirstCamera::SetCameraLocation(float DeltaTime)
 		case EMapPart::Part1:
 			if (Min_X < -0.5f)
 			{
-				SetActorLocation(FMath::Lerp(GetActorLocation(), GetActorLocation() + FVector(0, -100, 0), 12.0f * DeltaTime));
+				SetActorLocation(FMath::Lerp(GetActorLocation(), GetActorLocation() + FVector(0, -50, 0), 24.0f * DeltaTime));
 			}
 			else if (Min_X > -0.15f)
 			{
-				SetActorLocation(FMath::Lerp(GetActorLocation(), GetActorLocation() + FVector(0, 100, 0), 12.0f * DeltaTime));
+				SetActorLocation(FMath::Lerp(GetActorLocation(), GetActorLocation() + FVector(0, 50, 0), 24.0f * DeltaTime));
 			}
 			break;
 		case EMapPart::Part2:
 		case EMapPart::Part2_5:
 			if (Min_Y < -0.4f)
 			{
-				SetActorLocation(FMath::Lerp(GetActorLocation(), GetActorLocation() + FVector(0, -100, 0), 12.0f * DeltaTime));
+				SetActorLocation(FMath::Lerp(GetActorLocation(), GetActorLocation() + FVector(0, -50, 0), 24.0f * DeltaTime));
 			}
 			else if (Min_Y > -0.2f)
 			{
-				SetActorLocation(FMath::Lerp(GetActorLocation(), GetActorLocation() + FVector(0, 100, 0), 12.0f * DeltaTime));
+				SetActorLocation(FMath::Lerp(GetActorLocation(), GetActorLocation() + FVector(0, 50, 0), 24.0f * DeltaTime));
 			}
 			break;
 		case EMapPart::Part3:
 		case EMapPart::Part3_5:
 			if (Min_X < -0.5f)
 			{
-				SetActorLocation(FMath::Lerp(GetActorLocation(), GetActorLocation() + FVector(100, 0, 0), 12.0f * DeltaTime));
+				SetActorLocation(FMath::Lerp(GetActorLocation(), GetActorLocation() + FVector(50, 0, 0), 48.0f * DeltaTime));
 			}
 			else if (Min_X > -0.15f)
 			{
-				SetActorLocation(FMath::Lerp(GetActorLocation(), GetActorLocation() + FVector(-100, 0, 0), 12.0f * DeltaTime));
+				SetActorLocation(FMath::Lerp(GetActorLocation(), GetActorLocation() + FVector(-50, 0, 0), 48.0f * DeltaTime));
 			}
 			break;
 		case EMapPart::Part4:
 			if (Min_Y > 0.1f)
 			{
-				SetActorLocation(FMath::Lerp(GetActorLocation(), GetActorLocation() + FVector(0, 0, 100), 12.0f * DeltaTime));
+				SetActorLocation(FMath::Lerp(GetActorLocation(), GetActorLocation() + FVector(0, 0, 50), 48.0f * DeltaTime));
 			}
 			break;
 		}
@@ -251,8 +243,6 @@ void AFirstCamera::CameraTransformSync()
 	FTransform t = GetActorTransform(); 
 	t.SetLocation(t.GetLocation() + LocationOffset); 
 	SecondCamera->SetActorTransform(t); 
-	SpringArmComp->TargetArmLength = CurSpringArmLength; 
-	SecondCamera->GetSpringArm()->TargetArmLength = CurSpringArmLength; 
 }
 
 void AFirstCamera::ChangePart()

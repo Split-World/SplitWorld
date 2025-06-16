@@ -23,18 +23,10 @@ public:
 	UPROPERTY(EditAnywhere) 
 	class UStaticMeshComponent* Mesh; 
 
-	UPROPERTY(EditAnywhere, ReplicatedUsing=OnRep_IdxChange) 
+	UPROPERTY(EditAnywhere, Replicated) 
 	int Idx; 
 
-	UFUNCTION()
-	void OnRep_IdxChange(); 
-	
 	UPROPERTY(EditAnywhere)
-	float Speed;
-
-	UPROPERTY(EditAnywhere)
-	TArray<class UStaticMesh*> Meshes;
-	UPROPERTY(EditAnywhere)
-	TArray<class UMaterialInstance*> Materials;
+	float Speed; 
 
 };

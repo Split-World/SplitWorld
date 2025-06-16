@@ -17,7 +17,7 @@ AFishHandle::AFishHandle()
 	Mesh->SetupAttachment(BoxComp);
 	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision); 
 
-	bReplicates = true;
+	SetReplicates(true); 
 	bAlwaysRelevant = true; 
 }
 
@@ -38,7 +38,7 @@ void AFishHandle::Tick(float DeltaTime)
 }
 
 void AFishHandle::Interaction_Implementation()
-{ 
+{
 	if (!bLaunched && !(GM->bPlayer_Interactions[1] & 1) && !(GM->bPlayer_Interactions[1] & 2))
 	{
 		bLaunched = true;

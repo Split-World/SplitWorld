@@ -13,14 +13,7 @@ ADoorHandle::ADoorHandle()
 	Mesh->SetupAttachment(BoxComp);
 	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision); 
 
-	Player_PointComp = CreateDefaultSubobject<USceneComponent>(TEXT("Player_PointComp"));
-	Player_PointComp->SetupAttachment(RootComponent);
-	Player_PointComp->SetRelativeLocation(FVector(30.0f, 0, 0)); 
-	Player_PointComp->SetRelativeRotation(FRotator(0, 180.0f, 0)); 
-	Player_PointComp->SetIsReplicated(true); 
-	
-	SetReplicates(true);
-	SetReplicateMovement(true); 
+	SetReplicates(true); 
 	bAlwaysRelevant = true; 
 }
 
@@ -37,31 +30,23 @@ void ADoorHandle::BeginPlay()
 void ADoorHandle::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	if (GM && GM->CurPart == EMapPart::Part2)
-	{
-		GM->Players[Idx]->GetPawn()->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform); 
-	}
+	
 }
 
 void ADoorHandle::Interaction_Implementation()
 {
-	Super::Interaction_Implementation();
-	
 	if (GM->bPlayer_Interactions[0] == 3) 
 	{ 
-		GM->DoorInput |= (1 << Idx);
-		
+		GM->DoorInput |= (1 << Idx); 
 		GetWorldTimerManager().ClearTimer(DoorInputTimerHandle); 
 		GetWorldTimerManager().SetTimer(DoorInputTimerHandle, [&]()
 		{
 			GM->DoorInput &= ~(1 << Idx); 
-		}, 0.1f, false); 
+		}, 0.5f, false); 
 	}
 	
 	if (!(GM->bPlayer_Interactions[0] & (1 << Idx)))
 	{
 		GM->bPlayer_Interactions[0] |= (1 << Idx);
-		GM->Players[Idx]->GetPawn()->AttachToComponent(Player_PointComp, FAttachmentTransformRules::SnapToTargetNotIncludingScale); 
 	} 
 } 

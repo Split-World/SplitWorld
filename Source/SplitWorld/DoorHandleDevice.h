@@ -16,21 +16,11 @@ public:
 	virtual void BeginPlay() override; 
 	virtual void Tick(float DeltaTime) override;
 
-private:
-	UPROPERTY(EditAnywhere)
-	class UStaticMeshComponent* MeshComp;
-	UPROPERTY(EditAnywhere)
-	class USceneComponent* Handle1_PointComp; 
+private: 
 	UPROPERTY(EditAnywhere) 
-	class USceneComponent* Handle2_PointComp; 
+	class ADoor* Door; 
 
 	UPROPERTY()
-	class ASplitWorldGameModeBase* GM;
-
-	UPROPERTY(EditAnywhere)
-	int Idx; 
-
-	UPROPERTY(EditAnywhere) 
-	TArray<class ADoorHandle*> DoorHandles; 
+	class ASplitWorldGameModeBase* GM; 
 
 };

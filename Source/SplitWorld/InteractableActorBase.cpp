@@ -73,9 +73,7 @@ void AInteractableActorBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty
 void AInteractableActorBase::Interaction_Implementation()
 {
 	IInteractable::Interaction_Implementation();
-
-	InteractionWidget->SetVisibility(ESlateVisibility::Hidden);
-	Server_SetVisibleUI(ESlateVisibility::Hidden); 
+	
 }
 
 void AInteractableActorBase::OnVisibleUIRangeBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -88,13 +86,11 @@ void AInteractableActorBase::OnInteractableRangeBeginOverlap(UPrimitiveComponent
 	AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
 	const FHitResult& SweepResult)
 {
-	if (!OtherActor->IsA<ASplitPlayer>()) return; 
-	if (!HasAuthority()) return; 
-	if (!Idx && !Cast<ASplitPlayer>(OtherActor)->IsLocallyControlled()) return; 
-	if (Idx && Cast<ASplitPlayer>(OtherActor)->IsLocallyControlled()) return;
-	GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, FString::Printf(TEXT("%s"), *UEnum::GetValueAsString(GetLocalRole()))); 
-	InteractionWidget->SetVisibility(ESlateVisibility::Visible);
-	Server_SetVisibleUI(ESlateVisibility::Visible); 
+	if (!OtherActor->IsA<ASplitPlayer>()) return;
+	if (!Idx && Cast<ASplitPlayer>(OtherActor)->IsLocallyControlled()) return; 
+	if (Idx && !Cast<ASplitPlayer>(OtherActor)->IsLocallyControlled()) return;
+	
+	InteractionWidget->SetVisibility(ESlateVisibility::Visible); 
 }
 
 void AInteractableActorBase::OnInteractableRangeEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -103,15 +99,5 @@ void AInteractableActorBase::OnInteractableRangeEndOverlap(UPrimitiveComponent* 
 	if (!OtherActor->IsA<ASplitPlayer>()) return; 
 	
 	InteractionWidget->SetVisibility(ESlateVisibility::Hidden); 
-	Server_SetVisibleUI(ESlateVisibility::Hidden); 
 }
 
-void AInteractableActorBase::Server_SetVisibleUI_Implementation(ESlateVisibility Visible)
-{
-	Multi_SetVisibleUI(Visible); 
-}
-
-void AInteractableActorBase::Multi_SetVisibleUI_Implementation(ESlateVisibility Visible)
-{
-	InteractionWidget->SetVisibility(Visible); 
-} 

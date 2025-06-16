@@ -25,10 +25,7 @@ private:
 	class UBoxComponent* BoxComp;
 
 	UPROPERTY()
-	class ASplitWorldGameModeBase* GM;
-
-	UPROPERTY(EditAnywhere)
-	int Idx; 
+	class ASplitWorldGameModeBase* GM; 
 
 	UPROPERTY(EditAnywhere)
 	EMapPart ChangeView; 
