@@ -195,13 +195,13 @@ void ASplitPlayer::Tick(float DeltaTime)
 		FVector Normal;
 		int index;
 		
-		if (bMoving && !bFailClimb && !bTraversal && !bPush && !bDashing) bCanClimb = DetectWall(OutHit, HitLocation, Normal, index);
+		if (bMoving && !bFailClimb && !bTraversal && !bPush && !bDashing || bClimbing) bCanClimb = DetectWall(OutHit, HitLocation, Normal, index);
 		
 		if (bCanClimb)
 		{
 			if (index == 0)
 			{
-				GetCharacterMovement()->Velocity = FVector(0, 0, 0);
+				GetCharacterMovement()->Velocity = FVector::ZeroVector;
 				float value = GetActorForwardVector().Dot(-OutHit.ImpactNormal);
 				ClimbWall(FMath::RadiansToDegrees(FMath::Acos(value)));
 			}
@@ -598,7 +598,10 @@ void ASplitPlayer::ClimbWall(float Value)
 	if (Value > 5.0f) return;
 
 	GetCharacterMovement()->GravityScale = 0.f;
-	ClimbServer();
+	
+	bClimbing = true;
+
+	ClimbMulti();
 	
 	FHitResult OutHit;
 	TArray<AActor*> ignoreActors;
@@ -626,17 +629,13 @@ void ASplitPlayer::ClimbWall(float Value)
 	}
 	else if (bHit)
 	{
-		FailClimbServer();
+		bFailClimb = true;
+		bClimbing = false;
+
+		FailClimbMulti();
 		
 		GetCharacterMovement()->GravityScale = 1.f;
 	}
-}
-
-void ASplitPlayer::ClimbServer_Implementation()
-{
-	bClimbing = true;
-
-	ClimbMulti();
 }
 
 void ASplitPlayer::ClimbMulti_Implementation()
@@ -644,14 +643,6 @@ void ASplitPlayer::ClimbMulti_Implementation()
 	anim->bClimbing = true;
 	
 	ClonePlayer->anim->bClimbing = true;
-}
-
-void ASplitPlayer::FailClimbServer_Implementation()
-{
-	bFailClimb = true;
-	bClimbing = false;
-
-	FailClimbMulti();
 }
 
 void ASplitPlayer::FailClimbMulti_Implementation()
@@ -726,6 +717,8 @@ void ASplitPlayer::SpawnClone_Implementation(FVector PlayerStart, FVector Locati
 void ASplitPlayer::ChangePart()
 { 
 	CurPart = int(GM->CurPart);
+
+	ChangePartServer();
 }
 
 void ASplitPlayer::ChangePartServer_Implementation()
