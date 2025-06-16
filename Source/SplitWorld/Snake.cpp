@@ -13,7 +13,7 @@ ASnake::ASnake()
 	SetRootComponent(Mesh);
 	Mesh->SetCollisionProfileName(TEXT("Snake")); 
 
-	bReplicates = true;
+	SetReplicates(true); 
 	bAlwaysRelevant = true; 
 }
 

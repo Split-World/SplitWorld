@@ -9,7 +9,7 @@ AFireLaser::AFireLaser()
 {
  	PrimaryActorTick.bCanEverTick = true;
 
-	bReplicates = true;
+	SetReplicates(true);
 	bAlwaysRelevant = true; 
 }
 

@@ -4,9 +4,12 @@
 #include "SplitPlayer.h"
 
 #include "ClonePlayer.h"
+#include "Crack.h"
+#include "DoorHandle.h"
 #include "InputMappingContext.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "FloorHandle.h"
 #include "InputActionValue.h"
 #include "Interactable.h"
 #include "InteractableActorBase.h"
@@ -16,55 +19,27 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Net/UnrealNetwork.h"
 #include "SplitWorldGameModeBase.h" 
-#include "GroomComponent.h" 
+#include "SnakeHandle.h"
 #include "SpawnPoint.h"
 #include "Kismet/GameplayStatics.h"
-#include "Materials/MaterialParameterCollection.h"
 #include "Materials/MaterialParameterCollectionInstance.h"
-#include "UniversalObjectLocators/AnimInstanceLocatorFragment.h"
 
+class AFishHandle;
 // Sets default values
 ASplitPlayer::ASplitPlayer()
 {
  	PrimaryActorTick.bCanEverTick = true;
 
-	BodyComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Body"));
-	BodyComp->SetupAttachment(GetMesh());
-
-	BodyComp->SetRelativeLocation(FVector(0, 0, -90));
-	BodyComp->SetRelativeRotation(FRotator(0, -90, 0));
+	GetMesh()->SetRelativeLocation(FVector(0, 0, -90));
+	GetMesh()->SetRelativeRotation(FRotator(0, -90, 0));
 	
-	ConstructorHelpers::FObjectFinder<USkeletalMesh>tempBodyComp
+	ConstructorHelpers::FObjectFinder<USkeletalMesh>tempMeshComp
 	(TEXT("/Script/Engine.SkeletalMesh'/Game/Slay/Assets/Chr/Echo/Meshes/SK_Echo.SK_Echo'"));
 
-	if (tempBodyComp.Succeeded())
+	if (tempMeshComp.Succeeded())
 	{
-		BodyComp->SetSkeletalMesh(tempBodyComp.Object);
+		GetMesh()->SetSkeletalMesh(tempMeshComp.Object);
 	}
-	
-	/*HairComp = CreateDefaultSubobject<UGroomComponent>(TEXT("Hair"));
-	HairComp->SetupAttachment(BodyComp);
-
-	ConstructorHelpers::FObjectFinder<UGroomAsset>tempHairGroomAsset
-	(TEXT("/Script/HairStrandsCore.GroomAsset'/Game/Slay/Assets/Chr/Echo/Hair/Hair_S_UpdoBuns.Hair_S_UpdoBuns'"));
-
-	ConstructorHelpers::FObjectFinder<UGroomBindingAsset>tempHairBindingAsset
-	(TEXT("/Script/HairStrandsCore.GroomBindingAsset'/Game/Slay/Assets/Chr/Echo/Hair/Hair_S_UpdoBuns_Echo_M3D_LOD0_Binding.Hair_S_UpdoBuns_Echo_M3D_LOD0_Binding'"));
-
-	HairComp->SetGroomAsset(tempHairGroomAsset.Object);
-	HairComp->SetBindingAsset(tempHairBindingAsset.Object);
-	
-	EyebrowsComp = CreateDefaultSubobject<UGroomComponent>(TEXT("Eyebrows"));
-	EyebrowsComp->SetupAttachment(BodyComp);
-
-	ConstructorHelpers::FObjectFinder<UGroomAsset>tempEyebrowsGroomAsset
-	(TEXT("/Script/HairStrandsCore.GroomAsset'/Game/Slay/Assets/Chr/Echo/Hair/Eyebrows_L_Echo.Eyebrows_L_Echo'"));
-
-	ConstructorHelpers::FObjectFinder<UGroomBindingAsset>tempEyebrowsBindingAsset
-	(TEXT("/Script/HairStrandsCore.GroomBindingAsset'/Game/Slay/Assets/Chr/Echo/Hair/Eyebrows_L_Echo_Echo_M3D_LOD0_Binding.Eyebrows_L_Echo_Echo_M3D_LOD0_Binding'"));
-	
-	EyebrowsComp->SetGroomAsset(tempEyebrowsGroomAsset.Object);
-	EyebrowsComp->SetBindingAsset(tempEyebrowsBindingAsset.Object);*/
 	
 	GetCharacterMovement()->JumpZVelocity = 500.f;
 
@@ -116,12 +91,28 @@ ASplitPlayer::ASplitPlayer()
 		IA_Run = tempIARun.Object;
 	}
 	
-	ConstructorHelpers::FObjectFinder<UAnimMontage>tempClimbMontage
-	(TEXT("/Script/Engine.AnimMontage'/Game/JS_Folder/Animations/AM/AM_Climb.AM_Climb'"));
+	ConstructorHelpers::FObjectFinder<UAnimMontage>tempTraversalMontage
+	(TEXT("/Script/Engine.AnimMontage'/Game/JS_Folder/Animations/AM/AM_Traversal.AM_Traversal'"));
 	
-	if (tempClimbMontage.Succeeded())
+	if (tempTraversalMontage.Succeeded())
 	{
-		ClimbMontage = tempClimbMontage.Object;
+		TraversalMontage = tempTraversalMontage.Object;
+	}
+
+	ConstructorHelpers::FObjectFinder<UAnimMontage>tempRollMontage
+	(TEXT("/Script/Engine.AnimMontage'/Game/JS_Folder/Animations/AM/AM_Roll.AM_Roll'"));
+	
+	if (tempRollMontage.Succeeded())
+	{
+		RollMontage = tempRollMontage.Object;
+	}
+
+	ConstructorHelpers::FObjectFinder<UAnimMontage>tempControlInteractMontage
+	(TEXT("/Script/Engine.AnimMontage'/Game/JS_Folder/Animations/AM/AM_ControlInteract.AM_ControlInteract'"));
+	
+	if (tempControlInteractMontage.Succeeded())
+	{
+		ControlInteractMontage = tempControlInteractMontage.Object;
 	}
 	
 	bAlwaysRelevant = true;
@@ -143,7 +134,7 @@ void ASplitPlayer::BeginPlay()
 		SpawnClone(HasAuthority() ? Player1Start : Player2Start, HasAuthority() ? CloneDist : -CloneDist);
 	}
 
-	anim = Cast<USplitPlayerAnimInstance>(BodyComp->GetAnimInstance());
+	anim = Cast<USplitPlayerAnimInstance>(GetMesh()->GetAnimInstance());
 	
 	if (HasAuthority())
 	{
@@ -169,39 +160,29 @@ void ASplitPlayer::NotifyControllerChanged()
 void ASplitPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (!ClonePlayer) return;
+	
+	if (!IsValid(ClonePlayer)) return;
+	if (!IsValid(anim)) return;
+		
 	if (IsLocallyControlled())
-	{ 
-		CloneLocation((HasAuthority() ? CloneDist : -CloneDist) + GetActorLocation());
+	{
+		FTransform t = GetActorTransform();
+		t.SetLocation((HasAuthority() ? CloneDist : -CloneDist) + GetActorLocation());
+		CloneLocation(t);
 	}
-
-	if (!HasAuthority())
-	{ 
-		return; 
-	}
-
+	
+	if (bPush) PushingServer(!HasAuthority()); 
+	
+	if (!HasAuthority()) return; 
+	
 	if (!GetCharacterMovement()->IsFalling())
 	{
 		bJumping = false;
 		bDoubleJumping = false;
 		bFailClimb = false;
-		bClimbing = false;
-		bTraversal = false;
 		bDashing = false;
-
-		anim->bJumping = false;
-		anim->bDoubleJumping = false;
-		anim->bClimbing = false;
-		anim->bTraversal = false;
-		anim->bDashing = false;
 		
-		ClonePlayer->anim->bJumping = false;
-		ClonePlayer->anim->bDoubleJumping = false;
-		ClonePlayer->anim->bClimbing = false;
-		ClonePlayer->anim->bTraversal = false;
-		ClonePlayer->anim->bDashing = false;
-		
-		GetCharacterMovement()->GravityScale = 1.0f;
+		OnGroundMulti();
 	}
 	else
 	{
@@ -210,7 +191,7 @@ void ASplitPlayer::Tick(float DeltaTime)
 		FVector Normal;
 		int index;
 		
-		if (bMoving && !bFailClimb && !bTraversal) bCanClimb = DetectWall(OutHit, HitLocation, Normal, index);
+		if ((bMoving && !bFailClimb && !bTraversal && !bDashing) || bClimbing) bCanClimb = DetectWall(OutHit, HitLocation, Normal, index);
 		
 		if (bCanClimb)
 		{
@@ -221,34 +202,94 @@ void ASplitPlayer::Tick(float DeltaTime)
 			}
 			else if (index == 1)
 			{
-				GetCharacterMovement()->Velocity = FVector::ZeroVector;
-				GetCharacterMovement()->GravityScale = 0.0f;
-				GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 				bTraversal = true;
-				bCanClimb = false;
+				bClimbing = false; 
 				
-				anim->bTraversal = true;
-				
-				ClonePlayer->anim->bTraversal = true;
-				
-				anim->Montage_Play(ClimbMontage);
-				ClonePlayer->anim->Montage_Play(ClimbMontage);
+				TraversalMulti();
 			}
 		}
 	}
 	
-	if (bAdjustAnimaition)
+	if (bAdjustAnimaition && bTraversal)
 	{
-		SetActorLocation(GetActorLocation() + GetActorUpVector() * GetWorld()->GetDeltaSeconds() * 700.f);
-		SetActorLocation(GetActorLocation() + GetActorForwardVector() * GetWorld()->GetDeltaSeconds() * 100.f);
+		SetActorLocation(GetActorLocation() + GetActorUpVector() * GetWorld()->GetDeltaSeconds() * 200.f);
+		SetActorLocation(GetActorLocation() + GetActorForwardVector() * GetWorld()->GetDeltaSeconds() * 100.f); 
 	} 
-
+ 
 	if (bDashing)
 	{
-		SetActorLocation(GetActorLocation() + GetActorForwardVector() * GetWorld()->GetDeltaSeconds() * 700.f);
+		SetActorLocation(GetActorLocation() + GetActorForwardVector() * GetWorld()->GetDeltaSeconds() * 600.f);
 	}
 
 	ConveyorBeltCheck(DeltaTime); 
+}
+
+void ASplitPlayer::OnGroundMulti_Implementation()
+{
+	if (IsValid(anim) && IsValid(ClonePlayer))
+	{
+		GetCharacterMovement()->GravityScale = 1.0f;
+		
+		anim->bJumping = false;
+		anim->bDoubleJumping = false;
+		anim->bDashing = false;
+	
+		ClonePlayer->anim->bJumping = false;
+		ClonePlayer->anim->bDoubleJumping = false;
+		ClonePlayer->anim->bDashing = false;
+	}
+}
+
+void ASplitPlayer::TraversalMulti_Implementation()
+{
+	anim->bClimbing = false;
+	anim->Montage_Play(TraversalMontage);
+
+	ClonePlayer->anim->bClimbing = false;
+	ClonePlayer->anim->Montage_Play(TraversalMontage);
+
+	GetCharacterMovement()->GravityScale = 0.0f;
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetCharacterMovement()->Velocity = FVector::ZeroVector; 
+}
+
+void ASplitPlayer::StartTraversalServer_Implementation()
+{
+	bAdjustAnimaition = true;
+	
+	StartTraversalMulti();
+}
+
+void ASplitPlayer::StartTraversalMulti_Implementation()
+{
+
+}
+
+void ASplitPlayer::EndTraversalServer_Implementation()
+{
+	bAdjustAnimaition = false;
+	
+	EndTraversalMulti();
+}
+
+void ASplitPlayer::EndTraversalMulti_Implementation()
+{
+
+	
+}
+
+void ASplitPlayer::EndClimbServer_Implementation()
+{
+	bTraversal = false;
+
+	EndClimbMulti();
+}
+
+void ASplitPlayer::EndClimbMulti_Implementation()
+{
+	GetCharacterMovement()->GravityScale = 1.0f;
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::Type::QueryAndPhysics);
+	GetCharacterMovement()->Velocity = FVector::ZeroVector; 
 }
 
 // Called to bind functionality to input
@@ -285,6 +326,9 @@ void ASplitPlayer::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	DOREPLIFETIME(ASplitPlayer, bCanClimb);
 	DOREPLIFETIME(ASplitPlayer, bTraversal);
 	DOREPLIFETIME(ASplitPlayer, bAdjustAnimaition);
+
+	DOREPLIFETIME(ASplitPlayer, bPush);
+	DOREPLIFETIME(ASplitPlayer, bPushing);
 	
 	DOREPLIFETIME(ASplitPlayer, bDashing);
 	
@@ -298,8 +342,8 @@ void ASplitPlayer::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 
 void ASplitPlayer::MoveAction(const FInputActionValue& Value)
 {
-	if (bClimbing) return;
-	if (bDashing) return;
+	if (bClimbing || bDashing || bTraversal) return;
+	
 	if (!bMoving) MoveServer();
 
 	FVector2D v = Value.Get<FVector2D>();
@@ -354,9 +398,18 @@ void ASplitPlayer::MoveCancleMulti_Implementation()
 	ClonePlayer->anim->bMoving = false;
 }
 
-void ASplitPlayer::JumpServer_Implementation()
+void ASplitPlayer::JumpAction(const FInputActionValue& Value)
 {
-	GetCharacterMovement()->SetBase(nullptr); 
+	if ((!bJumping || !bDoubleJumping) && !bDashing && !bClimbing && !bPush && !bTraversal)
+	{
+		Jump();
+		JumpServer();
+	}
+}
+
+void ASplitPlayer::JumpServer_Implementation()
+{ 
+	GetCharacterMovement()->SetBase(nullptr);
 	if (!bJumping)
 	{
 		bJumping = true;
@@ -383,15 +436,6 @@ void ASplitPlayer::DoubleJumpMulti_Implementation()
 	ClonePlayer->anim->bDoubleJumping = true;
 }
 
-void ASplitPlayer::JumpAction(const FInputActionValue& Value)
-{
-	if ((!bJumping || !bDoubleJumping) && !bDashing)
-	{
-		Jump(); 
-	}
-	JumpServer();
-}
-
 void ASplitPlayer::InteractAction(const FInputActionValue& Value)
 {
 	FHitResult OutHit;
@@ -403,8 +447,8 @@ void ASplitPlayer::InteractAction(const FInputActionValue& Value)
 	GetActorLocation() + GetActorForwardVector() * 50.f,
 	GetActorLocation() + GetActorForwardVector() * 50.f,
 	FVector(25.f, 30.f, 70.f),
-	GetActorRotation(),
-	ETraceTypeQuery::TraceTypeQuery1, 
+	GetActorRotation(), 
+	ETraceTypeQuery::TraceTypeQuery1,
 	false,
 	ignoreActors,
 	EDrawDebugTrace::ForOneFrame,
@@ -420,9 +464,73 @@ void ASplitPlayer::InteractAction(const FInputActionValue& Value)
 		auto II = Cast<AInteractableActorBase>(OutHit.GetActor()); 
 		if (II && ((!II->Idx && HasAuthority()) || (II->Idx && !HasAuthority())))
 		{
-			Interact(II);
+			InteractServer(II);
 		}
 	}
+}
+
+void ASplitPlayer::InteractServer_Implementation(AInteractableActorBase* Actor)
+{
+	IInteractable::Execute_Interaction(Actor);
+
+	if (Actor->IsA<ADoorHandle>() && CurPart == int(EMapPart::Part1) || Actor->IsA<ACrack>() && CurPart == int(EMapPart::Part4))
+	{
+		bPush = true;
+
+		InteractMulti();
+	}
+	
+	if (Actor->IsA<AFishHandle>() || Actor->IsA<AFloorHandle>() || Actor->IsA<ASnakeHandle>())
+	{
+		ControlMulti();
+	}
+} 
+
+void ASplitPlayer::InteractMulti_Implementation()
+{
+	anim->bPush = true;
+
+	ClonePlayer->anim->bPush = true;
+}
+
+void ASplitPlayer::PushMulti()
+{
+	anim->bPushing = bPushing;
+
+	ClonePlayer->anim->bPushing = bPushing; 
+}
+
+void ASplitPlayer::PushingServer_Implementation(bool bIsClient)
+{
+	bPushing = GM->DoorInput & 1 << (int)bIsClient; 
+}
+
+void ASplitPlayer::ControlMulti_Implementation()
+{
+	anim->Montage_Play(ControlInteractMontage);
+		
+	ClonePlayer->anim->Montage_Play(ControlInteractMontage);
+}
+
+void ASplitPlayer::DashAction(const FInputActionValue& Value)
+{
+	if (bRunning || bDashing || bClimbing || bPush) return;
+	
+	if (!GetCharacterMovement()->IsFalling())
+	{
+		RollMulti();
+	}
+	else
+	{
+		DashServer();
+	}
+}
+
+void ASplitPlayer::RollMulti_Implementation()
+{
+	anim->Montage_Play(RollMontage);
+		
+	ClonePlayer->anim->Montage_Play(RollMontage);
 }
 
 void ASplitPlayer::DashServer_Implementation()
@@ -438,29 +546,14 @@ void ASplitPlayer::DashMulti_Implementation()
 	ClonePlayer->anim->bDashing = true;
 }
 
-void ASplitPlayer::DashAction(const FInputActionValue& Value)
+void ASplitPlayer::RunAction(const FInputActionValue& Value)
 {
-	if (!bRunning && !bDashing && !bClimbing)
-	{
-		DashServer();
-	}
-	
-	if (GetCharacterMovement()->IsFalling())
-	{
-		
-	}
-}
-
-void ASplitPlayer::RunMulti_Implementation(bool isRunning)
-{
-	anim->bRunning = isRunning;
-
-	ClonePlayer->anim->bRunning = isRunning;
+	RunServer();
 }
 
 void ASplitPlayer::RunServer_Implementation()
 {
-	if (!bRunning && !bDashing && !bClimbing && !bJumping && bMoving)
+	if (!bRunning && !bDashing && !bClimbing && !bJumping && bMoving && !bPush && !bTraversal)
 	{
 		bRunning = true;
 		RunMulti(true);
@@ -474,9 +567,11 @@ void ASplitPlayer::RunServer_Implementation()
 	}
 }
 
-void ASplitPlayer::RunAction(const FInputActionValue& Value)
+void ASplitPlayer::RunMulti_Implementation(bool isRunning)
 {
-	RunServer();
+	anim->bRunning = isRunning;
+
+	ClonePlayer->anim->bRunning = isRunning;
 }
 
 void ASplitPlayer::Die()
@@ -522,7 +617,7 @@ bool ASplitPlayer::DetectWall(FHitResult& Out_Hit, FVector& HitLocation, FVector
 			StartVector,
 			EndVector,
 			10.f,
-			(ETraceTypeQuery)ECC_Visibility,
+			ETraceTypeQuery::TraceTypeQuery1,
 			false,
 			ignoreActors,
 			EDrawDebugTrace::ForOneFrame,
@@ -551,11 +646,10 @@ void ASplitPlayer::ClimbWall(float Value)
 	if (Value > 5.0f) return;
 
 	GetCharacterMovement()->GravityScale = 0.f;
+	
 	bClimbing = true;
-	
-	anim->bClimbing = true;
-	
-	ClonePlayer->anim->bClimbing = true;
+
+	ClimbMulti();
 	
 	FHitResult OutHit;
 	TArray<AActor*> ignoreActors;
@@ -566,7 +660,7 @@ void ASplitPlayer::ClimbWall(float Value)
 	MoveVectorUpward(GetActorLocation(), 70.f),
 	MoveVectorUpward(GetActorLocation(), 90.f),
 	10.f,
-	(ETraceTypeQuery)ECC_Visibility,
+	ETraceTypeQuery::TraceTypeQuery1,
 	false,
 	ignoreActors,
 	EDrawDebugTrace::ForOneFrame,
@@ -579,19 +673,33 @@ void ASplitPlayer::ClimbWall(float Value)
 	
 	if (!bHit) 
 	{
-		SetActorLocation(GetActorLocation() + GetActorUpVector() * GetWorld()->GetDeltaSeconds());
+		SetActorLocation(GetActorLocation() + GetActorUpVector() * 700.f * GetWorld()->GetDeltaSeconds());
 	}
 	else if (bHit)
 	{
 		bFailClimb = true;
 		bClimbing = false;
-		
-		anim->bClimbing = false;
 
-		ClonePlayer->anim->bClimbing = false;
+		FailClimbMulti();
 		
 		GetCharacterMovement()->GravityScale = 1.f;
 	}
+}
+
+void ASplitPlayer::ClimbMulti_Implementation()
+{
+	GetCharacterMovement()->Velocity = FVector::ZeroVector;
+	
+	anim->bClimbing = true;
+	
+	ClonePlayer->anim->bClimbing = true;
+}
+
+void ASplitPlayer::FailClimbMulti_Implementation()
+{
+	anim->bClimbing = false;
+
+	ClonePlayer->anim->bClimbing = false;
 }
 
 FVector ASplitPlayer::MoveVectorUpward(FVector InVector, float AddValue)
@@ -635,9 +743,15 @@ FRotator ASplitPlayer::ReveseNormal(FVector InNormal)
 	return UKismetMathLibrary::NormalizedDeltaRotator(UKismetMathLibrary::MakeRotFromX(InNormal),FRotator(0.f ,0.f ,180.f));
 }
 
-void ASplitPlayer::CloneLocation_Implementation(FVector Location)
+void ASplitPlayer::CloneLocation_Implementation(FTransform Transform)
 {
-	ClonePlayer->SetActorLocation(Location - FVector(0, 0, 90));
+	Transform.SetLocation(Transform.GetLocation() - FVector(0.f, 0.f, 90.f));
+
+	FRotator curRot = Transform.GetRotation().Rotator();
+	curRot.Yaw -= 90.f;
+	Transform.SetRotation(curRot.Quaternion());
+	
+	ClonePlayer->SetActorTransform(Transform);
 }
 
 void ASplitPlayer::SpawnClone_Implementation(FVector PlayerStart, FVector LocationOffset)
@@ -650,14 +764,25 @@ void ASplitPlayer::SpawnClone_Implementation(FVector PlayerStart, FVector Locati
 	ClonePlayer = GetWorld()-> SpawnActor<AClonePlayer>(ClonePlayerFactory, CloneSpawnTransform);
 }
 
-void ASplitPlayer::Interact_Implementation(AInteractableActorBase* Actor)
-{
-	IInteractable::Execute_Interaction(Actor); 
-} 
-
 void ASplitPlayer::ChangePart()
 { 
-	CurPart = int(GM->CurPart); 
+	CurPart = int(GM->CurPart);
+
+	if (CurPart == 2) CanclePushServer();
+}
+
+void ASplitPlayer::CanclePushServer_Implementation()
+{
+	bPush = false;
+
+	ChangePartMulti();
+}
+
+void ASplitPlayer::ChangePartMulti_Implementation()
+{
+	anim->bPush = false;
+
+	ClonePlayer->anim->bPush = false;
 }
 
 void ASplitPlayer::ConveyorBeltCheck(float DeltaTime)

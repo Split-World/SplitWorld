@@ -14,7 +14,7 @@ AMovingFloor::AMovingFloor()
 	Mesh->SetCollisionProfileName(TEXT("Objects"));
 	Mesh->SetIsReplicated(true); 
 
-	bReplicates = true;
+	SetReplicates(true); 
 	SetReplicateMovement(true); 
 	bAlwaysRelevant = true; 
 }
@@ -35,7 +35,7 @@ void AMovingFloor::Tick(float DeltaTime)
 
 	if (Idx && GM && GM->bPlayer_Interactions[2] == 3 && MoveDistance > 0.0f)
 	{
-		FVector Dir = GetActorForwardVector() * -1500.0f * DeltaTime; 
+		FVector Dir = GetActorForwardVector() * -3500.0f * DeltaTime; 
 		SetActorLocation(GetActorLocation() + Dir); 
 		OtherFloor->SetActorLocation(OtherFloor->GetActorLocation() + Dir); 
 		for (auto handle : Handles)
@@ -43,7 +43,7 @@ void AMovingFloor::Tick(float DeltaTime)
 			handle->SetActorLocation(handle->GetActorLocation() + Dir); 
 		}
 
-		MoveDistance -= 1500.0f * DeltaTime; 
+		MoveDistance -= 3500.0f * DeltaTime; 
 	}
 }
 

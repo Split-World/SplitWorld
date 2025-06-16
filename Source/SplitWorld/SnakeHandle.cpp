@@ -15,7 +15,7 @@ ASnakeHandle::ASnakeHandle()
 	Mesh->SetupAttachment(BoxComp);
 	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision); 
 
-	bReplicates = true;
+	SetReplicates(true); 
 	bAlwaysRelevant = true; 
 }
 

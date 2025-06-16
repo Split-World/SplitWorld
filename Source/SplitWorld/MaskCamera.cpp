@@ -20,7 +20,7 @@ AMaskCamera::AMaskCamera()
 	CameraComp->SetIsReplicated(true);
 	CameraComp->bEnableClipPlane = true; 
 
-	bReplicates = true;
+	SetReplicates(true); 
 	SetReplicateMovement(true); 
 	bAlwaysRelevant = true; 
 }

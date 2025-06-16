@@ -31,7 +31,9 @@ void ARoadBreaker::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 } 
 
 void ARoadBreaker::Execute()
-{ 
+{
+	GEngine->AddOnScreenDebugMessage(-1 ,5, FColor::Red, TEXT("ARoadBreaker")); 
+	
 	for (auto Road : Roads)
 	{
 		auto Comp = Road->GetStaticMeshComponent(); 
