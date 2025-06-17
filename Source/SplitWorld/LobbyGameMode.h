@@ -10,4 +10,5 @@ UCLASS()
 class SPLITWORLD_API ALobbyGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
+	
 };
