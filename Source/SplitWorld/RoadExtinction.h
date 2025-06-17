@@ -39,5 +39,5 @@ private:
 	class UMaterialParameterCollection* MPC_SplitWorld;
 	UPROPERTY()
 	class UMaterialParameterCollectionInstance* MPC_Instance;
-	
+	 
 };

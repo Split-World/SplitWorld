@@ -26,5 +26,5 @@ private:
 	class USpringArmComponent* SpringArmComp;
 	UPROPERTY(EditAnywhere)
 	class USceneCaptureComponent2D* CameraComp; 
-
+ 
 };

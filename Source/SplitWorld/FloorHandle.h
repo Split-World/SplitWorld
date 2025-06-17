@@ -24,5 +24,6 @@ private:
 	class UStaticMeshComponent* Mesh;
 	
 	UPROPERTY()
-	class ASplitWorldGameModeBase* GM; 
+	class ASplitWorldGameModeBase* GM;
+	
 };

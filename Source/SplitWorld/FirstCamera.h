@@ -97,5 +97,6 @@ private:
 	bool bIsLastPart; 
 
 	UPROPERTY(Replicated) 
-	float CurSpringArmLength; 
+	float CurSpringArmLength;
+	
 };

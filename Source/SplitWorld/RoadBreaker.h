@@ -23,5 +23,5 @@ public:
 private: 
 	UPROPERTY(EditAnywhere, Replicated) 
 	TArray<class AStaticMeshActor*> Roads;
-
+ 
 };

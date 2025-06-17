@@ -32,5 +32,5 @@ private:
 
 	UPROPERTY(EditAnywhere) 
 	TArray<class ADoorHandle*> DoorHandles; 
-
+ 
 };
