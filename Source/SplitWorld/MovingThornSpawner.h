@@ -26,5 +26,5 @@ private:
 	FVector SpawnOffset = FVector(0, 50000.0f, 0); 
 
 	FTimerHandle SpawnTimerHandle; 
-
+ 
 };

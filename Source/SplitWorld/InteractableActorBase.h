@@ -66,6 +66,6 @@ private:
 	UPROPERTY(EditAnywhere)
 	class AFirstCamera* Camera;
 	UPROPERTY(EditAnywhere)
-	int Map; 
+	int Map;
 	
 };

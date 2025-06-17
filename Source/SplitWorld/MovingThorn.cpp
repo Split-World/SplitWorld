@@ -8,7 +8,7 @@
 
 AMovingThorn::AMovingThorn()
 { 
-	PrimaryActorTick.bCanEverTick = true; 
+	PrimaryActorTick.bCanEverTick = true;
 	
 	bReplicates = true; 
 	SetReplicateMovement(true);
