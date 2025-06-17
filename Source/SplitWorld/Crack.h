@@ -23,4 +23,6 @@ private:
 	UPROPERTY()
 	class ASplitWorldGameModeBase* GM; 
 
+	FTimerHandle CrackTimerHandle; 
+
 };

@@ -347,8 +347,8 @@ void ASplitPlayer::MoveAction(const FInputActionValue& Value)
 	if (!bMoving) MoveServer();
 
 	FVector2D v = Value.Get<FVector2D>();
-	Dir += Forwards[CurPart] * v.X * (v.X > 0 ? MoveCheck.Z : MoveCheck.W); 
-	Dir += Rights[CurPart] * v.Y * (v.Y > 0 ? MoveCheck.X : MoveCheck.Y); 
+	Dir += Forwards[CurPart] * v.X * (v.X > 0 ? MoveCheck.Z : MoveCheck.W) * 60.0f * GetWorld()->GetDeltaSeconds(); 
+	Dir += Rights[CurPart] * v.Y * (v.Y > 0 ? MoveCheck.X : MoveCheck.Y) * 60.0f * GetWorld()->GetDeltaSeconds();
 	
 	FRotator rot = GetControlRotation();
 	if (GetCharacterMovement()->IsFalling())
@@ -433,8 +433,7 @@ void ASplitPlayer::DoubleJumpMulti_Implementation()
 {
 	anim->bDoubleJumping = true;
 
-	ClonePlayer->anim->bDoubleJumping = true;
-	
+	ClonePlayer->anim->bDoubleJumping = true; 
 }
 
 void ASplitPlayer::InteractAction(const FInputActionValue& Value)
@@ -616,7 +615,7 @@ bool ASplitPlayer::DetectWall(FHitResult& Out_Hit, FVector& HitLocation, FVector
 		FVector EndVector = (GetActorForwardVector() * 100.f) + tempLocation;
 		
 		TArray<AActor*> ignoreActors;
-		ignoreActors.Add(this);
+		ignoreActors.Add(this); 
 		
 		bool bHit = UKismetSystemLibrary::SphereTraceSingle(
 			GetWorld(),

@@ -55,7 +55,6 @@ void AFish::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePro
 void AFish::Launch()
 {
 	bLaunched = true;
-	GM->bPlayer_Interactions[1] &= ~4;  
 }
 
 void AFish::OnMeshBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,

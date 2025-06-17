@@ -36,8 +36,8 @@ void ASecondCamera::Tick(float DeltaTime)
 
 }
 
-FVector ASecondCamera::GetCameraLocation()
+USceneCaptureComponent2D* ASecondCamera::GetCamera()
 {
-	return CameraComp->GetComponentLocation(); 
+	return CameraComp; 
 }
 

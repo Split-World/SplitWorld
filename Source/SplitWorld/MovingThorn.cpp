@@ -10,19 +10,15 @@ AMovingThorn::AMovingThorn()
 { 
 	PrimaryActorTick.bCanEverTick = true; 
 	
-	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh")); 
-	Mesh->SetupAttachment(BoxComp); 
-	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision); 
-
 	bReplicates = true; 
-	SetReplicateMovement(true); 
+	SetReplicateMovement(true);
+	bAlwaysRelevant = true; 
 } 
 
 void AMovingThorn::BeginPlay()
 {
 	Super::BeginPlay();
 
-	
 }
 
 void AMovingThorn::Tick(float DeltaTime)
@@ -46,10 +42,20 @@ void AMovingThorn::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 
 void AMovingThorn::Execute()
 { 
-	GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, TEXT("MovingThron")); 
 	if (!Idx && Player)
 	{
 		Player->Die(); 
 	}
 }
 
+void AMovingThorn::Server_SetMesh_Implementation(int _Idx)
+{ 
+	Idx = _Idx; 
+	Multi_SetMesh(_Idx); 
+}
+
+void AMovingThorn::Multi_SetMesh_Implementation(int _Idx)
+{ 
+	MeshComp->SetStaticMesh(Meshes[_Idx]);
+	MeshComp->SetMaterial(0, Materials[_Idx]); 
+}

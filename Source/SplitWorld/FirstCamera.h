@@ -34,7 +34,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override; 
 
-	FVector GetCameraLocation(); 
+	USceneCaptureComponent2D* GetCamera(); 
 	ASecondCamera* GetSecondCamera(); 
 	
 private: 
