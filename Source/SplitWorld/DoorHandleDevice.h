@@ -18,11 +18,11 @@ public:
 
 private:
 	UPROPERTY(EditAnywhere)
-	class UStaticMeshComponent* MeshComp;
+	class UStaticMeshComponent* MeshComp; 
 	UPROPERTY(EditAnywhere)
-	class USceneComponent* Handle1_PointComp; 
+	class USceneComponent* Handle1_PointComp;
 	UPROPERTY(EditAnywhere) 
-	class USceneComponent* Handle2_PointComp; 
+	class USceneComponent* Handle2_PointComp;  
 
 	UPROPERTY()
 	class ASplitWorldGameModeBase* GM;
