@@ -172,7 +172,9 @@ public:
 	UPROPERTY(Replicated)
 	bool bTraversal = false;
 	UPROPERTY(Replicated)
-	bool bAdjustAnimaition = false;
+	bool bAdjustAnimaition = false; 
+
+	FTimerHandle ClimbTimerHandle;
 	
 	bool DetectWall(FHitResult& Out_Hit, FVector& HitLocation, FVector& Normal, int& index);
 	void ClimbWall(float Value);

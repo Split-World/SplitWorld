@@ -656,11 +656,21 @@ void ASplitPlayer::ClimbWall(float Value)
 	GetCharacterMovement()->GravityScale = 0.f;
 	GetCharacterMovement()->Velocity = FVector::ZeroVector;
 	
-	if (!bClimbing) ClimbMulti();
-	
+	if (!bClimbing) 
+	{ 
+		GetWorldTimerManager().ClearTimer(ClimbTimerHandle); 
+		GetWorldTimerManager().SetTimer(ClimbTimerHandle, [&]()
+		{
+			bFailClimb = true;
+			bClimbing = false;
+
+			FailClimbMulti();
+		}, 1.0f, false); 
+		ClimbMulti();
+	}
+
 	bClimbing = true;
 
-	
 	FHitResult OutHit;
 	TArray<AActor*> ignoreActors;
 	ignoreActors.Add(this);
@@ -691,8 +701,6 @@ void ASplitPlayer::ClimbWall(float Value)
 		bClimbing = false;
 
 		FailClimbMulti();
-		
-		GetCharacterMovement()->GravityScale = 1.f;
 	}
 }
 
@@ -707,7 +715,9 @@ void ASplitPlayer::FailClimbMulti_Implementation()
 {
 	anim->bClimbing = false;
 
-	ClonePlayer->anim->bClimbing = false;
+	ClonePlayer->anim->bClimbing = false; 
+
+	GetCharacterMovement()->GravityScale = 1.f; 
 }
 
 FVector ASplitPlayer::MoveVectorUpward(FVector InVector, float AddValue)
