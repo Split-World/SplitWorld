@@ -100,6 +100,7 @@ void ADoorHandle::Interaction_Implementation()
 		GM->DoorInput |= (1 << Idx);
 
 		Multi_Interaction(); 
+
 		
 		GetWorldTimerManager().ClearTimer(DoorInputTimerHandle); 
 		GetWorldTimerManager().SetTimer(DoorInputTimerHandle, [&]()
@@ -110,7 +111,7 @@ void ADoorHandle::Interaction_Implementation()
 	
 	if (!(GM->bPlayer_Interactions[0] & (1 << Idx)))
 	{
-		GM->bPlayer_Interactions[0] |= (1 << Idx); 
+		GM->bPlayer_Interactions[0] |= (1 << Idx);
 		GM->Players[Idx]->GetPawn()->AttachToComponent(Player_PointComp, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 		Multi_SetVisibility(); 
 	} 
