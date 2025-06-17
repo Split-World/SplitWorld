@@ -23,7 +23,7 @@ private:
 	UPROPERTY(EditAnywhere)
 	class UStaticMeshComponent* Mesh;
 	UPROPERTY(EditAnywhere)
-	class USceneComponent* Player_PointComp; 
+	class USceneComponent* Player_PointComp;
 	
 	UPROPERTY()
 	class ASplitWorldGameModeBase* GM; 
