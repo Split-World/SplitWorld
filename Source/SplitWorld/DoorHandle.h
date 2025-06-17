@@ -29,5 +29,5 @@ private:
 	class ASplitWorldGameModeBase* GM; 
 
 	FTimerHandle DoorInputTimerHandle; 
-	
+	 
 }; 
