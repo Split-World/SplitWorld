@@ -16,6 +16,6 @@ void UArrowWidget::HideUI()
 
 void UArrowWidget::ShowUI()
 {
-	PlayAnimation(Show);
-	PlayAnimation(MoveArrow); 
+	PlayAnimation(Show); 
+	PlayAnimation(MoveArrow, 0, 0); 
 }

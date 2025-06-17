@@ -10,6 +10,7 @@
 #include "Components/BoxComponent.h"
 #include "Components/SceneCaptureComponent2D.h"
 #include "Components/WidgetComponent.h"
+#include "ArrowWidget.h"
 
 ADoorHandle::ADoorHandle()
 { 
@@ -29,6 +30,21 @@ ADoorHandle::ADoorHandle()
 	DoorWidgetComp->SetupAttachment(BoxComp);
 	DoorWidgetComp->SetRelativeLocation(FVector(0.0f, 0.0f, 100.0f));
 	DoorWidgetComp->SetDrawSize(FVector2D(100.0f)); 
+
+	Arrow1WidgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("Arrow1WidgetComp"));
+	Arrow1WidgetComp->SetupAttachment(DoorWidgetComp);
+	Arrow1WidgetComp->SetRelativeLocation(FVector(0.0f, 0.0f, 100.0f));
+	Arrow1WidgetComp->SetDrawSize(FVector2D(100.0f)); 
+
+	Arrow2WidgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("Arrow2WidgetComp"));
+	Arrow2WidgetComp->SetupAttachment(DoorWidgetComp);
+	Arrow2WidgetComp->SetRelativeLocation(FVector(0.0f, 0.0f, 150.0f)); 
+	Arrow2WidgetComp->SetDrawSize(FVector2D(100.0f));
+
+	Arrow3WidgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("Arrow3WidgetComp"));
+	Arrow3WidgetComp->SetupAttachment(DoorWidgetComp);
+	Arrow3WidgetComp->SetRelativeLocation(FVector(0.0f, 0.0f, 100.0f));
+	Arrow3WidgetComp->SetDrawSize(FVector2D(100.0f));
 	
 	bReplicates = true;
 	SetReplicateMovement(true); 
@@ -47,6 +63,12 @@ void ADoorHandle::BeginPlay()
 
 	DoorWidget = Cast<UDoorWidget>(DoorWidgetComp->GetWidget());
 	DoorWidget->SetIMG(Idx); 
+	Arrow1Widget = Cast<UArrowWidget>(Arrow1WidgetComp->GetWidget());
+	Arrow1Widget->SetIMG();
+	Arrow2Widget = Cast<UArrowWidget>(Arrow2WidgetComp->GetWidget());
+	Arrow2Widget->SetIMG();
+	Arrow3Widget = Cast<UArrowWidget>(Arrow3WidgetComp->GetWidget());
+	Arrow3Widget->SetIMG(); 
 }
 
 void ADoorHandle::Tick(float DeltaTime)
@@ -55,7 +77,17 @@ void ADoorHandle::Tick(float DeltaTime)
 
 	if (IsValid(Camera) && IsValid(Camera->GetSecondCamera()))
 	{
-		UILookCamera(); 
+		FVector Forward = GetActorForwardVector();
+		FVector CameraForward = !Map ? Camera->GetCamera()->GetForwardVector() : Camera->GetSecondCamera()->GetCamera()->GetForwardVector();
+
+		FVector CameraPos = !Map ? Camera->GetCamera()->GetComponentLocation() : Camera->GetSecondCamera()->GetCamera()->GetComponentLocation();
+		FVector Dir = (CameraPos - DoorWidgetComp->GetComponentLocation()).GetSafeNormal();
+		float RotDir = FMath::Sign(Forward.Cross(-CameraForward.GetSafeNormal2D()).Z);
+		float Yaw = FMath::RadiansToDegrees(FMath::Acos(Forward.Dot(-CameraForward.GetSafeNormal2D()))) * RotDir;
+
+		FRotator Rot = Dir.Rotation();
+		Rot.Yaw = Yaw;
+		DoorWidgetComp->SetRelativeRotation(Rot); 
 	}
 }
 
@@ -95,34 +127,25 @@ void ADoorHandle::ChangePart()
 	{
 		Multi_ShowDoorUI(); 
 	}
-}
-
-void ADoorHandle::UILookCamera()
-{
-	FVector Forward = GetActorForwardVector(); 
-	FVector CameraForward = !Map ? Camera->GetCamera()->GetForwardVector() : Camera->GetSecondCamera()->GetCamera()->GetForwardVector(); 
-		
-	FVector CameraPos = !Map ? Camera->GetCamera()->GetComponentLocation() : Camera->GetSecondCamera()->GetCamera()->GetComponentLocation(); 
-	FVector Dir = (CameraPos - DoorWidgetComp->GetComponentLocation()).GetSafeNormal(); 
-	float RotDir = FMath::Sign(Forward.Cross(-CameraForward.GetSafeNormal2D()).Z); 
-	float Yaw = FMath::RadiansToDegrees(FMath::Acos(Forward.Dot(-CameraForward.GetSafeNormal2D()))) * RotDir; 
-		
-	FRotator Rot = Dir.Rotation();
-	Rot.Yaw = Yaw;
-	DoorWidgetComp->SetRelativeRotation(Rot); 
-}
+} 
 
 void ADoorHandle::Multi_ShowDoorUI_Implementation()
 {
 	DoorWidget->ShowUI(); 
+	Arrow1Widget->ShowUI(); 
+	Arrow2Widget->ShowUI(); 
+	Arrow3Widget->ShowUI(); 
 } 
 
 void ADoorHandle::Multi_HideDoorUI_Implementation()
 {
 	DoorWidget->HideUI(); 
+	Arrow1Widget->HideUI(); 
+	Arrow2Widget->HideUI(); 
+	Arrow3Widget->HideUI(); 
 }
 
 void ADoorHandle::Multi_Interaction_Implementation()
 {
-	DoorWidget->InteractionHandle(); 	
+	DoorWidget->InteractionHandle(); 
 }

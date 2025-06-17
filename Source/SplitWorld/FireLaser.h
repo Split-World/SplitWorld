@@ -20,5 +20,9 @@ public:
 	virtual void Execute() override; 
 
 	void Fire(); 
+
+private: 
+	UPROPERTY(EditAnywhere) 
+	class UNiagaraComponent* LaserComp; 
 	
 };

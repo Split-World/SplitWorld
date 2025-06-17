@@ -30,9 +30,6 @@ private:
 	UFUNCTION()
 	void ChangePart(); 
 
-	UFUNCTION()
-	void UILookCamera(); 
-	
 	UPROPERTY(EditAnywhere)
 	class UStaticMeshComponent* Mesh;
 	UPROPERTY(EditAnywhere)
@@ -52,6 +49,12 @@ private:
 	FTimerHandle DoorInputTimerHandle;
 
 	UPROPERTY(EditAnywhere)
-	class UDoorWidget* DoorWidget;
-	
+	class UDoorWidget* DoorWidget; 
+	UPROPERTY(EditAnywhere)
+	class UArrowWidget* Arrow1Widget;
+	UPROPERTY(EditAnywhere)
+	class UArrowWidget* Arrow2Widget;
+	UPROPERTY(EditAnywhere)
+	class UArrowWidget* Arrow3Widget;
+
 }; 
