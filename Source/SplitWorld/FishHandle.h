@@ -37,5 +37,5 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	class ALaser* NormalLaser; 
-	
+	 
 };

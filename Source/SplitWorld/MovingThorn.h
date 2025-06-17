@@ -19,7 +19,7 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override; 
 
 	virtual void Execute() override; 
-	
+
 	UPROPERTY(Replicated) 
 	int Idx; 
 

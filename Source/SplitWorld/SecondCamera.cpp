@@ -41,3 +41,8 @@ USceneCaptureComponent2D* ASecondCamera::GetCamera()
 	return CameraComp; 
 }
 
+USpringArmComponent* ASecondCamera::GetSpringArm()
+{
+	return SpringArmComp; 
+}
+

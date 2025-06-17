@@ -36,5 +36,5 @@ private:
 
 	UFUNCTION(Server, Reliable)
 	void UpdateSuccess(bool bActive); 
-	
+	 
 };

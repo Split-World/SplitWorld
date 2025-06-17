@@ -56,4 +56,3 @@ void ADoorHandleDevice::Tick(float DeltaTime)
 		SetActorRotation(FRotator(0, Yaw, 0.0f)); 
 	}  
 } 
-

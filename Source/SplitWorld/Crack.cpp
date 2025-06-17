@@ -46,7 +46,7 @@ void ACrack::Interaction_Implementation()
 			GM->CrackInput &= ~(1 << Idx);
 		}, 0.05f, false); 
 	}
-	GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, TEXT("Interaction")); 
+	
 	if (!(GM->bPlayer_Interactions[3] & (1 << Idx)))
 	{
 		GM->bPlayer_Interactions[3] |= (1 << Idx);
