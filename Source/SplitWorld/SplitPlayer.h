@@ -77,6 +77,9 @@ public:
 	UFUNCTION()
 	void Die();
 
+	UPROPERTY(Replicated)
+	bool OnGround = false;
+	
 	UFUNCTION(NetMulticast, Reliable)
 	void OnGroundMulti();
 	
