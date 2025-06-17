@@ -52,11 +52,6 @@ public:
 	float CrackGauge[2];
 
 	UPROPERTY()
-	class USplitWorldGameInstance* GI;
-	
-	UPROPERTY(EditAnywhere)
-	class UMaterialParameterCollection* MPC_SplitWorld;
-	UPROPERTY()
-	class UMaterialParameterCollectionInstance* MPC_Instance;
+	class USplitWorldGameInstance* GI; 
 
 };
