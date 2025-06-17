@@ -31,5 +31,5 @@ private:
 
 	bool bActive;
 	FTimerHandle ActiveTimerHandle; 
-	
+	 
 };

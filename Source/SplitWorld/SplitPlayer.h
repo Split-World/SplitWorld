@@ -259,6 +259,6 @@ public:
 
 	void ConveyorBeltCheck(float DeltaTime);
 
-	UPROPERTY(Replicated)
+	UPROPERTY(EditAnywhere, Replicated)
 	class UMaterialParameterCollection* collection;
 };

@@ -35,6 +35,8 @@ void ARoadExtinction::BeginPlay()
 	
 	StartBoxComp->OnComponentBeginOverlap.AddDynamic(this, &ARoadExtinction::OnStartBoxBeginOverlap); 
 	DestroyBoxComp->OnComponentBeginOverlap.AddDynamic(this, &ARoadExtinction::OnDestroyBoxBeginOverlap); 
+
+	MPC_Instance = GetWorld()->GetParameterCollectionInstance(MPC_SplitWorld); 
 }
 
 void ARoadExtinction::Tick(float DeltaTime)

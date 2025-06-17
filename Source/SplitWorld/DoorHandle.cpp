@@ -13,7 +13,14 @@ ADoorHandle::ADoorHandle()
 	Mesh->SetupAttachment(BoxComp);
 	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision); 
 
-	SetReplicates(true); 
+	Player_PointComp = CreateDefaultSubobject<USceneComponent>(TEXT("Player_PointComp"));
+	Player_PointComp->SetupAttachment(RootComponent);
+	Player_PointComp->SetRelativeLocation(FVector(30.0f, 0, 0)); 
+	Player_PointComp->SetRelativeRotation(FRotator(0, 180.0f, 0)); 
+	Player_PointComp->SetIsReplicated(true); 
+	
+	bReplicates = true;
+	SetReplicateMovement(true); 
 	bAlwaysRelevant = true; 
 }
 
@@ -47,6 +54,8 @@ void ADoorHandle::Interaction_Implementation()
 	
 	if (!(GM->bPlayer_Interactions[0] & (1 << Idx)))
 	{
-		GM->bPlayer_Interactions[0] |= (1 << Idx);
+		GM->bPlayer_Interactions[0] |= (1 << Idx); 
+		GM->Players[Idx]->GetPawn()->AttachToComponent(Player_PointComp, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+		Multi_SetVisibility(); 
 	} 
 } 

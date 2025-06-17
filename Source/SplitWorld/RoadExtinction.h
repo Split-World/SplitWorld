@@ -33,6 +33,8 @@ private:
 	bool bStart;
 
 	UPROPERTY(EditAnywhere)
-	UMaterialParameterCollection* MPC_Extinction; 
-
+	class UMaterialParameterCollection* MPC_SplitWorld;
+	UPROPERTY()
+	class UMaterialParameterCollectionInstance* MPC_Instance;
+	
 };

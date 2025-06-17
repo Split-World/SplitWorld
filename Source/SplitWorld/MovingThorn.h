@@ -20,13 +20,20 @@ public:
 
 	virtual void Execute() override; 
 
-	UPROPERTY(EditAnywhere) 
-	class UStaticMeshComponent* Mesh; 
-
-	UPROPERTY(EditAnywhere, Replicated) 
+	UPROPERTY(Replicated) 
 	int Idx; 
 
+	UFUNCTION(Server, Reliable)
+	void Server_SetMesh(int _Idx); 
+	UFUNCTION(NetMulticast, Reliable)
+	void Multi_SetMesh(int _Idx);
+	
 	UPROPERTY(EditAnywhere)
 	float Speed; 
 
+	UPROPERTY(EditAnywhere)
+	TArray<class UStaticMesh*> Meshes;
+	UPROPERTY(EditAnywhere)
+	TArray<class UMaterialInstance*> Materials;
+	
 };

@@ -12,7 +12,7 @@ ACrack::ACrack()
 	BoxComp->SetCollisionProfileName(TEXT("Crack"));
 	BoxComp->SetIsReplicated(true); 
 
-	SetReplicates(true);
+	bReplicates = true; 
 	bAlwaysRelevant = true; 
 }
 
@@ -34,9 +34,23 @@ void ACrack::Tick(float DeltaTime)
 
 void ACrack::Interaction_Implementation()
 { 
+	Super::Interaction_Implementation(); 
+
+	if (GM->bPlayer_Interactions[3] == 3)
+	{ 
+		GM->CrackInput |= (1 << Idx); 
+
+		GetWorldTimerManager().ClearTimer(CrackTimerHandle);
+		GetWorldTimerManager().SetTimer(CrackTimerHandle, [&]()
+		{
+			GM->CrackInput &= ~(1 << Idx);
+		}, 0.05f, false); 
+	}
+	
 	if (!(GM->bPlayer_Interactions[3] & (1 << Idx)))
 	{
 		GM->bPlayer_Interactions[3] |= (1 << Idx);
+		Multi_SetVisibility(); 
 	}
 }
 

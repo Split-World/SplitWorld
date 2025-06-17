@@ -19,7 +19,7 @@ void ASpawnPoint::BeginPlay()
 {
 	Super::BeginPlay();
 
-	SphereComp->OnComponentBeginOverlap.AddDynamic(this,&ASpawnPoint::OnBeginOverlap);
+	SphereComp->OnComponentBeginOverlap.AddDynamic(this, &ASpawnPoint::OnBeginOverlap);
 }
 
 // Called every frame

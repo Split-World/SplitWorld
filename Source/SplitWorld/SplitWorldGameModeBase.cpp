@@ -3,6 +3,9 @@
 
 #include "SplitWorldGameModeBase.h" 
 
+#include "SplitWorldGameInstance.h"
+#include "Materials/MaterialParameterCollectionInstance.h"
+
 ASplitWorldGameModeBase::ASplitWorldGameModeBase()
 { 
 	PrimaryActorTick.bCanEverTick = true; 
@@ -22,7 +25,15 @@ AActor* ASplitWorldGameModeBase::ChoosePlayerStart_Implementation(AController* P
 	return Super::ChoosePlayerStart_Implementation(Player); 
 }
 
-void ASplitWorldGameModeBase::Tick(float DeltaTime)
+void ASplitWorldGameModeBase::BeginPlay()
+{
+	Super::BeginPlay();
+
+	GI = Cast<USplitWorldGameInstance>(GetWorld()->GetGameInstance()); 
+	MPC_Instance = GetWorld()->GetParameterCollectionInstance(MPC_SplitWorld); 
+}
+
+void ASplitWorldGameModeBase::Tick(float DeltaTime) 
 {
 	Super::Tick(DeltaTime); 
 
@@ -33,7 +44,7 @@ void ASplitWorldGameModeBase::Tick(float DeltaTime)
 
 	if (CurPart == EMapPart::PartCrack)
 	{
-		CrackInput(DeltaTime); 
+		CrackInteraction(DeltaTime); 
 	}
 
 	switch (CurPart)
@@ -79,8 +90,19 @@ void ASplitWorldGameModeBase::RotateDoorHandle(float DeltaTime)
 	} 
 }
 
-void ASplitWorldGameModeBase::CrackInput(float DeltaTime)
+void ASplitWorldGameModeBase::CrackInteraction(float DeltaTime)
 { 
-	CrackGauge[0] = FMath::Max(0.0f, CrackGauge[0] + DeltaTime * (bPlayer_Interactions[3] & 1 ? 1 : -1)); 
-	CrackGauge[1] = FMath::Max(0.0f, CrackGauge[1] + DeltaTime * (bPlayer_Interactions[3] & 2 ? 1 : -1)); 
+	CrackGauge[0] = FMath::Max(0.0f, CrackGauge[0] + DeltaTime * (CrackInput & 1 ? 1 : -1)); 
+	CrackGauge[1] = FMath::Max(0.0f, CrackGauge[1] + DeltaTime * (CrackInput & 2 ? 1 : -1));
+
+	MPC_Instance->SetScalarParameterValue(FName(TEXT("CircularPercent_Pink")), CrackGauge[0]); 
+	MPC_Instance->SetScalarParameterValue(FName(TEXT("CircularPercent_Green")), CrackGauge[1]); 
+	
+	if (CrackGauge[0] > 1.0f || CrackGauge[1] > 1.0f)
+	{
+		if (GI)
+		{
+			GI->ExitRoom(); 
+		}
+	}
 }

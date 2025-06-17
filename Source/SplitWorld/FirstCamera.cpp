@@ -94,9 +94,9 @@ void AFirstCamera::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLi
 	DOREPLIFETIME(AFirstCamera, LastData); 
 }
 
-FVector AFirstCamera::GetCameraLocation()
+USceneCaptureComponent2D* AFirstCamera::GetCamera()
 {
-	return CameraComp->GetComponentLocation(); 
+	return CameraComp; 
 }
 
 ASecondCamera* AFirstCamera::GetSecondCamera()
@@ -240,9 +240,14 @@ void AFirstCamera::SetCameraLocation(float DeltaTime)
 
 void AFirstCamera::CameraTransformSync() 
 { 
-	FTransform t = GetActorTransform(); 
-	t.SetLocation(t.GetLocation() + LocationOffset); 
-	SecondCamera->SetActorTransform(t); 
+	if (IsValid(SecondCamera))
+	{
+		FTransform t = GetActorTransform();
+		t.SetLocation(t.GetLocation() + LocationOffset);
+		SecondCamera->SetActorTransform(t);
+		SpringArmComp->TargetArmLength = CurSpringArmLength;
+		SecondCamera->GetSpringArm()->TargetArmLength = CurSpringArmLength;
+	} 
 }
 
 void AFirstCamera::ChangePart()

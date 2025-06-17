@@ -17,10 +17,13 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 private: 
-	UPROPERTY(EditAnywhere) 
-	class ADoor* Door; 
-
 	UPROPERTY()
-	class ASplitWorldGameModeBase* GM; 
+	class ASplitWorldGameModeBase* GM;
 
+	UPROPERTY(EditAnywhere)
+	int Idx; 
+
+	UPROPERTY(EditAnywhere) 
+	TArray<class ADoorHandle*> DoorHandles;
+	
 };

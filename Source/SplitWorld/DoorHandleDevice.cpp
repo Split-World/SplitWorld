@@ -29,8 +29,7 @@ void ADoorHandleDevice::Tick(float DeltaTime)
 
 	if (HasAuthority()) 
 	{ 
-		SetActorRotation(FQuat::Slerp(FRotator(0).Quaternion(), FRotator(0, 450.0f, 0).Quaternion(), GM->DoorGauge / 10.0f));
-		Door->SetActorLocation(Door->GetActorLocation() + FVector(0, 0, -100.0f) * DeltaTime); 
-	} 
-}
-
+		float Yaw = FMath::Lerp(0, 450.0f, GM->DoorGauge / 10.0f); 
+		SetActorRotation(FRotator(0, Yaw, 0.0f)); 
+	}  
+} 
