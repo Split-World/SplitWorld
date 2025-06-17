@@ -35,5 +35,5 @@ public:
 	TArray<class UStaticMesh*> Meshes;
 	UPROPERTY(EditAnywhere)
 	TArray<class UMaterialInstance*> Materials;
-	
+
 };

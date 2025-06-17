@@ -33,7 +33,7 @@ void ACrack::Tick(float DeltaTime)
 }
 
 void ACrack::Interaction_Implementation()
-{ 
+{
 	Super::Interaction_Implementation(); 
 
 	if (GM->bPlayer_Interactions[3] == 3)

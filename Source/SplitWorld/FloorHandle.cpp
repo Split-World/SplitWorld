@@ -13,7 +13,7 @@ AFloorHandle::AFloorHandle()
 	Mesh->SetupAttachment(BoxComp);
 	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision); 
 
-	bReplicates = true; 
+	bReplicates = true;
 	SetReplicateMovement(true); 
 	bAlwaysRelevant = true; 
 }
@@ -35,7 +35,7 @@ void AFloorHandle::Tick(float DeltaTime)
 }
 
 void AFloorHandle::Interaction_Implementation()
-{ 
+{
 	Super::Interaction_Implementation();
 	
 	if (!(GM->bPlayer_Interactions[2] & (1 << Idx)))

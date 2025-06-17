@@ -77,6 +77,9 @@ public:
 	UFUNCTION()
 	void Die();
 
+	UPROPERTY(Replicated)
+	bool OnGround = false;
+	
 	UFUNCTION(NetMulticast, Reliable)
 	void OnGroundMulti();
 	
@@ -139,6 +142,9 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 	void DashMulti();
 
+	UFUNCTION(Server, Reliable)
+	void RollServer();
+	
 	UFUNCTION(NetMulticast, Reliable)
 	void RollMulti();
 	

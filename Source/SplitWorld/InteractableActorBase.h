@@ -31,7 +31,7 @@ public:
 
 	virtual void Interaction_Implementation() override;
 
-	UPROPERTY(EditAnywhere, Replicated)
+	UPROPERTY(EditAnywhere, Replicated) 
 	int Idx; 
 
 protected: 
@@ -66,6 +66,6 @@ private:
 	UPROPERTY(EditAnywhere)
 	class AFirstCamera* Camera;
 	UPROPERTY(EditAnywhere)
-	int Map; 
-
+	int Map;
+	
 };

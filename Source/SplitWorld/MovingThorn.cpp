@@ -11,7 +11,8 @@ AMovingThorn::AMovingThorn()
 	PrimaryActorTick.bCanEverTick = true;
 	
 	bReplicates = true; 
-	SetReplicateMovement(true); 
+	SetReplicateMovement(true);
+	bAlwaysRelevant = true; 
 } 
 
 void AMovingThorn::BeginPlay()
