@@ -9,12 +9,7 @@
 AMovingThorn::AMovingThorn()
 { 
 	PrimaryActorTick.bCanEverTick = true;
-
 	
-	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh")); 
-	Mesh->SetupAttachment(BoxComp); 
-	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision); 
-
 	bReplicates = true; 
 	SetReplicateMovement(true); 
 } 
