@@ -13,8 +13,8 @@ enum class EMapPart : uint8
 { 
 	Part1, 
 	PartDoor, 
-	Part2, 
-	Part2_5, 
+	Part2,
+	Part2_5,
 	Part3, 
 	Part3_5, 
 	Part4, 
@@ -28,18 +28,18 @@ class SPLITWORLD_API ASplitWorldGameModeBase : public AGameModeBase
 
 public:
 	ASplitWorldGameModeBase();
-	virtual AActor* ChoosePlayerStart_Implementation(AController* Player) override; 
+	virtual AActor* ChoosePlayerStart_Implementation(AController* Player) override;
+	virtual void BeginPlay() override; 
 	virtual void Tick(float DeltaTime) override; 
 
 	void ChangeMapPart(EMapPart Part); 
 	void RotateDoorHandle(float DeltaTime); 
-	void CrackInput(float DeltaTime); 
+	void CrackInteraction(float DeltaTime); 
 	
 	UPROPERTY() 
 	TArray<class AController*> Players; 
 
-	int bPlayer_Interactions[4];
-	int bViewChanger[8]; 
+	int bPlayer_Interactions[4]; 
 
 	EMapPart CurPart = EMapPart::Part1; 
 
@@ -48,6 +48,15 @@ public:
 	int DoorInput; 
 	float DoorGauge; 
 	
-	float CrackGauge[2]; 
+	int CrackInput; 
+	float CrackGauge[2];
+
+	UPROPERTY()
+	class USplitWorldGameInstance* GI;
+	
+	UPROPERTY(EditAnywhere)
+	class UMaterialParameterCollection* MPC_SplitWorld;
+	UPROPERTY()
+	class UMaterialParameterCollectionInstance* MPC_Instance;
 
 };

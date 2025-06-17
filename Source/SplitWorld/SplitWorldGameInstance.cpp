@@ -15,6 +15,7 @@ void USplitWorldGameInstance::Init()
 		SessionInterface->OnCreateSessionCompleteDelegates.AddUObject(this, &USplitWorldGameInstance::OnCreateSessionComplete); 
 		SessionInterface->OnFindSessionsCompleteDelegates.AddUObject(this, &USplitWorldGameInstance::OnFindSessionsComplete);
 		SessionInterface->OnJoinSessionCompleteDelegates.AddUObject(this, &USplitWorldGameInstance::OnJoinSessionComplete); 
+		SessionInterface->OnDestroySessionCompleteDelegates.AddUObject(this, &USplitWorldGameInstance::OnExitRoomComplete);
 	}
 
 	SessionIndex = -1; 
@@ -56,12 +57,32 @@ void USplitWorldGameInstance::JoinSession()
 	SessionInterface->JoinSession(0, FName(SessionName), sr); 
 }
 
+void USplitWorldGameInstance::GameStart()
+{ 
+	GetWorld()->ServerTravel(TEXT("/Game/SK/Levels/CameraTestMap?listen?port=7777")); 
+}
+
+void USplitWorldGameInstance::ExitRoom()
+{
+	ServerRPC_ExitRoom(); 
+}
+
+void USplitWorldGameInstance::ServerRPC_ExitRoom_Implementation()
+{
+	MultiRPC_ExitRoom(); 
+}
+
+void USplitWorldGameInstance::MultiRPC_ExitRoom_Implementation()
+{
+	SessionInterface->DestroySession(FName(*SessionName)); 
+}
+
 void USplitWorldGameInstance::OnCreateSessionComplete(FName sessionName, bool bWasSuccessful)
 {
 	UE_LOG(LogTemp, Warning, TEXT("SessionName = %s, bWasSuccessful = %d"), *sessionName.ToString(), bWasSuccessful) 
 	if (bWasSuccessful) 
 	{ 
-		GetWorld()->ServerTravel(TEXT("/Game/SK/Levels/CameraTestMap?listen?port=7777")); 
+		GetWorld()->ServerTravel(TEXT("/Game/WaitingMap?listen?port=7777")); 
 	}
 }
 
@@ -124,5 +145,21 @@ void USplitWorldGameInstance::OnJoinSessionComplete(FName sessionName, EOnJoinSe
 	else
 	{
 		UE_LOG(LogTemp, Warning, TEXT("JoinSessionComplete Failed : %d"), result); 
+	}
+}
+
+void USplitWorldGameInstance::OnExitRoomComplete(FName sessionName, bool bWasSuccessful)
+{
+	auto pc = GetWorld()->GetFirstPlayerController();
+	FString url = TEXT("/Game/LobbyMap");
+	pc->ClientTravel(url, TRAVEL_Absolute); 
+}
+
+void USplitWorldGameInstance::OnNetworkFailure(UWorld* World, UNetDriver* NetDriver, ENetworkFailure::Type FailureType,
+	const FString& ErrorString)
+{
+	if (FailureType == ENetworkFailure::Type::ConnectionLost)
+	{
+		MultiRPC_ExitRoom_Implementation(); 
 	}
 }

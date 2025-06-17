@@ -248,7 +248,7 @@ bool FOnlineSessionSteam::CreateSession(int32 HostingPlayerNum, FName SessionNam
 		Session->SessionSettings.BuildUniqueId = GetBuildUniqueId();
 
 		Session->SessionSettings.bUseLobbiesIfAvailable = true; 
-
+		
 		// Create Internet or LAN match
 		if (!NewSessionSettings.bIsLANMatch)
 		{

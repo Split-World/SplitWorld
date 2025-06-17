@@ -18,7 +18,7 @@ public:
 
 private:
 	UPROPERTY(EditAnywhere)
-	class UStaticMeshComponent* MeshComp;
+	class UStaticMeshComponent* MeshComp; 
 	UPROPERTY(EditAnywhere)
 	class USceneComponent* Handle1_PointComp; 
 	UPROPERTY(EditAnywhere) 
@@ -32,5 +32,5 @@ private:
 
 	UPROPERTY(EditAnywhere) 
 	TArray<class ADoorHandle*> DoorHandles; 
-
+ 
 };

@@ -19,7 +19,7 @@ ASecondCamera::ASecondCamera()
 	CameraComp->SetRelativeRotation(FRotator(12.5f, 0.0f, 0.0f));
 	CameraComp->SetIsReplicated(true); 
 	
-	bReplicates = true;
+	SetReplicates(true);
 	SetReplicateMovement(true);
 	bAlwaysRelevant = true;
 }
@@ -36,9 +36,9 @@ void ASecondCamera::Tick(float DeltaTime)
 
 }
 
-FVector ASecondCamera::GetCameraLocation()
+USceneCaptureComponent2D* ASecondCamera::GetCamera()
 {
-	return CameraComp->GetComponentLocation(); 
+	return CameraComp; 
 }
 
 USpringArmComponent* ASecondCamera::GetSpringArm()

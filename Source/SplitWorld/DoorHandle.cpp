@@ -19,7 +19,7 @@ ADoorHandle::ADoorHandle()
 	Player_PointComp->SetRelativeRotation(FRotator(0, 180.0f, 0)); 
 	Player_PointComp->SetIsReplicated(true); 
 	
-	SetReplicates(true);
+	bReplicates = true;
 	SetReplicateMovement(true); 
 	bAlwaysRelevant = true; 
 }
@@ -62,6 +62,7 @@ void ADoorHandle::Interaction_Implementation()
 	if (!(GM->bPlayer_Interactions[0] & (1 << Idx)))
 	{
 		GM->bPlayer_Interactions[0] |= (1 << Idx);
-		GM->Players[Idx]->GetPawn()->AttachToComponent(Player_PointComp, FAttachmentTransformRules::SnapToTargetNotIncludingScale); 
+		GM->Players[Idx]->GetPawn()->AttachToComponent(Player_PointComp, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+		Multi_SetVisibility(); 
 	} 
 } 

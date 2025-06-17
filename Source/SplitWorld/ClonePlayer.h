@@ -18,15 +18,6 @@ public:
 	
 public:
 	UPROPERTY(EditAnywhere)
-	class USkeletalMeshComponent* BodyComp;
-
-	UPROPERTY(EditAnywhere)
-	class UGroomComponent* HairComp;
-
-	UPROPERTY(EditAnywhere)
-	class UGroomComponent* EyebrowsComp;
-
-	UPROPERTY(EditAnywhere)
 	class USkeletalMeshComponent* MeshComp;
 
 	UPROPERTY()

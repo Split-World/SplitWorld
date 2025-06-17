@@ -16,7 +16,7 @@ AFish::AFish()
 	Mesh->SetCollisionProfileName(TEXT("Fish"));
 	Mesh->SetIsReplicated(true);
 
-	bReplicates = true;
+	SetReplicates(true);
 	SetReplicateMovement(true); 
 	bAlwaysRelevant = true; 
 }
@@ -55,7 +55,6 @@ void AFish::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePro
 void AFish::Launch()
 {
 	bLaunched = true;
-	GM->bPlayer_Interactions[1] &= ~4;  
 }
 
 void AFish::OnMeshBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,

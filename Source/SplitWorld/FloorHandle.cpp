@@ -38,5 +38,9 @@ void AFloorHandle::Interaction_Implementation()
 {
 	Super::Interaction_Implementation();
 	
-	if (!(GM->bPlayer_Interactions[2] & (1 << Idx))) GM->bPlayer_Interactions[2] |= (1 << Idx); 
+	if (!(GM->bPlayer_Interactions[2] & (1 << Idx)))
+	{ 
+		GM->bPlayer_Interactions[2] |= (1 << Idx);
+		Multi_SetVisibility(); 
+	} 
 }

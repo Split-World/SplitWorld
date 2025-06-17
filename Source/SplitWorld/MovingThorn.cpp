@@ -8,7 +8,7 @@
 
 AMovingThorn::AMovingThorn()
 { 
-	PrimaryActorTick.bCanEverTick = true; 
+	PrimaryActorTick.bCanEverTick = true;
 	
 	bReplicates = true; 
 	SetReplicateMovement(true);
@@ -19,8 +19,6 @@ void AMovingThorn::BeginPlay()
 {
 	Super::BeginPlay();
 
-	MeshComp->SetStaticMesh(Meshes[Idx]);
-	MeshComp->SetMaterial(0, Materials[Idx]); 
 }
 
 void AMovingThorn::Tick(float DeltaTime)
@@ -44,16 +42,20 @@ void AMovingThorn::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 
 void AMovingThorn::Execute()
 { 
-	GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, TEXT("MovingThron")); 
 	if (!Idx && Player)
 	{
 		Player->Die(); 
 	}
 }
 
-void AMovingThorn::OnRep_IdxChange()
-{
-	MeshComp->SetStaticMesh(Meshes[Idx]);
-	MeshComp->SetMaterial(0, Materials[Idx]); 
+void AMovingThorn::Server_SetMesh_Implementation(int _Idx)
+{ 
+	Idx = _Idx; 
+	Multi_SetMesh(_Idx); 
 }
 
+void AMovingThorn::Multi_SetMesh_Implementation(int _Idx)
+{ 
+	MeshComp->SetStaticMesh(Meshes[_Idx]);
+	MeshComp->SetMaterial(0, Materials[_Idx]); 
+}

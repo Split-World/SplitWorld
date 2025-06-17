@@ -15,7 +15,7 @@ ASnakeHandle::ASnakeHandle()
 	Mesh->SetupAttachment(BoxComp);
 	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision); 
 
-	bReplicates = true;
+	SetReplicates(true); 
 	bAlwaysRelevant = true; 
 }
 
@@ -31,12 +31,13 @@ void ASnakeHandle::BeginPlay()
 
 void ASnakeHandle::Tick(float DeltaTime)
 {
-	Super::Tick(DeltaTime);
-
+	Super::Tick(DeltaTime); 
 }
 
 void ASnakeHandle::Interaction_Implementation()
-{ 
+{
+	Super::Interaction_Implementation();
+	
 	if (!bActive && !(GM->bPlayer_Interactions[1] & 4))
 	{
 		bActive = true;
@@ -56,9 +57,14 @@ void ASnakeHandle::Interaction_Implementation()
 				
 				GetWorldTimerManager().SetTimer(ActiveTimerHandle, [&]()
 				{
-					bActive = false; 
+					bActive = false;
+					Multi_ExecuteFunction(EFunctionType::ActiveKey, false); 
 				}, 1.0f, false); 
-			} 
+			}
+			else
+			{
+				Multi_SetVisibility(); 
+			}
 		}, 1.0f, false); 
 	}
 }

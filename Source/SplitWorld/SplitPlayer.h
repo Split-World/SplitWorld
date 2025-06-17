@@ -35,15 +35,6 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 public:
-	UPROPERTY(EditAnywhere)
-	class USkeletalMeshComponent* BodyComp;
-
-	UPROPERTY(EditAnywhere)
-	class UGroomComponent* HairComp;
-
-	UPROPERTY(EditAnywhere)
-	class UGroomComponent* EyebrowsComp;
-	
 	UPROPERTY(EditAnywhere, Category = Input)
 	class UInputMappingContext* IMC_Default;
 	
@@ -86,6 +77,12 @@ public:
 	UFUNCTION()
 	void Die();
 
+	UPROPERTY(Replicated)
+	bool OnGround = false;
+	
+	UFUNCTION(NetMulticast, Reliable)
+	void OnGroundMulti();
+	
 	UFUNCTION(Server, Reliable)
 	void MoveServer();
 
@@ -119,10 +116,37 @@ public:
 	FVector Dir;
 
 	UFUNCTION(Server, Reliable)
+	void InteractServer(class AInteractableActorBase* Actor);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void InteractMulti();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void ControlMulti();
+
+	UFUNCTION()
+	void PushMulti();
+
+	UFUNCTION(Server, Reliable)
+	void PushingServer(bool bIsClient); 
+
+	UPROPERTY(Replicated)
+	bool bPush = false;
+	
+	UPROPERTY(ReplicatedUsing = PushMulti)
+	bool bPushing = false;
+	
+	UFUNCTION(Server, Reliable)
 	void DashServer();
 
 	UFUNCTION(NetMulticast, Reliable)
 	void DashMulti();
+
+	UFUNCTION(Server, Reliable)
+	void RollServer();
+	
+	UFUNCTION(NetMulticast, Reliable)
+	void RollMulti();
 	
 	UPROPERTY(Replicated)
 	bool bDashing = false;
@@ -150,6 +174,33 @@ public:
 	bool DetectWall(FHitResult& Out_Hit, FVector& HitLocation, FVector& Normal, int& index);
 	void ClimbWall(float Value);
 
+	UFUNCTION(NetMulticast, Reliable)
+	void TraversalMulti();
+
+	UFUNCTION(Server, Reliable)
+	void StartTraversalServer();
+	
+	UFUNCTION(NetMulticast, Reliable)
+	void StartTraversalMulti();
+
+	UFUNCTION(Server, Reliable)
+	void EndTraversalServer();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void EndTraversalMulti();
+
+	UFUNCTION(Server, Reliable)
+	void EndClimbServer();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void EndClimbMulti();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void ClimbMulti();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void FailClimbMulti();
+	
 	FVector MoveVectorUpward(FVector InVector, float AddValue);
 	FVector MoveVectorDownward(FVector InVector, float SubtractValue);
 	FVector MoveVectorForward(FVector InVector, FRotator InRotation, float AddValue);
@@ -160,7 +211,13 @@ public:
 	FRotator ReveseNormal(FVector InNormal);
 
 	UPROPERTY(EditAnywhere)
-	UAnimMontage* ClimbMontage;
+	UAnimMontage* TraversalMontage;
+
+	UPROPERTY(EditAnywhere)
+	UAnimMontage* RollMontage;
+
+	UPROPERTY(EditAnywhere)
+	UAnimMontage* ControlInteractMontage;
 
 	UPROPERTY()
 	class USplitPlayerAnimInstance* anim;
@@ -179,14 +236,10 @@ public:
 	FVector CloneDist;
 
 	UFUNCTION(Server, Reliable)
-
-	void CloneLocation(FVector Location); 
+	void CloneLocation(FTransform Transform); 
 	
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AClonePlayer> ClonePlayerFactory;
-
-	UFUNCTION(Server, Reliable)
-	void Interact(class AInteractableActorBase* Actor);
 
 	UPROPERTY() 
 	class ASplitWorldGameModeBase* GM; 
@@ -199,13 +252,19 @@ public:
 	UPROPERTY(Replicated)
 	int CurPart = 0;
 
-	void ChangePart(); 
+	void ChangePart();
+
+	UFUNCTION(Server, Reliable)
+	void CanclePushServer();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void ChangePartMulti();
 
 	UPROPERTY(Replicated) 
 	FVector4 MoveCheck; 
 
 	void ConveyorBeltCheck(float DeltaTime);
 
-	UPROPERTY(Replicated)
+	UPROPERTY(EditAnywhere, Replicated)
 	class UMaterialParameterCollection* collection;
 };

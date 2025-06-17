@@ -5,11 +5,16 @@
 
 #include "SplitWorldGameInstance.h"
 #include "Components/Button.h"
+#include "Kismet/GameplayStatics.h"
 
 void ULobbyWidget::NativeConstruct()
 {
+	Super::NativeConstruct();
+	
 	GI = Cast<USplitWorldGameInstance>(GetWorld()->GetGameInstance()); 
-	Btn_Play->OnClicked.AddDynamic(this, &ULobbyWidget::Play); 
+
+	BTN_Play->OnClicked.AddDynamic(this, &ULobbyWidget::Play); 
+	BTN_Quit->OnClicked.AddDynamic(this, &ULobbyWidget::Quit); 
 }
 
 void ULobbyWidget::Play()
@@ -17,6 +22,12 @@ void ULobbyWidget::Play()
 	if (GI)
 	{
 		GI->FindSession();
-		Btn_Play->SetIsEnabled(false); 
+		BTN_Play->SetIsEnabled(false); 
 	}
+}
+
+void ULobbyWidget::Quit()
+{
+	auto pc = GetWorld()->GetFirstPlayerController();
+	UKismetSystemLibrary::QuitGame(GetWorld(), pc, EQuitPreference::Quit, false); 
 }

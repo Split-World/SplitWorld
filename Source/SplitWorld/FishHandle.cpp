@@ -38,7 +38,9 @@ void AFishHandle::Tick(float DeltaTime)
 }
 
 void AFishHandle::Interaction_Implementation()
-{ 
+{
+	Super::Interaction_Implementation(); 
+	
 	if (!bLaunched && !(GM->bPlayer_Interactions[1] & 1) && !(GM->bPlayer_Interactions[1] & 2))
 	{
 		bLaunched = true;
@@ -58,10 +60,14 @@ void AFishHandle::Interaction_Implementation()
 				{
 					bLaunched = false;
 					GM->bPlayer_Interactions[1] &= ~1;
-
+					GM->bPlayer_Interactions[1] &= ~4;
+					
+					Multi_ExecuteFunction(EFunctionType::ActiveKey, false); 
+					
 					if (GM->bPlayer_Interactions[1] & 2)
 					{
 						NormalLaser->Disable();
+						Multi_SetVisibility(); 
 					} 
 				}, 4.5f, false); 
 			}, 0.25f, false); 
