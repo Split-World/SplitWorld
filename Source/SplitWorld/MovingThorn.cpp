@@ -8,7 +8,8 @@
 
 AMovingThorn::AMovingThorn()
 { 
-	PrimaryActorTick.bCanEverTick = true; 
+	PrimaryActorTick.bCanEverTick = true;
+
 	
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh")); 
 	Mesh->SetupAttachment(BoxComp); 
