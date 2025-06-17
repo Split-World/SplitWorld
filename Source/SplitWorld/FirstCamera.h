@@ -21,7 +21,7 @@ public:
 	UPROPERTY(EditAnywhere)
 	float Length;
 	UPROPERTY(EditAnywhere)
-	float Speed; 
+	float Speed;
 	
 };
 
