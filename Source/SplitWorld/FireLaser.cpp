@@ -43,7 +43,7 @@ void AFireLaser::Execute()
 	}
 }
 
-void AFireLaser::Fire()
+void AFireLaser::Fire_Implementation()
 { 
 	BoxComp->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics); 
 	MeshComp->SetVisibility(true); 
@@ -55,5 +55,6 @@ void AFireLaser::Fire()
 	{ 
 		BoxComp->SetCollisionEnabled(ECollisionEnabled::NoCollision); 
 		MeshComp->SetVisibility(false); 
+		LaserComp->Deactivate(); 
 	}, 0.5f, false); 
 } 

@@ -39,7 +39,8 @@ public:
 	UPROPERTY() 
 	TArray<class AController*> Players; 
 
-	int bPlayer_Interactions[4]; 
+	int bPlayer_Interactions[4];
+	int bViewChanger[8]; 
 
 	EMapPart CurPart = EMapPart::Part1; 
 
