@@ -102,10 +102,10 @@ public:
 	void Die();
 	
 	UFUNCTION(Server, Reliable)
-	void DieServer();
+	void DieServer(FTransform NewTransform);
 	
 	UFUNCTION(NetMulticast, Reliable)
-	void DieMulti();
+	void DieMulti(FTransform NewTransform);
 	
 	UPROPERTY(Replicated)
 	bool OnGround = false;
@@ -315,5 +315,36 @@ public:
 	UPROPERTY(EditAnywhere, Replicated)
 	class UMaterialParameterCollection* collection;
 	UPROPERTY()
-	class UMaterialParameterCollectionInstance* MPC_Instance; 
+	class UMaterialParameterCollectionInstance* MPC_Instance;
+
+	UPROPERTY(EditAnywhere)
+	class UNiagaraComponent* DashVFX;
+	UPROPERTY(EditAnywhere)
+	class UNiagaraComponent* DoubleJumpVFX;
+	UPROPERTY(EditAnywhere)
+	class UNiagaraComponent* DieVFX;
+	UPROPERTY(EditAnywhere)
+	class UNiagaraComponent* RespawnVFX;
+
+	UPROPERTY(EditAnywhere)
+	class UAudioComponent* BG_Sound;
+	UPROPERTY(EditAnywhere)
+	class UAudioComponent* Door_Sound;
+	UPROPERTY(EditAnywhere)
+	class UAudioComponent* Water_Sound;
+	UPROPERTY(EditAnywhere)
+	class UAudioComponent* Extinction_Sound;
+
+	UFUNCTION(Server, Reliable)
+	void RespawnServer();
+	
+	UFUNCTION(NetMulticast, Reliable)
+	void RespawnMulti();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void PlaySound(UAudioComponent* Audio);
+	UFUNCTION(NetMulticast, Reliable)
+	void StopSound(UAudioComponent* Audio);
+	
 };
+

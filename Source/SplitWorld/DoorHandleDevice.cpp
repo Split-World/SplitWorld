@@ -53,6 +53,8 @@ void ADoorHandleDevice::Tick(float DeltaTime)
 	if (HasAuthority() && GM->DoorInput) 
 	{ 
 		float Yaw = FMath::Lerp(0, 450.0f, GM->DoorGauge / 10.0f); 
-		SetActorRotation(FRotator(0, Yaw, 0.0f)); 
+		SetActorRotation(FRotator(0, Yaw, 0.0f));
+
+		
 	}  
 } 

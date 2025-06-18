@@ -22,7 +22,7 @@ ADoorHandle::ADoorHandle()
 
 	Player_PointComp = CreateDefaultSubobject<USceneComponent>(TEXT("Player_PointComp"));
 	Player_PointComp->SetupAttachment(RootComponent);
-	Player_PointComp->SetRelativeLocation(FVector(30.0f, 0, 0)); 
+	Player_PointComp->SetRelativeLocation(FVector(100.0f, 0, 0)); 
 	Player_PointComp->SetRelativeRotation(FRotator(0, 180.0f, 0)); 
 	Player_PointComp->SetIsReplicated(true); 
 
@@ -100,8 +100,6 @@ void ADoorHandle::Interaction_Implementation()
 		GM->DoorInput |= (1 << Idx);
 
 		Multi_Interaction(); 
-
-		
 		GetWorldTimerManager().ClearTimer(DoorInputTimerHandle); 
 		GetWorldTimerManager().SetTimer(DoorInputTimerHandle, [&]()
 		{

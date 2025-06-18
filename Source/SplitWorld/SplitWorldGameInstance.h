@@ -40,7 +40,7 @@ private:
 	IOnlineSessionPtr SessionInterface; 
 	TSharedPtr<FOnlineSessionSearch> SessionSearch;
 
-	FString SessionName = "Default Room";
+	FString SessionName = "SplitPlayer";
 	FString HostName = "SplitPlayer";
 
 	int SessionIndex;

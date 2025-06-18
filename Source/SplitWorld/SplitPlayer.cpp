@@ -13,6 +13,7 @@
 #include "InputActionValue.h"
 #include "Interactable.h"
 #include "InteractableActorBase.h"
+#include "NiagaraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -21,6 +22,8 @@
 #include "SplitWorldGameModeBase.h" 
 #include "SnakeHandle.h"
 #include "SpawnPoint.h"
+#include "AssetTypeActions/AssetDefinition_SoundBase.h"
+#include "Components/AudioComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Materials/MaterialParameterCollectionInstance.h"
 
@@ -115,6 +118,30 @@ ASplitPlayer::ASplitPlayer()
 	}
 	
 	bAlwaysRelevant = true;
+
+	DashVFX = CreateDefaultSubobject<UNiagaraComponent>(TEXT("DashVFX"));
+	DashVFX->SetupAttachment(GetMesh());
+
+	DoubleJumpVFX = CreateDefaultSubobject<UNiagaraComponent>(TEXT("DoubleJumpVFX"));
+	DoubleJumpVFX->SetupAttachment(GetMesh());
+
+	DieVFX = CreateDefaultSubobject<UNiagaraComponent>(TEXT("DieVFX"));
+	DieVFX->SetupAttachment(GetMesh());
+
+	RespawnVFX = CreateDefaultSubobject<UNiagaraComponent>(TEXT("RespawnVFX"));
+	RespawnVFX->SetupAttachment(GetMesh());
+
+	BG_Sound = CreateDefaultSubobject<UAudioComponent>(TEXT("BG_Sound"));
+	BG_Sound->SetupAttachment(GetMesh());
+
+	Door_Sound = CreateDefaultSubobject<UAudioComponent>(TEXT("Door_Sound"));
+	Door_Sound->SetupAttachment(GetMesh());
+
+	Water_Sound = CreateDefaultSubobject<UAudioComponent>(TEXT("Water_Sound"));
+	Water_Sound->SetupAttachment(GetMesh());
+
+	Extinction_Sound = CreateDefaultSubobject<UAudioComponent>(TEXT("Extinction_Sound"));
+	Extinction_Sound->SetupAttachment(GetMesh()); 
 }
 
 // Called when the game starts or when spawned
@@ -141,7 +168,18 @@ void ASplitPlayer::BeginPlay()
 		GM->ChangePartDelegate.AddLambda([&](){ ChangePart(); }); 
 	}
 
-	MPC_Instance = GetWorld()->GetParameterCollectionInstance(collection); 
+	MPC_Instance = GetWorld()->GetParameterCollectionInstance(collection);
+
+	DashVFX->Deactivate();
+	DoubleJumpVFX->Deactivate();
+	DieVFX->Deactivate();
+	RespawnVFX->Deactivate();
+
+	PlaySound(BG_Sound);
+
+	StopSound(Door_Sound);
+	StopSound(Water_Sound);
+	StopSound(Extinction_Sound);
 }
 
 void ASplitPlayer::NotifyControllerChanged()
@@ -172,7 +210,7 @@ void ASplitPlayer::Tick(float DeltaTime)
 		CloneLocation(t);
 	}
 	
-	if (bPush) PushingServer(!HasAuthority()); 
+	if (bPush && IsLocallyControlled()) PushingServer(!HasAuthority()); 
 	
 	if (!HasAuthority()) return; 
 	
@@ -227,7 +265,16 @@ void ASplitPlayer::Tick(float DeltaTime)
 		SetActorLocation(GetActorLocation() + GetActorForwardVector() * GetWorld()->GetDeltaSeconds() * 600.f);
 	}
 
-	ConveyorBeltCheck(DeltaTime); 
+	ConveyorBeltCheck(DeltaTime);
+
+	if (GM->DoorInput)
+	{
+		PlaySound(Door_Sound); 
+	}
+	else
+	{
+		StopSound(Door_Sound); 
+	}
 }
 
 void ASplitPlayer::OnGroundMulti_Implementation()
@@ -424,7 +471,7 @@ void ASplitPlayer::JumpAction(const FInputActionValue& Value)
 
 void ASplitPlayer::JumpServer_Implementation()
 {
-	GetCharacterMovement()->SetBase(nullptr);
+	//GetCharacterMovement()->SetBase(nullptr);
 	if (!bJumping)
 	{
 		bJumping = true;
@@ -453,6 +500,14 @@ void ASplitPlayer::DoubleJumpMulti_Implementation()
 	ClonePlayer->anim->bDoubleJumping = true;
 
 	UGameplayStatics::PlaySound2D(GetWorld(), HA2Sound);
+	
+	DoubleJumpVFX->Activate();
+
+	FTimerHandle Handle;
+	GetWorldTimerManager().SetTimer(Handle, [&]()
+	{
+		DoubleJumpVFX->Deactivate(); 
+	}, 0.5f, false);  
 }
 
 void ASplitPlayer::InteractAction(const FInputActionValue& Value)
@@ -586,6 +641,14 @@ void ASplitPlayer::DashMulti_Implementation()
 
 	UGameplayStatics::PlaySound2D(GetWorld(), HA4Sound);
 	UGameplayStatics::PlaySound2D(GetWorld(), DashSound);
+
+	DashVFX->Activate();
+
+	FTimerHandle Handle;
+	GetWorldTimerManager().SetTimer(Handle, [&]()
+	{
+		DashVFX->Deactivate(); 
+	}, 0.5f, false);  
 }
 
 void ASplitPlayer::RunAction(const FInputActionValue& Value)
@@ -618,8 +681,6 @@ void ASplitPlayer::RunMulti_Implementation(bool isRunning)
 
 void ASplitPlayer::Die()
 {
-	DieServer();
-	
 	if (CurPart == 6)
 	{
 		TArray<class AActor*> FoundActors;
@@ -639,19 +700,45 @@ void ASplitPlayer::Die()
 				}
 		}
 	}
-
-	SetActorTransform(SpawnTransform);
+	
+	DieServer(SpawnTransform);
 }
 
-void ASplitPlayer::DieMulti_Implementation()
+void ASplitPlayer::DieMulti_Implementation(FTransform NewTransform)
 {
-	UGameplayStatics::PlaySound2D(GetWorld(), DieSound); 
+	UGameplayStatics::PlaySound2D(GetWorld(), DieSound);
+
+	DieVFX->Activate(); 
+
+	FTimerHandle Handle;
+	GetWorldTimerManager().SetTimer(Handle, [&]()
+	{
+		DieVFX->Deactivate();
+		SetActorTransform(SpawnTransform);
+		RespawnServer(); 
+	}, 0.5f, false);
 }
 
-void ASplitPlayer::DieServer_Implementation()
+void ASplitPlayer::DieServer_Implementation(FTransform NewTransform)
 {
-	DieMulti(); 
+	DieMulti(NewTransform); 
 }
+
+void ASplitPlayer::RespawnServer_Implementation()
+{
+	RespawnMulti(); 
+}
+
+void ASplitPlayer::RespawnMulti_Implementation()
+{
+	RespawnVFX->Activate(); 
+
+	FTimerHandle Handle;
+	GetWorldTimerManager().SetTimer(Handle, [&]()
+	{
+		RespawnVFX->Deactivate(); 
+	}, 0.5f, false); 
+} 
 
 bool ASplitPlayer::DetectWall(FHitResult& Out_Hit, FVector& HitLocation, FVector& Normal, int& index)	
 {
@@ -832,8 +919,27 @@ void ASplitPlayer::ChangePart()
 { 
 	CurPart = int(GM->CurPart);
 
-	if (CurPart == 2) CanclePushServer();
-}
+	if (CurPart == 2) CanclePushServer(); 
+
+	if (CurPart == int(EMapPart::Part3))
+	{
+		PlaySound(Water_Sound);
+		GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, TEXT("Call")); 
+	}
+	else if (!(CurPart == int(EMapPart::Part3_5)))
+	{
+		StopSound(Water_Sound); 
+	}
+
+	if (CurPart == int(EMapPart::Part4))
+	{
+		PlaySound(Extinction_Sound); 
+	}
+	else
+	{
+		StopSound(Extinction_Sound); 
+	}
+} 
 
 void ASplitPlayer::CanclePushServer_Implementation()
 {
@@ -861,5 +967,15 @@ void ASplitPlayer::ConveyorBeltCheck(float DeltaTime)
 	{ 
 		SetActorLocation(GetActorLocation() + FVector(0, -300.0f, 0) * DeltaTime); 
 	}
+}
+
+void ASplitPlayer::StopSound_Implementation(UAudioComponent* Audio)
+{
+	Audio->Stop(); 
+}
+
+void ASplitPlayer::PlaySound_Implementation(UAudioComponent* Audio)
+{ 
+	Audio->Play(); 
 }
 

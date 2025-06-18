@@ -38,7 +38,8 @@ void USplitWorldGameInstance::CreateSession()
 	SessionSettings.Set(FName("Host_NAME"), HostName, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
 
 	FUniqueNetIdPtr NetID = GetWorld()->GetFirstLocalPlayerFromController()->GetUniqueNetIdForPlatformUser().GetUniqueNetId();
-	SessionInterface->CreateSession(*NetID, FName(SessionName), SessionSettings); 
+	SessionInterface->CreateSession(*NetID, FName(SessionName), SessionSettings);
+	UE_LOG(LogTemp, Warning,  TEXT("Create Session")); 
 }
 
 void USplitWorldGameInstance::FindSession()
@@ -59,7 +60,7 @@ void USplitWorldGameInstance::JoinSession()
 
 void USplitWorldGameInstance::GameStart()
 { 
-	GetWorld()->ServerTravel(TEXT("/Game/SK/Levels/CameraTestMap?listen?port=7777")); 
+	GetWorld()->ServerTravel(TEXT("/Game/KS/Levels/KS_TestMap?listen?port=7777")); 
 }
 
 void USplitWorldGameInstance::ExitRoom()
@@ -113,9 +114,13 @@ void USplitWorldGameInstance::OnFindSessionsComplete(bool bWasSuccessful)
 			continue; 
 		} 
 		
-		SessionIndex = i; 
 		sr.Session.SessionSettings.Get(FName("ROOM_NAME"), FindSessionName);
 
+		if (FindSessionName.Equals(SessionName) == false)
+		{
+			continue;;
+		}
+		SessionIndex = i; 
 		break; 
 	}
 
