@@ -35,6 +35,9 @@ public:
 	UPROPERTY()
 	class USplitWorldGameInstance* GI; 
 	UPROPERTY() 
-	class AGameStateBase* GS; 
+	class AGameStateBase* GS;
+
+	UPROPERTY()
+	class APlayerController* pc; 
 
 };

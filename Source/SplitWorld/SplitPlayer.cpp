@@ -412,8 +412,7 @@ void ASplitPlayer::JumpAction(const FInputActionValue& Value)
 }
 
 void ASplitPlayer::JumpServer_Implementation()
-{
-	GetCharacterMovement()->SetBase(nullptr);
+{ 
 	if (!bJumping)
 	{
 		bJumping = true;
@@ -431,6 +430,8 @@ void ASplitPlayer::JumpMulti_Implementation()
 	anim->bJumping = true;
 
 	ClonePlayer->anim->bJumping = true;
+	
+	GetCharacterMovement()->SetBase(nullptr); 
 }
 
 void ASplitPlayer::DoubleJumpMulti_Implementation()

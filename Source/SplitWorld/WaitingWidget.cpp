@@ -17,17 +17,24 @@ void UWaitingWidget::NativeConstruct()
 	BTN_ConnectionBreak->OnClicked.AddDynamic(this, &UWaitingWidget::ConnectionBreak); 
 	BTN_GameStart->OnClicked.AddDynamic(this, &UWaitingWidget::GameStart); 
 
-	BTN_GameStart->SetIsEnabled(false); 
+	BTN_GameStart->SetIsEnabled(false);
+
+	pc = GetWorld()->GetFirstPlayerController(); 
 }
 
 void UWaitingWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 { 
 	Super::NativeTick(MyGeometry, InDeltaTime); 
-	
-	bool bIsFullRoom = GS->PlayerArray.Num() == 2; 
-	BTN_GameStart->SetIsEnabled(bIsFullRoom); 
 
-	BD_Player2->SetBrushColor(FLinearColor(BD_Player1->GetBrushColor() * (bIsFullRoom ? 1.0f : 0.5f))); 
+	bool bIsFullRoom = GS->PlayerArray.Num() == 2;
+	if (pc->HasAuthority())
+	{
+		BTN_GameStart->SetIsEnabled(bIsFullRoom);
+	} 
+
+	FLinearColor newColor(BD_Player1->GetBrushColor() * (bIsFullRoom ? 1.0f : 0.25f));
+	newColor.A = 0.75f; 
+	BD_Player2->SetBrushColor(newColor); 
 } 
 
 void UWaitingWidget::ConnectionBreak()

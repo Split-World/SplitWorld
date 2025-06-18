@@ -29,7 +29,7 @@ private:
 	UPROPERTY(EditAnywhere, Replicated) 
 	TArray<class AStaticMeshActor*> Roads;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Replicated)
 	class USoundBase* BreakSound;
 
 	bool bActive;

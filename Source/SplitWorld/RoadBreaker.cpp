@@ -29,6 +29,7 @@ void ARoadBreaker::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ARoadBreaker, Roads); 
+	DOREPLIFETIME(ARoadBreaker, BreakSound); 
 } 
 
 void ARoadBreaker::Execute()
