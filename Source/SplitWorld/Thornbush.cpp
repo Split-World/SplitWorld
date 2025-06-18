@@ -27,7 +27,6 @@ void AThornbush::Execute()
 	if (Player) 
 	{
 		Player->Die(); 
-		GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, TEXT("Thornbush"));
 	} 
 }
 

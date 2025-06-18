@@ -58,4 +58,5 @@ void AMovingThorn::Multi_SetMesh_Implementation(int _Idx)
 { 
 	MeshComp->SetStaticMesh(Meshes[_Idx]);
 	MeshComp->SetMaterial(0, Materials[_Idx]); 
+	MeshComp->SetRelativeScale3D(Scales[_Idx]); 
 }

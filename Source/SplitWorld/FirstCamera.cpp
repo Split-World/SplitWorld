@@ -237,7 +237,7 @@ void AFirstCamera::SetCameraLocation(float DeltaTime)
 			}
 			break;
 		case EMapPart::Part4:
-			if (Min_Y > 0.1f)
+			if (Min_Y > -0.3f)
 			{
 				SetActorLocation(FMath::Lerp(GetActorLocation(), GetActorLocation() + FVector(0, 0, 100), 12.0f * DeltaTime));
 			}

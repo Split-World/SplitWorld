@@ -21,8 +21,7 @@
 #include "Net/UnrealNetwork.h"
 #include "SplitWorldGameModeBase.h" 
 #include "SnakeHandle.h"
-#include "SpawnPoint.h"
-#include "AssetTypeActions/AssetDefinition_SoundBase.h"
+#include "SpawnPoint.h" 
 #include "Components/AudioComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Materials/MaterialParameterCollectionInstance.h"
@@ -210,9 +209,11 @@ void ASplitPlayer::Tick(float DeltaTime)
 		CloneLocation(t);
 	}
 	
-	if (bPush && IsLocallyControlled()) PushingServer(!HasAuthority()); 
+	if (bPush) PushingServer(!HasAuthority()); 
 	
 	if (!HasAuthority()) return; 
+
+	ConveyorBeltCheck(DeltaTime);
 	
 	if (!GetCharacterMovement()->IsFalling())
 	{
@@ -248,7 +249,7 @@ void ASplitPlayer::Tick(float DeltaTime)
 			{
 				bTraversal = true;
 				bClimbing = false; 
-				
+			
 				TraversalMulti();
 			}
 		}
@@ -264,8 +265,6 @@ void ASplitPlayer::Tick(float DeltaTime)
 	{
 		SetActorLocation(GetActorLocation() + GetActorForwardVector() * GetWorld()->GetDeltaSeconds() * 600.f);
 	}
-
-	ConveyorBeltCheck(DeltaTime);
 
 	if (GM->DoorInput)
 	{
@@ -691,8 +690,8 @@ void ASplitPlayer::Die()
 		
 		float distance = 999999.f;
 		for (auto Actor : FoundActors)
-		{
-			if (Actor->GetActorLocation().Z > Z)
+		{ 
+			if (Actor->GetActorLocation().Z > Z + 300.0f)
 				if (distance > FVector::Dist(GetActorLocation(), Actor->GetActorLocation()))
 				{
 					distance = FVector::Dist(GetActorLocation(), Actor->GetActorLocation());
@@ -924,7 +923,6 @@ void ASplitPlayer::ChangePart()
 	if (CurPart == int(EMapPart::Part3))
 	{
 		PlaySound(Water_Sound);
-		GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, TEXT("Call")); 
 	}
 	else if (!(CurPart == int(EMapPart::Part3_5)))
 	{

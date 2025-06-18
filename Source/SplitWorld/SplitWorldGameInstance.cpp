@@ -118,8 +118,8 @@ void USplitWorldGameInstance::OnFindSessionsComplete(bool bWasSuccessful)
 
 		if (FindSessionName.Equals(SessionName) == false)
 		{
-			continue;;
-		}
+			continue; 
+		} 
 		SessionIndex = i; 
 		break; 
 	}

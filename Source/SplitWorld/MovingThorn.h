@@ -35,6 +35,9 @@ public:
 	TArray<class UStaticMesh*> Meshes;
 
 	UPROPERTY(EditAnywhere)
-	TArray<class UMaterialInstance*> Materials;
+	TArray<class UMaterialInstance*> Materials; 
+
+	UPROPERTY(EditAnywhere) 
+	TArray<FVector> Scales; 
 
 };
