@@ -12,6 +12,6 @@ void UEndRoll::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* An
 
 	if (IsValid(player))
 	{
-		player->EndRollServer();
+		player->EndRollServer(); 
 	}
 }

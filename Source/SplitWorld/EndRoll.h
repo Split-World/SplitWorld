@@ -18,5 +18,5 @@ public:
 	virtual void NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation) override;
 public:
 	UPROPERTY() 
-	class ASplitPlayer* player;
+	class ASplitPlayer* player; 
 };
