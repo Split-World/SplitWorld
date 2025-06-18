@@ -19,6 +19,11 @@ public:
 
 	virtual void Execute() override; 
 
-	void Fire(); 
+	UFUNCTION(NetMulticast, Reliable) 
+	void Fire();  
+
+private: 
+	UPROPERTY(EditAnywhere) 
+	class UNiagaraComponent* LaserComp; 
 	
 };

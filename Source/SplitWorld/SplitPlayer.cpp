@@ -2,7 +2,7 @@
 
 
 #include "SplitPlayer.h"
-
+#include "FishHandle.h" 
 #include "ClonePlayer.h"
 #include "Crack.h"
 #include "DoorHandle.h"
@@ -24,7 +24,6 @@
 #include "Kismet/GameplayStatics.h"
 #include "Materials/MaterialParameterCollectionInstance.h"
 
-class AFishHandle;
 // Sets default values
 ASplitPlayer::ASplitPlayer()
 {
@@ -141,6 +140,8 @@ void ASplitPlayer::BeginPlay()
 		GM = Cast<ASplitWorldGameModeBase>(GetWorld()->GetAuthGameMode());
 		GM->ChangePartDelegate.AddLambda([&](){ ChangePart(); }); 
 	}
+
+	MPC_Instance = GetWorld()->GetParameterCollectionInstance(collection); 
 }
 
 void ASplitPlayer::NotifyControllerChanged()
@@ -436,7 +437,7 @@ void ASplitPlayer::DoubleJumpMulti_Implementation()
 {
 	anim->bDoubleJumping = true;
 
-	ClonePlayer->anim->bDoubleJumping = true; 
+	ClonePlayer->anim->bDoubleJumping = true;
 }
 
 void ASplitPlayer::InteractAction(const FInputActionValue& Value)
@@ -530,7 +531,7 @@ void ASplitPlayer::DashAction(const FInputActionValue& Value)
 }
 
 void ASplitPlayer::RollServer_Implementation()
-{
+{ 
 	RollMulti();
 }
 
@@ -588,9 +589,9 @@ void ASplitPlayer::Die()
 	{
 		TArray<class AActor*> FoundActors;
 		UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASpawnPoint::StaticClass(), FoundActors);
-
+		
 		float Z;
-		GetWorld()->GetParameterCollectionInstance(collection)->GetScalarParameterValue(FName(TEXT("World_Z")),Z);
+		MPC_Instance->GetScalarParameterValue(FName(TEXT("World_Z")),Z);
 		
 		float distance = 999999.f;
 		for (auto Actor : FoundActors)
@@ -656,11 +657,21 @@ void ASplitPlayer::ClimbWall(float Value)
 	GetCharacterMovement()->GravityScale = 0.f;
 	GetCharacterMovement()->Velocity = FVector::ZeroVector;
 	
-	if (!bClimbing) ClimbMulti();
-	
+	if (!bClimbing) 
+	{ 
+		GetWorldTimerManager().ClearTimer(ClimbTimerHandle); 
+		GetWorldTimerManager().SetTimer(ClimbTimerHandle, [&]()
+		{
+			bFailClimb = true;
+			bClimbing = false;
+
+			FailClimbMulti();
+		}, 1.0f, false); 
+		ClimbMulti();
+	}
+
 	bClimbing = true;
 
-	
 	FHitResult OutHit;
 	TArray<AActor*> ignoreActors;
 	ignoreActors.Add(this);
@@ -691,8 +702,6 @@ void ASplitPlayer::ClimbWall(float Value)
 		bClimbing = false;
 
 		FailClimbMulti();
-		
-		GetCharacterMovement()->GravityScale = 1.f;
 	}
 }
 
@@ -707,7 +716,9 @@ void ASplitPlayer::FailClimbMulti_Implementation()
 {
 	anim->bClimbing = false;
 
-	ClonePlayer->anim->bClimbing = false;
+	ClonePlayer->anim->bClimbing = false; 
+
+	GetCharacterMovement()->GravityScale = 1.f; 
 }
 
 FVector ASplitPlayer::MoveVectorUpward(FVector InVector, float AddValue)
@@ -806,3 +817,4 @@ void ASplitPlayer::ConveyorBeltCheck(float DeltaTime)
 		SetActorLocation(GetActorLocation() + FVector(0, -300.0f, 0) * DeltaTime); 
 	}
 }
+

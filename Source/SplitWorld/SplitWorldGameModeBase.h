@@ -39,7 +39,8 @@ public:
 	UPROPERTY() 
 	TArray<class AController*> Players; 
 
-	int bPlayer_Interactions[4]; 
+	int bPlayer_Interactions[4];
+	int bViewChanger[8]; 
 
 	EMapPart CurPart = EMapPart::Part1; 
 
@@ -52,11 +53,6 @@ public:
 	float CrackGauge[2];
 
 	UPROPERTY()
-	class USplitWorldGameInstance* GI;
-	
-	UPROPERTY(EditAnywhere)
-	class UMaterialParameterCollection* MPC_SplitWorld;
-	UPROPERTY()
-	class UMaterialParameterCollectionInstance* MPC_Instance;
+	class USplitWorldGameInstance* GI; 
 
 };

@@ -1,0 +1,1 @@
+C:\UnrealEngine\UE_5.5\Engine\Binaries\Win64\UnrealEditor.exe C:\GitHub\SplitWorld\SplitWorld.uproject -game -ResX=720 -ResY=450 -WinX=100 -WinY=100 -WINDOWED -log 

@@ -140,11 +140,11 @@ public:
 	void DashServer();
 
 	UFUNCTION(NetMulticast, Reliable)
-	void DashMulti();
+	void DashMulti(); 
 
-	UFUNCTION(Server, Reliable)
-	void RollServer();
-	
+	UFUNCTION(Server, Reliable) 
+	void RollServer(); 
+
 	UFUNCTION(NetMulticast, Reliable)
 	void RollMulti();
 	
@@ -169,7 +169,9 @@ public:
 	UPROPERTY(Replicated)
 	bool bTraversal = false;
 	UPROPERTY(Replicated)
-	bool bAdjustAnimaition = false;
+	bool bAdjustAnimaition = false; 
+
+	FTimerHandle ClimbTimerHandle;
 	
 	bool DetectWall(FHitResult& Out_Hit, FVector& HitLocation, FVector& Normal, int& index);
 	void ClimbWall(float Value);
@@ -267,4 +269,6 @@ public:
 
 	UPROPERTY(EditAnywhere, Replicated)
 	class UMaterialParameterCollection* collection;
+	UPROPERTY()
+	class UMaterialParameterCollectionInstance* MPC_Instance; 
 };

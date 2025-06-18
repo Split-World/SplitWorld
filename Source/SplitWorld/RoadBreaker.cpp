@@ -3,6 +3,7 @@
 
 #include "RoadBreaker.h" 
 #include "Engine/StaticMeshActor.h" 
+#include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 
 ARoadBreaker::ARoadBreaker()
@@ -32,12 +33,25 @@ void ARoadBreaker::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 
 void ARoadBreaker::Execute()
 {
-	GEngine->AddOnScreenDebugMessage(-1 ,5, FColor::Red, TEXT("ARoadBreaker")); 
-	
+	if (bActive) return; 
+
 	for (auto Road : Roads)
 	{
 		auto Comp = Road->GetStaticMeshComponent(); 
-		Comp->SetSimulatePhysics(true); 
+		Comp->SetSimulatePhysics(true);
+		Server_PlaySound(); 
 	}
+
+	bActive = true; 
+} 
+
+void ARoadBreaker::Multi_PlaySound_Implementation()
+{
+	UGameplayStatics::PlaySound2D(GetWorld(), BreakSound); 
+}
+
+void ARoadBreaker::Server_PlaySound_Implementation()
+{
+	Multi_PlaySound(); 
 } 
 

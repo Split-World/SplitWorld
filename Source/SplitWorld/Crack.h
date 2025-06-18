@@ -17,12 +17,33 @@ public:
 	virtual void BeginPlay() override; 
 	virtual void Tick(float DeltaTime) override;
 
-	virtual void Interaction_Implementation() override; 
+	virtual void Interaction_Implementation() override;
 
-private: 
+	UFUNCTION()
+	void ChangePart();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void UpdateCrackGauge(float Pink, float Green); 
+
+	UPROPERTY(EditAnywhere)
+	class UMaterialParameterCollection* MPC_SplitWorld;
+	
+private:
+	UFUNCTION(NetMulticast, Reliable)
+	void ShowUI();
+	
+	UPROPERTY(EditAnywhere)
+	class UWidgetComponent* CrackWidgetComp;
+	
 	UPROPERTY()
 	class ASplitWorldGameModeBase* GM; 
 
-	FTimerHandle CrackTimerHandle; 
+	FTimerHandle CrackTimerHandle;
+
+	UPROPERTY(EditAnywhere)
+	class UCrackWidget* CrackWidget;
+
+	UPROPERTY()
+	class UMaterialParameterCollectionInstance* MPC_Instance;
  
 };
