@@ -21,5 +21,9 @@ public:
 
 	UFUNCTION(NetMulticast, Reliable) 
 	void Disable(); 
-	
+
+private:
+	UPROPERTY(EditAnywhere)
+	class UNiagaraComponent* LaserComp; 
+
 };

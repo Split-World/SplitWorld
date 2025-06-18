@@ -59,13 +59,14 @@ protected:
 
 	bool bCanInteraction; 
 	
+	UPROPERTY(EditAnywhere)
+	class AFirstCamera* Camera;
+	
+	UPROPERTY(EditAnywhere)
+	int Map; 
+
 private: 
 	UPROPERTY(EditAnywhere)
 	class UInteractionWidget* InteractionWidget;
-
-	UPROPERTY(EditAnywhere)
-	class AFirstCamera* Camera;
-	UPROPERTY(EditAnywhere)
-	int Map;
 	
 };

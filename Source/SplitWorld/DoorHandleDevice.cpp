@@ -28,7 +28,7 @@ ADoorHandleDevice::ADoorHandleDevice()
 	Handle2_PointComp->SetRelativeRotation(FRotator(0, 180.0f, 0)); 
 	Handle2_PointComp->SetIsReplicated(true); 
 
-	SetReplicates(true);
+	bReplicates = true;
 	SetReplicateMovement(true); 
 	bAlwaysRelevant = true;
 }

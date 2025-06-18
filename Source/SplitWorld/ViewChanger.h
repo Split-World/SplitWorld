@@ -20,14 +20,17 @@ public:
 private: 
 	UFUNCTION()
 	void OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
+	
 	UPROPERTY(EditAnywhere) 
 	class UBoxComponent* BoxComp;
 
 	UPROPERTY()
-	class ASplitWorldGameModeBase* GM; 
+	class ASplitWorldGameModeBase* GM;
+
+	UPROPERTY(EditAnywhere)
+	int Idx; 
 
 	UPROPERTY(EditAnywhere)
 	EMapPart ChangeView; 
-
+	
 };

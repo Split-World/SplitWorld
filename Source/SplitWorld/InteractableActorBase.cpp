@@ -35,7 +35,7 @@ AInteractableActorBase::AInteractableActorBase()
 	
 	VisibleUIRangeComp = CreateDefaultSubobject<USphereComponent>(TEXT("VisibleUIRangeComp")); 
 	VisibleUIRangeComp->SetupAttachment(BoxComp);
-	VisibleUIRangeComp->SetSphereRadius(500.0f); 
+	VisibleUIRangeComp->SetSphereRadius(350.0f); 
 	
 	InteractableRangeComp = CreateDefaultSubobject<USphereComponent>(TEXT("InteractableRangeComp")); 
 	InteractableRangeComp->SetupAttachment(BoxComp);
@@ -60,21 +60,17 @@ void AInteractableActorBase::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	if (IsValid(Camera) && IsValid(Camera->GetSecondCamera()))
-	{
-		FRotator Rot(0, 0, 0);
+	{ 
 		FVector Forward = GetActorForwardVector(); 
 		FVector CameraForward = !Map ? Camera->GetCamera()->GetForwardVector() : Camera->GetSecondCamera()->GetCamera()->GetForwardVector(); 
-		FVector Right = GetActorRightVector();
-		FVector Up = GetActorUpVector();
-
+		
 		FVector CameraPos = !Map ? Camera->GetCamera()->GetComponentLocation() : Camera->GetSecondCamera()->GetCamera()->GetComponentLocation(); 
 		FVector Dir = (CameraPos - InteractionWidgetComp->GetComponentLocation()).GetSafeNormal(); 
 		float RotDir = FMath::Sign(Forward.Cross(-CameraForward.GetSafeNormal2D()).Z); 
 		float Yaw = FMath::RadiansToDegrees(FMath::Acos(Forward.Dot(-CameraForward.GetSafeNormal2D()))) * RotDir; 
 		
-		Rot = Dir.Rotation();
+		FRotator Rot = Dir.Rotation();
 		Rot.Yaw = Yaw; 
-		FVector x = Camera->GetCamera()->GetForwardVector().GetSafeNormal2D();
 		InteractionWidgetComp->SetRelativeRotation(Rot); 
 	} 
 }

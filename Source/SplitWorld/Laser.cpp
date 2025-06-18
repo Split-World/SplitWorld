@@ -4,11 +4,16 @@
 #include "Laser.h" 
 #include "SplitPlayer.h"
 #include "Components/BoxComponent.h"
+#include "NiagaraComponent.h" 
 
 ALaser::ALaser()
 { 
 	PrimaryActorTick.bCanEverTick = true; 
-
+	
+	LaserComp = CreateDefaultSubobject<UNiagaraComponent>(TEXT("LaserComp"));
+	LaserComp->SetupAttachment(BoxComp);
+	LaserComp->SetRelativeRotation(FRotator(-90.0f, 0.0f, 0.0f));
+	
 	SetReplicates(true);
 	bAlwaysRelevant = true; 
 }
@@ -35,5 +40,6 @@ void ALaser::Execute()
 void ALaser::Disable_Implementation()
 {
 	BoxComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	MeshComp->SetVisibility(false);  
+	MeshComp->SetVisibility(false);
+	LaserComp->Deactivate(); 
 }

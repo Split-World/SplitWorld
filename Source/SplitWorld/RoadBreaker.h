@@ -18,10 +18,20 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	virtual void Execute() override; 
+	virtual void Execute() override;
+
+	UFUNCTION(Server, Reliable)
+	void Server_PlaySound(); 
+	UFUNCTION(NetMulticast, Reliable)
+	void Multi_PlaySound();
 
 private: 
 	UPROPERTY(EditAnywhere, Replicated) 
 	TArray<class AStaticMeshActor*> Roads;
- 
+
+	UPROPERTY(EditAnywhere)
+	class USoundBase* BreakSound;
+
+	bool bActive;
+	
 };

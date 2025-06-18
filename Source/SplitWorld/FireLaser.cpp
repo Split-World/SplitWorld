@@ -4,10 +4,16 @@
 #include "FireLaser.h" 
 #include "SplitPlayer.h" 
 #include "Components/BoxComponent.h" 
+#include "NiagaraComponent.h" 
 
 AFireLaser::AFireLaser()
 {
  	PrimaryActorTick.bCanEverTick = true;
+
+	LaserComp = CreateDefaultSubobject<UNiagaraComponent>(TEXT("LaserComp")); 
+	LaserComp->SetupAttachment(BoxComp); 
+	LaserComp->SetRelativeRotation(FRotator(-90.0f, 90.0f, 0.0f)); 
+	LaserComp->SetRelativeScale3D(FVector(1.0f, 0.5f, 0.5f)); 
 
 	SetReplicates(true);
 	bAlwaysRelevant = true; 
@@ -19,6 +25,8 @@ void AFireLaser::BeginPlay()
 	
 	BoxComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	MeshComp->SetVisibility(false); 
+	
+	LaserComp->Deactivate(); 
 }
 
 void AFireLaser::Tick(float DeltaTime)
@@ -35,15 +43,18 @@ void AFireLaser::Execute()
 	}
 }
 
-void AFireLaser::Fire()
+void AFireLaser::Fire_Implementation()
 { 
 	BoxComp->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics); 
 	MeshComp->SetVisibility(true); 
+
+	LaserComp->Activate(); 
 
 	FTimerHandle handle; 
 	GetWorldTimerManager().SetTimer(handle, [&]()
 	{ 
 		BoxComp->SetCollisionEnabled(ECollisionEnabled::NoCollision); 
 		MeshComp->SetVisibility(false); 
+		LaserComp->Deactivate(); 
 	}, 0.5f, false); 
 } 
