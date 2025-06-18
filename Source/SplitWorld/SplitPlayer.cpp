@@ -197,7 +197,7 @@ void ASplitPlayer::Tick(float DeltaTime)
 
 		OnGround = false;
 		
-		if ((bMoving && !bFailClimb && !bTraversal && !bDashing) || bClimbing) bCanClimb = DetectWall(OutHit, HitLocation, Normal, index);
+		if ((bMoving && !bFailClimb && !bTraversal && !bDashing && !bRolling) || bClimbing) bCanClimb = DetectWall(OutHit, HitLocation, Normal, index);
 		
 		if (bCanClimb)
 		{
@@ -412,7 +412,8 @@ void ASplitPlayer::JumpAction(const FInputActionValue& Value)
 }
 
 void ASplitPlayer::JumpServer_Implementation()
-{ 
+{
+	GetCharacterMovement()->SetBase(nullptr);
 	if (!bJumping)
 	{
 		bJumping = true;
@@ -430,8 +431,6 @@ void ASplitPlayer::JumpMulti_Implementation()
 	anim->bJumping = true;
 
 	ClonePlayer->anim->bJumping = true;
-	
-	GetCharacterMovement()->SetBase(nullptr); 
 }
 
 void ASplitPlayer::DoubleJumpMulti_Implementation()
