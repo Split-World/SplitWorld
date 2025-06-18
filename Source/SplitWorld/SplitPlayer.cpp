@@ -564,12 +564,12 @@ void ASplitPlayer::RollMulti_Implementation()
 void ASplitPlayer::EndRollServer_Implementation()
 {
 	bRolling = false;
-	EndRollMulti();
+	EndRollMulti(); 
 }
 
 void ASplitPlayer::EndRollMulti_Implementation()
 {
-	
+	 
 }
 
 void ASplitPlayer::DashServer_Implementation()
@@ -645,12 +645,12 @@ void ASplitPlayer::Die()
 
 void ASplitPlayer::DieMulti_Implementation()
 {
-	UGameplayStatics::PlaySound2D(GetWorld(), DieSound);
+	UGameplayStatics::PlaySound2D(GetWorld(), DieSound); 
 }
 
 void ASplitPlayer::DieServer_Implementation()
 {
-	DieMulti();
+	DieMulti(); 
 }
 
 bool ASplitPlayer::DetectWall(FHitResult& Out_Hit, FVector& HitLocation, FVector& Normal, int& index)	
