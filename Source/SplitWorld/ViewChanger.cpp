@@ -5,6 +5,7 @@
 
 #include "SplitWorldGameModeBase.h"
 #include "Components/BoxComponent.h" 
+#include "Kismet/GameplayStatics.h"
 
 AViewChanger::AViewChanger()
 { 
@@ -43,7 +44,7 @@ void AViewChanger::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, A
 
 			if (GM->bViewChanger[int(GM->CurPart)] == 3)
 			{ 
-				GM->ChangeMapPart(ChangeView);
+				GM->ChangeMapPart(ChangeView); 
 			}
 		} 
 	} 

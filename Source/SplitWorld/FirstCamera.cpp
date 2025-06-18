@@ -204,7 +204,7 @@ void AFirstCamera::SetCameraLocation(float DeltaTime)
 
 		switch (GM->CurPart)
 		{
-		case EMapPart::Part1:
+		case EMapPart::Part1: 
 			if (Min_X < -0.5f)
 			{
 				SetActorLocation(FMath::Lerp(GetActorLocation(), GetActorLocation() + FVector(0, -100, 0), 12.0f * DeltaTime));

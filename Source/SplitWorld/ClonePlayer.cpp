@@ -12,7 +12,7 @@ AClonePlayer::AClonePlayer()
 { 
 	PrimaryActorTick.bCanEverTick = true;
 
-	SetReplicates(true); 
+	bReplicates = true;
 	SetReplicateMovement(true); 
 	bAlwaysRelevant = true;
 

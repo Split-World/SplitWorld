@@ -39,5 +39,10 @@ private:
 	class UMaterialParameterCollection* MPC_SplitWorld;
 	UPROPERTY()
 	class UMaterialParameterCollectionInstance* MPC_Instance;
+
+	UPROPERTY(EditAnywhere)
+	class USoundBase* StartSound;
+	UPROPERTY(EditAnywhere)
+	class USoundBase* ExtinctionSound; 
 	
 };

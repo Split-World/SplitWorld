@@ -5,6 +5,7 @@
 
 #include "Snake.h"
 #include "SplitWorldGameModeBase.h"
+#include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 
 AFish::AFish()
@@ -16,7 +17,7 @@ AFish::AFish()
 	Mesh->SetCollisionProfileName(TEXT("Fish"));
 	Mesh->SetIsReplicated(true);
 
-	SetReplicates(true);
+	bReplicates = true;
 	SetReplicateMovement(true); 
 	bAlwaysRelevant = true; 
 }
@@ -55,10 +56,16 @@ void AFish::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePro
 void AFish::Launch()
 {
 	bLaunched = true;
+	PlaySound(LaunchSound); 
+}
+
+void AFish::PlaySound_Implementation(USoundBase* Sound)
+{
+	UGameplayStatics::PlaySound2D(GetWorld(), Sound); 
 }
 
 void AFish::OnMeshBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+                               UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (auto Snake = Cast<ASnake>(OtherActor))
 	{
@@ -76,6 +83,7 @@ void AFish::UpdateSuccess_Implementation(bool bActive)
 	{
 		SetActorLocation(StartLocation);
 		GM->bPlayer_Interactions[1] |= 4;
+		PlaySound(FailSound); 
 	}
 	
 	bLaunched = false; 

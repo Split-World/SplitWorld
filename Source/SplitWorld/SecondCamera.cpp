@@ -19,7 +19,7 @@ ASecondCamera::ASecondCamera()
 	CameraComp->SetRelativeRotation(FRotator(12.5f, 0.0f, 0.0f));
 	CameraComp->SetIsReplicated(true); 
 	
-	SetReplicates(true);
+	bReplicates = true;
 	SetReplicateMovement(true);
 	bAlwaysRelevant = true;
 }

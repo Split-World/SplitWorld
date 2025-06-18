@@ -64,7 +64,7 @@ void ACrack::Tick(float DeltaTime)
 		CrackWidgetComp->SetRelativeRotation(Rot);
 	}
 
-	if (GM)
+	if (GM && GM->CurPart == EMapPart::PartCrack)
 	{
 		UpdateCrackGauge(GM->CrackGauge[0], GM->CrackGauge[1]); 
 	}

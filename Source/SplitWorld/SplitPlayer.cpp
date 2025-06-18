@@ -2,7 +2,7 @@
 
 
 #include "SplitPlayer.h"
-
+#include "FishHandle.h" 
 #include "ClonePlayer.h"
 #include "Crack.h"
 #include "DoorHandle.h"
@@ -24,7 +24,6 @@
 #include "Kismet/GameplayStatics.h"
 #include "Materials/MaterialParameterCollectionInstance.h"
 
-class AFishHandle;
 // Sets default values
 ASplitPlayer::ASplitPlayer()
 {
@@ -141,6 +140,8 @@ void ASplitPlayer::BeginPlay()
 		GM = Cast<ASplitWorldGameModeBase>(GetWorld()->GetAuthGameMode());
 		GM->ChangePartDelegate.AddLambda([&](){ ChangePart(); }); 
 	}
+
+	MPC_Instance = GetWorld()->GetParameterCollectionInstance(collection); 
 }
 
 void ASplitPlayer::NotifyControllerChanged()
@@ -588,9 +589,9 @@ void ASplitPlayer::Die()
 	{
 		TArray<class AActor*> FoundActors;
 		UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASpawnPoint::StaticClass(), FoundActors);
-
+		
 		float Z;
-		GetWorld()->GetParameterCollectionInstance(collection)->GetScalarParameterValue(FName(TEXT("World_Z")),Z);
+		MPC_Instance->GetScalarParameterValue(FName(TEXT("World_Z")),Z);
 		
 		float distance = 999999.f;
 		for (auto Actor : FoundActors)

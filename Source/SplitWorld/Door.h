@@ -23,6 +23,6 @@ private:
 	UPROPERTY()
 	class ASplitWorldGameModeBase* GM;
 
-	bool bActive; 
+	FVector StartLocation; 
 	
 };

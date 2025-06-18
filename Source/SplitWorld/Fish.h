@@ -18,7 +18,10 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
-	void Launch(); 
+	void Launch();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void PlaySound(USoundBase* Sound); 
 
 private:
 	UFUNCTION() 
@@ -35,6 +38,11 @@ private:
 	FVector StartLocation;
 
 	UFUNCTION(Server, Reliable)
-	void UpdateSuccess(bool bActive); 
+	void UpdateSuccess(bool bActive);
+
+	UPROPERTY(EditAnywhere)
+	class USoundBase* FailSound;
+	UPROPERTY(EditAnywhere)
+	class USoundBase* LaunchSound; 
 	 
 };

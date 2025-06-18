@@ -145,9 +145,6 @@ public:
 	UFUNCTION(Server, Reliable) 
 	void RollServer(); 
 
-	UFUNCTION(Server, Reliable)
-	void RollServer();
-	
 	UFUNCTION(NetMulticast, Reliable)
 	void RollMulti();
 	
@@ -272,4 +269,6 @@ public:
 
 	UPROPERTY(EditAnywhere, Replicated)
 	class UMaterialParameterCollection* collection;
+	UPROPERTY()
+	class UMaterialParameterCollectionInstance* MPC_Instance; 
 };

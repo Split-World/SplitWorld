@@ -40,5 +40,6 @@ void ALaser::Execute()
 void ALaser::Disable_Implementation()
 {
 	BoxComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	MeshComp->SetVisibility(false);  
+	MeshComp->SetVisibility(false);
+	LaserComp->Deactivate(); 
 }
