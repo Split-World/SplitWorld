@@ -52,6 +52,30 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = Input)
 	class UInputAction* IA_Run;
+
+	UPROPERTY(EditAnywhere, Category = Sound)
+	class USoundBase* DashSound;
+
+	UPROPERTY(EditAnywhere, Category = Sound)
+	class USoundBase* DodgeSound;
+	
+	UPROPERTY(EditAnywhere, Category = Sound)
+	class USoundBase* WalkSound;
+
+	UPROPERTY(EditAnywhere, Category = Sound)
+	class USoundBase* DieSound;
+	
+	UPROPERTY(EditAnywhere, Category = Sound)
+	class USoundBase* HA1Sound;
+	
+	UPROPERTY(EditAnywhere, Category = Sound)
+	class USoundBase* HA2Sound;
+
+	UPROPERTY(EditAnywhere, Category = Sound)
+	class USoundBase* HA3Sound;
+	
+	UPROPERTY(EditAnywhere, Category = Sound)
+	class USoundBase* HA4Sound;
 	
 	UFUNCTION()
 	void MoveAction(const FInputActionValue& Value);
@@ -76,7 +100,13 @@ public:
 
 	UFUNCTION()
 	void Die();
-
+	
+	UFUNCTION(Server, Reliable)
+	void DieServer();
+	
+	UFUNCTION(NetMulticast, Reliable)
+	void DieMulti();
+	
 	UPROPERTY(Replicated)
 	bool OnGround = false;
 	
@@ -88,6 +118,12 @@ public:
 
 	UFUNCTION(NetMulticast, Reliable)
 	void MoveMulti();
+
+	UFUNCTION(Server, Reliable)
+	void MoveSoundServer();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MoveSoundMulti();
 	
 	UFUNCTION(Server, Reliable)
 	void MoveCancleServer();
@@ -147,9 +183,18 @@ public:
 	
 	UFUNCTION(NetMulticast, Reliable)
 	void RollMulti();
+
+	UFUNCTION(Server, Reliable)
+	void EndRollServer();
+	
+	UFUNCTION(NetMulticast, Reliable)
+	void EndRollMulti();
 	
 	UPROPERTY(Replicated)
 	bool bDashing = false;
+	
+	UPROPERTY(Replicated)
+	bool bRolling = false;
 
 	UFUNCTION(Server, Reliable)
 	void RunServer();

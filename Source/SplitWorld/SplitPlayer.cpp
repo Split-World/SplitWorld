@@ -196,7 +196,7 @@ void ASplitPlayer::Tick(float DeltaTime)
 
 		OnGround = false;
 		
-		if ((bMoving && !bFailClimb && !bTraversal && !bDashing) || bClimbing) bCanClimb = DetectWall(OutHit, HitLocation, Normal, index);
+		if ((bMoving && !bFailClimb && !bTraversal && !bDashing && !bRolling) || bClimbing) bCanClimb = DetectWall(OutHit, HitLocation, Normal, index);
 		
 		if (bCanClimb)
 		{
@@ -266,7 +266,7 @@ void ASplitPlayer::StartTraversalServer_Implementation()
 
 void ASplitPlayer::StartTraversalMulti_Implementation()
 {
-	bAdjustAnimaition = true;
+	
 }
 
 void ASplitPlayer::EndTraversalServer_Implementation()
@@ -278,7 +278,7 @@ void ASplitPlayer::EndTraversalServer_Implementation()
 
 void ASplitPlayer::EndTraversalMulti_Implementation()
 {
-	bAdjustAnimaition = false;
+	
 }
 
 void ASplitPlayer::EndClimbServer_Implementation()
@@ -334,6 +334,7 @@ void ASplitPlayer::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	DOREPLIFETIME(ASplitPlayer, bPushing);
 	
 	DOREPLIFETIME(ASplitPlayer, bDashing);
+	DOREPLIFETIME(ASplitPlayer, bRolling);
 	
 	DOREPLIFETIME(ASplitPlayer, bRunning);
 	
@@ -345,7 +346,7 @@ void ASplitPlayer::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 
 void ASplitPlayer::MoveAction(const FInputActionValue& Value)
 {
-	if (bClimbing || bDashing || bTraversal) return;
+	if (bClimbing || bDashing || bTraversal || bRolling) return;
 	
 	if (!bMoving) MoveServer();
 
@@ -379,6 +380,16 @@ void ASplitPlayer::MoveMulti_Implementation()
 	ClonePlayer->anim->bMoving = true;
 }
 
+void ASplitPlayer::MoveSoundServer_Implementation()
+{
+	MoveSoundMulti();
+}
+
+void ASplitPlayer::MoveSoundMulti_Implementation()
+{
+	UGameplayStatics::PlaySound2D(GetWorld(), WalkSound);
+}
+
 void ASplitPlayer::MoveCancle(const FInputActionValue& Value)
 {
 	MoveCancleServer();
@@ -403,7 +414,7 @@ void ASplitPlayer::MoveCancleMulti_Implementation()
 
 void ASplitPlayer::JumpAction(const FInputActionValue& Value)
 {
-	if ((!bJumping || !bDoubleJumping) && !bDashing && !bClimbing && !bPush && !bTraversal)
+	if ((!bJumping || !bDoubleJumping) && !bDashing && !bClimbing && !bPush && !bTraversal && !bRolling)
 	{
 		Jump();
 		JumpServer();
@@ -430,13 +441,17 @@ void ASplitPlayer::JumpMulti_Implementation()
 	anim->bJumping = true;
 
 	ClonePlayer->anim->bJumping = true;
+
+	UGameplayStatics::PlaySound2D(GetWorld(), HA1Sound);
 }
 
 void ASplitPlayer::DoubleJumpMulti_Implementation()
 {
 	anim->bDoubleJumping = true;
 
-	ClonePlayer->anim->bDoubleJumping = true; 
+	ClonePlayer->anim->bDoubleJumping = true;
+
+	UGameplayStatics::PlaySound2D(GetWorld(), HA2Sound);
 }
 
 void ASplitPlayer::InteractAction(const FInputActionValue& Value)
@@ -517,7 +532,7 @@ void ASplitPlayer::ControlMulti_Implementation()
 
 void ASplitPlayer::DashAction(const FInputActionValue& Value)
 {
-	if (bRunning || bDashing || bClimbing || bPush) return;
+	if (bRunning || bDashing || bClimbing || bPush || bRolling) return;
 	
 	if (!GetCharacterMovement()->IsFalling())
 	{
@@ -531,6 +546,7 @@ void ASplitPlayer::DashAction(const FInputActionValue& Value)
 
 void ASplitPlayer::RollServer_Implementation()
 {
+	bRolling = true;
 	RollMulti();
 }
 
@@ -539,6 +555,20 @@ void ASplitPlayer::RollMulti_Implementation()
 	anim->Montage_Play(RollMontage);
 		
 	ClonePlayer->anim->Montage_Play(RollMontage);
+
+	UGameplayStatics::PlaySound2D(GetWorld(), HA3Sound);
+	UGameplayStatics::PlaySound2D(GetWorld(), DodgeSound);
+}
+
+void ASplitPlayer::EndRollServer_Implementation()
+{
+	bRolling = false;
+	EndRollMulti();
+}
+
+void ASplitPlayer::EndRollMulti_Implementation()
+{
+	
 }
 
 void ASplitPlayer::DashServer_Implementation()
@@ -552,6 +582,9 @@ void ASplitPlayer::DashMulti_Implementation()
 	anim->bDashing = true;
 
 	ClonePlayer->anim->bDashing = true;
+
+	UGameplayStatics::PlaySound2D(GetWorld(), HA4Sound);
+	UGameplayStatics::PlaySound2D(GetWorld(), DashSound);
 }
 
 void ASplitPlayer::RunAction(const FInputActionValue& Value)
@@ -561,7 +594,7 @@ void ASplitPlayer::RunAction(const FInputActionValue& Value)
 
 void ASplitPlayer::RunServer_Implementation()
 {
-	if (!bRunning && !bDashing && !bClimbing && !bJumping && bMoving && !bPush && !bTraversal)
+	if (!bRunning && !bDashing && !bClimbing && !bJumping && bMoving && !bPush && !bTraversal && !bRolling)
 	{
 		bRunning = true;
 		RunMulti(true);
@@ -583,7 +616,9 @@ void ASplitPlayer::RunMulti_Implementation(bool isRunning)
 }
 
 void ASplitPlayer::Die()
-{ 
+{
+	DieServer();
+	
 	if (CurPart == 6)
 	{
 		TArray<class AActor*> FoundActors;
@@ -605,6 +640,16 @@ void ASplitPlayer::Die()
 	}
 
 	SetActorTransform(SpawnTransform);
+}
+
+void ASplitPlayer::DieMulti_Implementation()
+{
+	UGameplayStatics::PlaySound2D(GetWorld(), DieSound);
+}
+
+void ASplitPlayer::DieServer_Implementation()
+{
+	DieMulti();
 }
 
 bool ASplitPlayer::DetectWall(FHitResult& Out_Hit, FVector& HitLocation, FVector& Normal, int& index)	
