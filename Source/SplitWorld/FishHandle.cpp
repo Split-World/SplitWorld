@@ -1,0 +1,77 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+
+#include "FishHandle.h"
+
+#include "FireLaser.h"
+#include "Fish.h"
+#include "Laser.h"
+#include "SplitWorldGameModeBase.h"
+#include "Components/BoxComponent.h"
+
+AFishHandle::AFishHandle()
+{
+	PrimaryActorTick.bCanEverTick = true;
+	
+	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
+	Mesh->SetupAttachment(BoxComp);
+	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision); 
+
+	bReplicates = true;
+	bAlwaysRelevant = true; 
+}
+
+void AFishHandle::BeginPlay()
+{
+	Super::BeginPlay();
+	
+	if (HasAuthority())
+	{
+		GM = Cast<ASplitWorldGameModeBase>(GetWorld()->GetAuthGameMode());
+	} 
+}
+
+void AFishHandle::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+}
+
+void AFishHandle::Interaction_Implementation()
+{
+	Super::Interaction_Implementation(); 
+	
+	if (!bLaunched && !(GM->bPlayer_Interactions[1] & 1) && !(GM->bPlayer_Interactions[1] & 2))
+	{
+		bLaunched = true;
+		GM->bPlayer_Interactions[1] |= 1; 
+
+		Fishes[0]->Launch();
+		FireLasers[0]->Fire(); 
+		GetWorldTimerManager().SetTimer(FishTimerHandle, [&]()
+		{
+			Fishes[1]->Launch();
+			FireLasers[1]->Fire(); 
+			GetWorldTimerManager().SetTimer(FishTimerHandle, [&]()
+			{
+				Fishes[2]->Launch();
+				FireLasers[2]->Fire(); 
+				GetWorldTimerManager().SetTimer(FishTimerHandle, [&]()
+				{
+					bLaunched = false;
+					GM->bPlayer_Interactions[1] &= ~1;
+					GM->bPlayer_Interactions[1] &= ~4;
+					
+					Multi_ExecuteFunction(EFunctionType::ActiveKey, false); 
+					
+					if (GM->bPlayer_Interactions[1] & 2)
+					{
+						NormalLaser->Disable();
+						Multi_SetVisibility(); 
+					} 
+				}, 4.5f, false); 
+			}, 0.25f, false); 
+		}, 0.25f, false); 
+	}
+}
+
